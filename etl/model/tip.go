@@ -6,8 +6,8 @@ package model
 import (
 	"time"
 
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/tzindex/rpc"
 )
 
 // ChainTip reflects the blockchain state at the currently indexed height.

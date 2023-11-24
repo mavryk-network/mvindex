@@ -4,7 +4,7 @@
 package metadata
 
 import (
-	"blockwatch.cc/tzgo/micheline"
+	"github.com/mavryk-network/tzgo/micheline"
 )
 
 func init() {

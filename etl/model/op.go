@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzgo/micheline"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 const (

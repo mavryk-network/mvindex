@@ -7,7 +7,7 @@ import (
 	"context"
 	"fmt"
 
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 type Bundle struct {

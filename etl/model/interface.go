@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/task"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzgo/micheline"
+	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/tzindex/etl/task"
+	"github.com/mavryk-network/tzindex/rpc"
 )
 
 // Model is the interface all data models must implement.

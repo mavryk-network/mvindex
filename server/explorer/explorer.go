@@ -9,8 +9,8 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/tzindex/server"
 )
 
 func init() {

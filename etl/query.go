@@ -5,8 +5,8 @@ package etl
 
 import (
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 type ListRequest struct {

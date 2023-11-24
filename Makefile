@@ -2,13 +2,13 @@
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 
 PLATFORM ?= alpine
-REPO ?= blockwatch.cc/tzindex
+REPO ?= github.com/mavryk-network/tzindex
 BUILD_TARGET ?= tzindex
 BUILD_TAG ?= master
 BUILD_VERSION ?= $(shell git describe ${BUILD_TAG} --tags --always)-$(PLATFORM)
 BUILD_COMMIT ?= $(shell git rev-parse --short ${BUILD_TAG})
-BUILD_IMAGE := blockwatch/$(BUILD_TARGET):$(BUILD_VERSION)
-BUILD_LATEST := blockwatch/$(BUILD_TARGET):latest
+BUILD_IMAGE := mavrykdynamics/$(BUILD_TARGET):$(BUILD_VERSION)
+BUILD_LATEST := mavrykdynamics/$(BUILD_TARGET):latest
 export BUILD_TAG BUILD_TARGET BUILD_VERSION BUILD_COMMIT BUILD_IMAGE BUILD_LATEST
 
 BUILD_FLAGS := --build-arg BUILD_TARGET=$(BUILD_TARGET) --build-arg BUILD_COMMIT=$(BUILD_COMMIT) --build-arg BUILD_VERSION=$(BUILD_VERSION) --build-arg BUILD_TAG=$(BUILD_TAG)

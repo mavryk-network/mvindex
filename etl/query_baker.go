@@ -7,8 +7,8 @@ import (
 	"context"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 func (m *Indexer) LookupBaker(ctx context.Context, addr tezos.Address) (*model.Baker, error) {

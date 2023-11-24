@@ -4,9 +4,9 @@
 package etl
 
 import (
-	"blockwatch.cc/tzgo/micheline"
 	"blockwatch.cc/tzindex/etl/model"
 	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzgo/micheline"
 )
 
 func (b *Builder) NewTransactionFlows(

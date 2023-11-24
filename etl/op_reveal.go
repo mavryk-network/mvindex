@@ -8,9 +8,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl/model"
 	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 // manager operation, extends grace period

@@ -9,8 +9,8 @@ import (
 	"fmt"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/tzindex/rpc"
 )
 
 const BakerTableKey = "baker"

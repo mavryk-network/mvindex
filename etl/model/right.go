@@ -9,7 +9,7 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/vec"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 const RightsTableKey = "rights"

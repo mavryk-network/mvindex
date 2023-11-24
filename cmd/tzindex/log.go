@@ -8,7 +8,6 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/store"
-	"blockwatch.cc/tzgo/micheline"
 	"blockwatch.cc/tzindex/etl"
 	"blockwatch.cc/tzindex/etl/cache"
 	"blockwatch.cc/tzindex/etl/index"
@@ -21,6 +20,7 @@ import (
 	"blockwatch.cc/tzindex/server/tables"
 	"github.com/echa/config"
 	logpkg "github.com/echa/log"
+	"github.com/mavryk-network/tzgo/micheline"
 )
 
 var (

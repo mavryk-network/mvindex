@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/store"
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl/model"
 	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 var (

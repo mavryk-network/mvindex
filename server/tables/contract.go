@@ -17,10 +17,10 @@ import (
 	"blockwatch.cc/packdb/encoding/csv"
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl/model"
 	"blockwatch.cc/tzindex/rpc"
 	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 var (

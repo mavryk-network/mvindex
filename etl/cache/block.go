@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 // NOTE: simple read-mostly cache for timestamps and block hashes

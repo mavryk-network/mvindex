@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 // BakingRight holds simplified information about the right to bake a specific Tezos block

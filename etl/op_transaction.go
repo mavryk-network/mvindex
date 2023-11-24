@@ -8,9 +8,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl/model"
 	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 // can implicitly burn a fee when new account is created

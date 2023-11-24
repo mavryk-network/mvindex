@@ -7,7 +7,7 @@ import (
 	"errors"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 const MetadataTableKey = "metadata"

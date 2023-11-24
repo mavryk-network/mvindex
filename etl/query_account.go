@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 func (m *Indexer) LookupAccount(ctx context.Context, addr tezos.Address) (*model.Account, error) {

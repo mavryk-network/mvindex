@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/tzindex/etl/model"
+	"github.com/mavryk-network/tzindex/rpc"
 )
 
 func (b *Builder) AppendEndorsementOp(ctx context.Context, oh *rpc.Operation, id model.OpRef, rollback bool) error {

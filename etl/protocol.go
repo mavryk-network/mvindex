@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"sync"
 
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 type Registry struct {

@@ -8,9 +8,9 @@ import (
 	"context"
 	"fmt"
 
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/tzindex/etl/model"
+	"github.com/mavryk-network/tzindex/rpc"
 )
 
 // this is a generic op only, details are in governance table

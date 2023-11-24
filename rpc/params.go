@@ -6,7 +6,7 @@ package rpc
 import (
 	"time"
 
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 // Params contains a subset of protocol configuration settings that are relevant

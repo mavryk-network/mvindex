@@ -7,8 +7,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/micheline"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 // Ensure SmartRollup types implement the TypedOperation interface.

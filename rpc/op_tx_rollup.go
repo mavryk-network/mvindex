@@ -6,8 +6,8 @@ package rpc
 import (
 	"encoding/json"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/micheline"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 // Ensure TxRollup implements the TypedOperation interface.

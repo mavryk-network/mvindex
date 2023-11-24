@@ -12,8 +12,8 @@ import (
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
 
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 const rankDefaultSize = 1 << 16

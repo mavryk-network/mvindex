@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 const (

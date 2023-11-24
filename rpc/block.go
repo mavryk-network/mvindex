@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/micheline"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 // Block holds information about a Tezos block. This is a

@@ -11,8 +11,8 @@ import (
 	"strings"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 func (m *Indexer) BlockByID(ctx context.Context, id uint64) (*model.Block, error) {

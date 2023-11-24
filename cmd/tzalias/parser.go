@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"blockwatch.cc/tzpro-go/tzpro/index"
+	"github.com/mavryk-network/tzpro-go/tzpro/index"
 )
 
 type kvpairs map[string]string

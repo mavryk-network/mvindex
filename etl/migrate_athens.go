@@ -7,10 +7,10 @@ import (
 	"context"
 	"fmt"
 
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl/index"
 	"blockwatch.cc/tzindex/etl/model"
 	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 // insert invoice

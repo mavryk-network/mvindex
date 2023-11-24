@@ -8,8 +8,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/micheline"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 // Operation represents a single operation or batch of operations included in a block

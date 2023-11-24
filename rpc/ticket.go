@@ -4,9 +4,9 @@
 package rpc
 
 import (
-	m "blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
 	"github.com/cespare/xxhash/v2"
+	m "github.com/mavryk-network/tzgo/micheline"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 type Ticket struct {

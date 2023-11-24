@@ -6,7 +6,7 @@ package model
 import (
 	"fmt"
 
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 // implicit operation list ids

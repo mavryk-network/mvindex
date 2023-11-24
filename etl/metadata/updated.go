@@ -6,7 +6,7 @@ package metadata
 import (
 	"time"
 
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 func init() {

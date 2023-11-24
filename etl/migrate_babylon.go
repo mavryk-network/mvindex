@@ -9,8 +9,8 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/vec"
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/micheline"
+	"github.com/mavryk-network/tzgo/tezos"
 
 	"blockwatch.cc/tzindex/etl/model"
 	"blockwatch.cc/tzindex/rpc"
@@ -142,7 +142,7 @@ func (b *Builder) RunBabylonUpgrade(ctx context.Context, params *rpc.Params, n i
 		return err
 	}
 	// find eligible delegator KT1 accounts that are not yet contracts
-	// Note: these are KT1 accounts distinct from the tz1/2/3 airdrop
+	// Note: these are KT1 accounts distinct from the mv1/2/3 airdrop
 	// accounts above
 	var count int
 	err = pack.NewQuery("etl.migrate.upgrade").

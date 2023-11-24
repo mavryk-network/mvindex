@@ -22,11 +22,11 @@ import (
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
 	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/metadata"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
 	lru "github.com/hashicorp/golang-lru/v2"
+	"github.com/mavryk-network/tzindex/etl"
+	"github.com/mavryk-network/tzindex/etl/metadata"
+	"github.com/mavryk-network/tzindex/etl/model"
+	"github.com/mavryk-network/tzindex/server"
 )
 
 var (

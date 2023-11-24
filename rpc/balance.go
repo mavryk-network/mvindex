@@ -6,7 +6,7 @@ package rpc
 import (
 	"fmt"
 
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 // BalanceUpdate is a variable structure depending on the Kind field

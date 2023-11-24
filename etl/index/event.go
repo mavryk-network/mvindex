@@ -8,9 +8,8 @@ import (
 	"fmt"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
+	"github.com/mavryk-network/tzindex/etl/model"
+	"github.com/mavryk-network/tzindex/etl/task"
 )
 
 const EventIndexKey = "event"

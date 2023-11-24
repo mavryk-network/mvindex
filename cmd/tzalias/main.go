@@ -17,12 +17,12 @@ import (
 
 	"github.com/qri-io/jsonschema"
 
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/metadata"
-	"blockwatch.cc/tzpro-go/tzpro"
-	"blockwatch.cc/tzpro-go/tzpro/index"
 	"github.com/echa/config"
 	"github.com/echa/log"
+	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/tzindex/etl/metadata"
+	"github.com/mavryk-network/tzpro-go/tzpro"
+	"github.com/mavryk-network/tzpro-go/tzpro/index"
 )
 
 var (

@@ -1,8 +1,9 @@
 package rpc
 
 import (
-	"blockwatch.cc/tzgo/tezos"
 	"testing"
+
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 func TestParams(t *testing.T) {

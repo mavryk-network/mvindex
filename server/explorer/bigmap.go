@@ -11,11 +11,11 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl"
 	"blockwatch.cc/tzindex/etl/model"
 	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/tzgo/micheline"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 func init() {

@@ -10,8 +10,8 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 func (m *Indexer) ElectionByHeight(ctx context.Context, height int64) (*model.Election, error) {

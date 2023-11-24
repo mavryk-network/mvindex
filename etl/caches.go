@@ -9,9 +9,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"blockwatch.cc/tzgo/tezos"
 	"blockwatch.cc/tzindex/etl/cache"
 	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/tzgo/tezos"
 )
 
 func (m *Indexer) CacheStats() map[string]interface{} {

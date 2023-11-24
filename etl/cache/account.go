@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
 	"github.com/cespare/xxhash/v2"
 	lru "github.com/hashicorp/golang-lru/v2"
+	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/tzindex/etl/model"
 )
 
 var AccountCacheSizeMaxSize = 16384 // entries

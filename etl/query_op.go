@@ -12,9 +12,8 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzindex/etl/model"
+	"github.com/mavryk-network/tzindex/rpc"
 )
 
 func (m *Indexer) LookupOp(ctx context.Context, opIdent string, r ListRequest) ([]*model.Op, error) {

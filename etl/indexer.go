@@ -11,12 +11,12 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/store"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/cache"
-	"blockwatch.cc/tzindex/etl/index"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/tzindex/etl/cache"
+	"github.com/mavryk-network/tzindex/etl/index"
+	"github.com/mavryk-network/tzindex/etl/model"
+	"github.com/mavryk-network/tzindex/etl/task"
+	"github.com/mavryk-network/tzindex/rpc"
 )
 
 type IndexerConfig struct {
