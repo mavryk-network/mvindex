@@ -677,28 +677,28 @@ var (
 		PreservedCycles:        5,
 		BlocksPerCycle:         4096,
 		BlocksPerCommitment:    32,
-		BlocksPerStakeSnapshot: 256,
+		BlocksPerSnapshot: 256,
 		BlocksPerVotingPeriod:  32768,
 	}
 	edoParams = Constants{
 		PreservedCycles:        5,
 		BlocksPerCycle:         4096,
 		BlocksPerCommitment:    32,
-		BlocksPerStakeSnapshot: 256,
+		BlocksPerSnapshot: 256,
 		BlocksPerVotingPeriod:  20478, // !!
 	}
 	granadaParams = Constants{
 		PreservedCycles:        5,
 		BlocksPerCycle:         8192,  // !!
 		BlocksPerCommitment:    64,    // !!
-		BlocksPerStakeSnapshot: 512,   // !!
+		BlocksPerSnapshot: 512,   // !!
 		BlocksPerVotingPeriod:  40956, // !!
 	}
 	mumbaiParams = Constants{
 		PreservedCycles:        5,
 		BlocksPerCycle:         16384, // !!
 		BlocksPerCommitment:    128,   // !!
-		BlocksPerStakeSnapshot: 1024,  // !!
+		BlocksPerSnapshot: 1024,  // !!
 		BlocksPerVotingPeriod:  81912, // !!
 	}
 
