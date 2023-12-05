@@ -27,7 +27,7 @@ func (b *Builder) MigrateIthaca(ctx context.Context, oldparams, params *rpc.Para
 		iLegacy := strings.HasPrefix(balances[i].Category, "legacy")
 		jLegacy := strings.HasPrefix(balances[j].Category, "legacy")
 		if iLegacy && jLegacy {
-			return balances[i].Delegate < balances[j].Delegate
+			return balances[i].Staker.Delegate < balances[j].Staker.Delegate
 		}
 		return iLegacy && !jLegacy
 	})

@@ -9,6 +9,13 @@ import (
 	"github.com/mavryk-network/tzgo/tezos"
 )
 
+// Staker is a variable structure included inside the staker
+type Staker struct {
+	Baker    string `json:"baker,omitempty"`
+	Contract string `json:"contract,omitempty"`
+	Delegate string `json:"delegate,omitempty"`
+}
+
 // BalanceUpdate is a variable structure depending on the Kind field
 type BalanceUpdate struct {
 	Kind     string `json:"kind"`          // contract, freezer, accumulator, commitment, minted, burned
@@ -18,7 +25,7 @@ type BalanceUpdate struct {
 
 	// related debtor or creditor
 	Contract  string `json:"contract,omitempty"`  // contract only
-	Delegate  string `json:"delegate,omitempty"`  // freezer and burn only
+	Staker    Staker `json:"staker,omitempty"`    // freezer and burn only
 	Committer string `json:"committer,omitempty"` // committer only
 
 	// Ithaca only
