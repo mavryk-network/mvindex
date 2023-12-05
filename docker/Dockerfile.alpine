@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:experimental
 # build stage
 FROM          golang:1.21-alpine AS tzindex-builder
-ARG           REPO=blockwatch.cc/tzindex
+ARG           REPO=mavrykdynamics/tzindex
 ARG           BUILD_TARGET=tzindex
 ARG           BUILD_VERSION=dev
 ARG           BUILD_COMMIT=none
