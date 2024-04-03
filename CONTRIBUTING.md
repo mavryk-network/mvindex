@@ -1,17 +1,17 @@
-# Contributing to Tzindex
+# Contributing to MvIndex
 
-Thanks for your interest in contributing to TzIndex! This document outlines some of the conventions on the development workflow, commit message formatting, contact points and other resources.
+Thanks for your interest in contributing to MvIndex! This document outlines some of the conventions on the development workflow, commit message formatting, contact points and other resources.
 
 If you need any help or mentoring getting started, understanding the codebase, or making a PR (or anything else really), please ask on [Discord](https://discord.gg/D5e98Hw).
 
 
 ## Building and setting up a development workspace
 
-TzIndex is written in Golang and uses Go modules, so it should work with Go versions >= 1.11.
+MvIndex is written in Golang and uses Go modules, so it should work with Go versions >= 1.11.
 
 ### Prerequisites
 
-To build TzIndex you'll need to at least have the following installed:
+To build MvIndex you'll need to at least have the following installed:
 
 * `git` - Version control
 * `go` - Golang compiler and standard library
@@ -20,16 +20,16 @@ To build TzIndex you'll need to at least have the following installed:
 ### Getting the repository
 
 ```
-git clone https://github.com/blockwatch-cc/tzindex.git
-cd tzindex
+git clone https://github.com/mavryk-network/mvindex.git
+cd mvindex
 # Future instructions assume you are in this directory
 ```
 
 ### Building and testing
 
-TzIndex includes a `Makefile` with common workflows, you can also use `go build` or `go run`, as you would in other Golang projects.
+MvIndex includes a `Makefile` with common workflows, you can also use `go build` or `go run`, as you would in other Golang projects.
 
-You can build TzIndex:
+You can build MvIndex:
 
 ```bash
 make build

@@ -6,8 +6,8 @@ package etl
 import (
 	"context"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 func (b *Builder) AppendInvoiceOp(ctx context.Context, acc *model.Account, amount int64, p int) error {

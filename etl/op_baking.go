@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/mavryk-network/tzgo/tezos"
-	"github.com/mavryk-network/tzindex/etl/model"
-	"github.com/mavryk-network/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 func (b *Builder) AppendEndorsementOp(ctx context.Context, oh *rpc.Operation, id model.OpRef, rollback bool) error {
@@ -36,7 +36,7 @@ func (b *Builder) AppendEndorsementOp(ctx context.Context, oh *rpc.Operation, id
 
 	// build op
 	op := model.NewOp(b.block, id)
-	op.Status = tezos.OpStatusApplied
+	op.Status = mavryk.OpStatusApplied
 	op.IsSuccess = true
 	op.SenderId = bkr.AccountId
 
@@ -121,7 +121,7 @@ func (b *Builder) AppendSeedNonceOp(ctx context.Context, oh *rpc.Operation, id m
 
 	// build op
 	op := model.NewOp(b.block, id)
-	op.Status = tezos.OpStatusApplied
+	op.Status = mavryk.OpStatusApplied
 	op.IsSuccess = true
 	op.SenderId = b.block.ProposerId
 
@@ -177,7 +177,7 @@ func (b *Builder) AppendVdfRevelationOp(ctx context.Context, oh *rpc.Operation, 
 
 	// build op
 	op := model.NewOp(b.block, id)
-	op.Status = tezos.OpStatusApplied
+	op.Status = mavryk.OpStatusApplied
 	op.IsSuccess = true
 	op.SenderId = b.block.ProposerId
 
@@ -245,7 +245,7 @@ func (b *Builder) AppendDoubleBakingOp(ctx context.Context, oh *rpc.Operation, i
 			}
 		}
 	default:
-		// no balance updates in oxford+, we can only look at rights
+		// no balance updates in atlas+, we can only look at rights
 		var head rpc.BlockHeader
 		_ = json.Unmarshal(dop.BH1, &head)
 		addr, err := b.rpc.GetBakingRightOwner(ctx,
@@ -271,7 +271,7 @@ func (b *Builder) AppendDoubleBakingOp(ctx context.Context, oh *rpc.Operation, i
 	// build op
 	op := model.NewOp(b.block, id)
 	op.IsSuccess = true
-	op.Status = tezos.OpStatusApplied
+	op.Status = mavryk.OpStatusApplied
 	op.SenderId = b.block.ProposerId
 	if offender != nil {
 		op.ReceiverId = offender.AccountId
@@ -431,7 +431,7 @@ func (b *Builder) AppendDoubleEndorsingOp(ctx context.Context, oh *rpc.Operation
 			}
 		}
 	default:
-		// no balance updates in oxford+, we can only look at rights
+		// no balance updates in atlas+, we can only look at rights
 		var end rpc.InlinedEndorsement
 		_ = json.Unmarshal(dop.OP1, &end)
 		addr, err := b.rpc.GetEndorsingSlotOwner(ctx,
@@ -457,7 +457,7 @@ func (b *Builder) AppendDoubleEndorsingOp(ctx context.Context, oh *rpc.Operation
 	// build op
 	op := model.NewOp(b.block, id)
 	op.IsSuccess = true
-	op.Status = tezos.OpStatusApplied
+	op.Status = mavryk.OpStatusApplied
 	op.SenderId = b.block.Proposer.AccountId
 	if offender != nil {
 		op.ReceiverId = offender.AccountId
@@ -711,7 +711,7 @@ func (b *Builder) AppendDrainDelegateOp(ctx context.Context, oh *rpc.Operation, 
 	op.SenderId = baker.Account.RowId
 	op.ReceiverId = dst.RowId
 	op.BakerId = b.block.ProposerId
-	op.Status = tezos.OpStatusApplied
+	op.Status = mavryk.OpStatusApplied
 	op.IsSuccess = true
 	op.Data = dop.ConsensusKey.String()
 	b.block.Ops = append(b.block.Ops, op)

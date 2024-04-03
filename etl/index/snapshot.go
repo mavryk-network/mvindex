@@ -9,8 +9,8 @@ import (
 	"sort"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
 )
 
 const SnapshotIndexKey = "snapshot"
@@ -120,7 +120,7 @@ func (idx *SnapshotIndex) Close() error {
 
 func (idx *SnapshotIndex) ConnectBlock(ctx context.Context, block *model.Block, builder model.BlockBuilder) error {
 	// handle snapshot index
-	if block.TZ.Snapshot != nil {
+	if block.MV.Snapshot != nil {
 		if err := idx.updateCycleSnapshot(ctx, block); err != nil {
 			log.Error(err)
 			// return err
@@ -129,14 +129,14 @@ func (idx *SnapshotIndex) ConnectBlock(ctx context.Context, block *model.Block, 
 	}
 
 	// skip non-snapshot blocks
-	if block.Height == 0 || !block.TZ.IsSnapshotBlock() {
+	if block.Height == 0 || !block.MV.IsSnapshotBlock() {
 		return nil
 	}
 
 	// first snapshot (0 based) is block 255 (0 based index) in a cycle
 	// snapshot 15 is without unfrozen rewards from end-of-cycle block
-	sn := block.TZ.GetSnapshotIndex()
-	isCycleEnd := block.TZ.IsCycleEnd()
+	sn := block.MV.GetSnapshotIndex()
+	isCycleEnd := block.MV.IsCycleEnd()
 
 	// snapshot all currently funded accounts and delegates
 	accounts, err := builder.Table(model.AccountTableKey)
@@ -274,7 +274,7 @@ func (idx *SnapshotIndex) ConnectBlock(ctx context.Context, block *model.Block, 
 func (idx *SnapshotIndex) DisconnectBlock(ctx context.Context, block *model.Block, _ model.BlockBuilder) error {
 	// skip non-snapshot blocks
 	// if block.Height == 0 || !block.Params.IsSnapshotBlock(block.Height) {
-	if block.Height == 0 || !block.TZ.IsSnapshotBlock() {
+	if block.Height == 0 || !block.MV.IsSnapshotBlock() {
 		return nil
 	}
 	return idx.DeleteBlock(ctx, block.Height)
@@ -304,7 +304,7 @@ func (idx *SnapshotIndex) DeleteCycle(ctx context.Context, cycle int64) error {
 // snapshot rows from staging and compacts
 func (idx *SnapshotIndex) updateCycleSnapshot(ctx context.Context, block *model.Block) error {
 	// update all snapshot rows at snapshot cycle & index
-	snap := block.TZ.Snapshot
+	snap := block.MV.Snapshot
 
 	// adjust to source snapshot cycle
 	if snap.Base < 0 {

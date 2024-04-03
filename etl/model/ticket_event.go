@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 const (
@@ -87,7 +87,7 @@ type TicketEvent struct {
 	Ticketer AccountID       `pack:"E,bloom=3" json:"ticketer"`
 	Sender   AccountID       `pack:"S"         json:"sender"`
 	Receiver AccountID       `pack:"R"         json:"receiver"`
-	Amount   tezos.Z         `pack:"A,snappy"  json:"amount"`
+	Amount   mavryk.Z        `pack:"A,snappy"  json:"amount"`
 	Height   int64           `pack:"h,i32"     json:"height"`
 	Time     time.Time       `pack:"t"         json:"time"`
 	OpId     uint64          `pack:"d"         json:"op_id"`

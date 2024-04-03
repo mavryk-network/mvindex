@@ -12,8 +12,8 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var null = []byte(`null`)

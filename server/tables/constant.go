@@ -15,9 +15,9 @@ import (
 	"blockwatch.cc/packdb/encoding/csv"
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -211,7 +211,7 @@ func StreamConstantTable(ctx *server.Context, args *TableRequest) (interface{}, 
 			switch mode {
 			case pack.FilterModeEqual, pack.FilterModeNotEqual:
 				// single-address lookup and compile condition
-				addr, err := tezos.ParseAddress(val[0])
+				addr, err := mavryk.ParseAddress(val[0])
 				if err != nil || !addr.IsValid() {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", val[0]), err))
 				}
@@ -221,7 +221,7 @@ func StreamConstantTable(ctx *server.Context, args *TableRequest) (interface{}, 
 				// return duplicates)
 				hashes := make([][]byte, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					addr, err := tezos.ParseAddress(v)
+					addr, err := mavryk.ParseAddress(v)
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", v), err))
 					}
@@ -235,7 +235,7 @@ func StreamConstantTable(ctx *server.Context, args *TableRequest) (interface{}, 
 			switch mode {
 			case pack.FilterModeEqual, pack.FilterModeNotEqual:
 				// single-hash lookup and compile condition
-				hash, err := tezos.ParseExprHash(val[0])
+				hash, err := mavryk.ParseExprHash(val[0])
 				if err != nil || !hash.IsValid() {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid exprhash '%s'", val[0]), err))
 				}
@@ -244,7 +244,7 @@ func StreamConstantTable(ctx *server.Context, args *TableRequest) (interface{}, 
 				// multi-hash lookup
 				hashes := make([][]byte, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					addr, err := tezos.ParseExprHash(v)
+					addr, err := mavryk.ParseExprHash(v)
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid exprhash '%s'", v), err))
 					}

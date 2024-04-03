@@ -1,11 +1,9 @@
-module blockwatch.cc/tzindex
+module github.com/mavryk-network/mvindex
 
 go 1.21
 
 require (
 	blockwatch.cc/packdb v0.0.0-20240123064027-0b0a316f6af1
-	blockwatch.cc/tzgo v1.18.3-0.20240122060213-b82e574dc58f
-	blockwatch.cc/tzpro-go v0.18.2-0.20240202081659-a61612798ea7
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d
 	github.com/awesome-gocui/gocui v1.1.0
 	github.com/cespare/xxhash/v2 v2.2.0
@@ -19,6 +17,8 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/schema v1.2.1
 	github.com/hashicorp/golang-lru/v2 v2.0.7
+	github.com/mavryk-network/mvgo v1.18.4
+	github.com/mavryk-network/mvpro-go v0.18.2-0.20240403091405-9269f9218b78
 	github.com/qri-io/jsonschema v0.2.1
 	github.com/tidwall/gjson v1.17.0
 	go.etcd.io/bbolt v1.3.8

@@ -6,8 +6,8 @@ package profile
 import (
 	"fmt"
 
-	m "blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	m "github.com/mavryk-network/mvgo/micheline"
 )
 
 var (
@@ -16,8 +16,8 @@ var (
 )
 
 type Claim struct {
-	Url  string         `json:"url"   prim:"url,path=0/0"`
-	Sign tezos.HexBytes `json:"sign"  prim:"sign,path=0/1"`
+	Url  string          `json:"url"   prim:"url,path=0/0"`
+	Sign mavryk.HexBytes `json:"sign"  prim:"sign,path=0/1"`
 }
 
 type Params struct {
@@ -26,9 +26,9 @@ type Params struct {
 }
 
 type Storage struct {
-	Claims       []Claim       `json:"claims"`
-	ContractType string        `json:"contract_type"`
-	Owner        tezos.Address `json:"owner"`
+	Claims       []Claim        `json:"claims"`
+	ContractType string         `json:"contract_type"`
+	Owner        mavryk.Address `json:"owner"`
 }
 
 func (d *Decoder) DecodeParams(buf []byte) (p Params, err error) {

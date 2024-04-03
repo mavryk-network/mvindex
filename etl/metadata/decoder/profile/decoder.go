@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"strings"
 
-	"blockwatch.cc/tzindex/etl/metadata"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
 	"github.com/echa/config"
+	"github.com/mavryk-network/mvindex/etl/metadata"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
 	"github.com/tidwall/gjson"
 )
 

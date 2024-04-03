@@ -12,8 +12,8 @@ import (
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
 
-	"blockwatch.cc/tzindex/etl/model"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 const rankDefaultSize = 1 << 16
@@ -125,7 +125,7 @@ func (h *RankCache) Build(ctx context.Context, accounts, ops *pack.Table) error 
 	// Step 1: capture accounts
 	type XAcc struct {
 		RowId            model.AccountID `pack:"I,pk"`
-		Hash             tezos.Address   `pack:"H"`
+		Hash             mavryk.Address  `pack:"H"`
 		SpendableBalance int64           `pack:"s"`
 	}
 	a := &XAcc{}

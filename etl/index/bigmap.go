@@ -10,9 +10,9 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	lru "github.com/hashicorp/golang-lru/v2"
-	"github.com/mavryk-network/tzgo/micheline"
-	"github.com/mavryk-network/tzindex/etl/model"
-	"github.com/mavryk-network/tzindex/etl/task"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
 )
 
 const BigmapIndexKey = "bigmap"

@@ -11,11 +11,11 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
-	"github.com/mavryk-network/tzgo/micheline"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 func init() {
@@ -26,18 +26,18 @@ var _ server.RESTful = (*Bigmap)(nil)
 var _ server.Resource = (*Bigmap)(nil)
 
 type Bigmap struct {
-	Contract      tezos.Address     `json:"contract"`
+	Contract      mavryk.Address    `json:"contract"`
 	BigmapId      int64             `json:"bigmap_id"`
 	NUpdates      int64             `json:"n_updates"`
 	NKeys         int64             `json:"n_keys"`
 	AllocHeight   int64             `json:"alloc_height"`
-	AllocBlock    tezos.BlockHash   `json:"alloc_block"`
+	AllocBlock    mavryk.BlockHash  `json:"alloc_block"`
 	AllocTime     time.Time         `json:"alloc_time"`
 	UpdatedHeight int64             `json:"update_height"`
-	UpdatedBlock  tezos.BlockHash   `json:"update_block"`
+	UpdatedBlock  mavryk.BlockHash  `json:"update_block"`
 	UpdatedTime   time.Time         `json:"update_time"`
 	DeletedHeight *int64            `json:"deleted_height"`
-	DeletedBlock  *tezos.BlockHash  `json:"deleted_block"`
+	DeletedBlock  *mavryk.BlockHash `json:"deleted_block"`
 	DeletedTime   *time.Time        `json:"deleted_time"`
 	KeyType       micheline.Typedef `json:"key_type"`
 	ValueType     micheline.Typedef `json:"value_type"`
@@ -103,19 +103,19 @@ func (b Bigmap) RegisterRoutes(r *mux.Router) error {
 
 // bigmap metadata
 type BigmapMeta struct {
-	Contract     tezos.Address `json:"contract"`
-	BigmapId     int64         `json:"bigmap_id"`
-	UpdateTime   time.Time     `json:"time"`
-	UpdateHeight int64         `json:"height"`
-	UpdateOp     tezos.OpHash  `json:"op"`
-	Sender       tezos.Address `json:"sender"`
-	Source       tezos.Address `json:"source"`
+	Contract     mavryk.Address `json:"contract"`
+	BigmapId     int64          `json:"bigmap_id"`
+	UpdateTime   time.Time      `json:"time"`
+	UpdateHeight int64          `json:"height"`
+	UpdateOp     mavryk.OpHash  `json:"op"`
+	Sender       mavryk.Address `json:"sender"`
+	Source       mavryk.Address `json:"source"`
 }
 
 // keys
 type BigmapKey struct {
 	Key     micheline.Key   `json:"key"`
-	KeyHash tezos.ExprHash  `json:"hash"`
+	KeyHash mavryk.ExprHash `json:"hash"`
 	Meta    *BigmapMeta     `json:"meta,omitempty"`
 	Prim    *micheline.Prim `json:"prim,omitempty"`
 }
@@ -135,7 +135,7 @@ var _ server.Resource = (*BigmapKeyList)(nil)
 // values
 type BigmapValue struct {
 	Key       *micheline.Key   `json:"key,omitempty"`   // omit on bigmap clear
-	KeyHash   *tezos.ExprHash  `json:"hash,omitempty"`  // omit on bigmap clear
+	KeyHash   *mavryk.ExprHash `json:"hash,omitempty"`  // omit on bigmap clear
 	Value     *micheline.Value `json:"value,omitempty"` // omit on removal updates
 	Meta      *BigmapMeta      `json:"meta,omitempty"`
 	KeyPrim   *micheline.Prim  `json:"key_prim,omitempty"`
@@ -209,11 +209,11 @@ func loadBigmap(ctx *server.Context) *model.BigmapAlloc {
 	}
 }
 
-func parseBigmapKey(ctx *server.Context, typ micheline.OpCode) tezos.ExprHash {
+func parseBigmapKey(ctx *server.Context, typ micheline.OpCode) mavryk.ExprHash {
 	if k, ok := mux.Vars(ctx.Request)["key"]; !ok || k == "" {
 		panic(server.EBadRequest(server.EC_RESOURCE_ID_MISSING, "missing bigmap key", nil))
 	} else {
-		expr, err := tezos.ParseExprHash(k)
+		expr, err := mavryk.ParseExprHash(k)
 		if err == nil {
 			return expr
 		}

@@ -15,7 +15,7 @@ const (
 	bakerNs     = "baker"
 	bakerSchema = `{
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://api.tzpro.io/metadata/schemas/baker.json",
+	"$id": "https://api.mvpro.io/metadata/schemas/baker.json",
 	"title": "Baker Info",
     "description": "A list of baker related settings.",
 	"type": "object",

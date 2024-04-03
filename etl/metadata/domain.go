@@ -11,7 +11,7 @@ const (
 	NsDomain     = "tzdomain"
 	domainSchema = `{
     "$schema": "http://json-schema.org/draft/2019-09/schema#",
-    "$id": "https://api.tzpro.io/metadata/schemas/domain.json",
+    "$id": "https://api.mvpro.io/metadata/schemas/domain.json",
     "title": "Tezos Domains",
     "description": "Tezos domains reverse record.",
     "type": "object",

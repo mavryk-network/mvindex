@@ -6,10 +6,10 @@ package rpc
 import (
 	"fmt"
 
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
-func (b *Block) CollectAddresses(addUnique func(tezos.Address)) error {
+func (b *Block) CollectAddresses(addUnique func(mavryk.Address)) error {
 	// collect from block-level balance updates if invoice is found
 	if inv, ok := b.Invoices(); ok {
 		for _, v := range inv {
@@ -34,7 +34,7 @@ func (b *Block) CollectAddresses(addUnique func(tezos.Address)) error {
 					// account may already be activated and this is a second claim
 					// don't look for and allocate new account, this happens in
 					// op processing
-					bkey, err := tezos.BlindAddress(tx.Pkh, tx.Secret)
+					bkey, err := mavryk.BlindAddress(tx.Pkh, tx.Secret)
 					if err != nil {
 						return fmt.Errorf("%s %s: blinded address creation failed: %w", op.Kind(), oh.Hash, err)
 					}
@@ -112,7 +112,7 @@ func (b *Block) CollectAddresses(addUnique func(tezos.Address)) error {
 					addUnique(tx.Result().OriginatedRollup)
 
 					// find offender who gets slashed from balance updates
-					if op.Kind() == tezos.OpTypeTxRollupRejection {
+					if op.Kind() == mavryk.OpTypeTxRollupRejection {
 						if bal := tx.Result().BalanceUpdates; len(bal) > 0 {
 							addUnique(bal[0].Address()) // offender
 						}
@@ -169,8 +169,8 @@ func (b *Block) CollectAddresses(addUnique func(tezos.Address)) error {
 					addUnique(tx.Staker)
 
 					// TODO
-					// tezos.OpTypeDalSlotAvailability,
-					// tezos.OpTypeDalPublishSlotHeader:
+					// mavryk.OpTypeDalSlotAvailability,
+					// mavryk.OpTypeDalPublishSlotHeader:
 
 					// No address info
 					// - SeedNonceRevelation
@@ -188,11 +188,11 @@ func (b *Block) CollectAddresses(addUnique func(tezos.Address)) error {
 	// collect from implicit block ops
 	for i, op := range b.Metadata.ImplicitOperationsResults {
 		switch op.Kind {
-		case tezos.OpTypeOrigination:
+		case mavryk.OpTypeOrigination:
 			for _, v := range op.OriginatedContracts {
 				addUnique(v)
 			}
-		case tezos.OpTypeTransaction:
+		case mavryk.OpTypeTransaction:
 			for _, v := range op.BalanceUpdates {
 				addUnique(v.Address())
 			}

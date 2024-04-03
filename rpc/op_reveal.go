@@ -3,9 +3,7 @@
 
 package rpc
 
-import (
-	"github.com/mavryk-network/tzgo/tezos"
-)
+import "github.com/mavryk-network/mvgo/mavryk"
 
 // Ensure Reveal implements the TypedOperation interface.
 var _ TypedOperation = (*Reveal)(nil)
@@ -13,5 +11,5 @@ var _ TypedOperation = (*Reveal)(nil)
 // Reveal represents a reveal operation
 type Reveal struct {
 	Manager
-	PublicKey tezos.Key `json:"public_key"`
+	PublicKey mavryk.Key `json:"public_key"`
 }

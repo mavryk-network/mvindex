@@ -8,22 +8,22 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mavryk-network/tzgo/micheline"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
 )
 
 // Block holds information about a Tezos block. This is a
 // stripped version for indexing without signatures.
 type Block struct {
-	Protocol   tezos.ProtocolHash `json:"protocol"`
-	ChainId    tezos.ChainIdHash  `json:"chain_id"`
-	Hash       tezos.BlockHash    `json:"hash"`
-	Header     BlockHeader        `json:"header"`
-	Metadata   BlockMetadata      `json:"metadata"`
-	Operations [4][]*Operation    `json:"operations"`
+	Protocol   mavryk.ProtocolHash `json:"protocol"`
+	ChainId    mavryk.ChainIdHash  `json:"chain_id"`
+	Hash       mavryk.BlockHash    `json:"hash"`
+	Header     BlockHeader         `json:"header"`
+	Metadata   BlockMetadata       `json:"metadata"`
+	Operations [4][]*Operation     `json:"operations"`
 }
 
-func (b Block) GetProtocol() tezos.ProtocolHash {
+func (b Block) GetProtocol() mavryk.ProtocolHash {
 	return b.Protocol
 }
 
@@ -83,14 +83,14 @@ func (b Block) GetVotingInfo() VotingPeriodInfo {
 	return VotingPeriodInfo{}
 }
 
-func (b Block) GetVotingPeriodKind() tezos.VotingPeriodKind {
+func (b Block) GetVotingPeriodKind() mavryk.VotingPeriodKind {
 	if b.Metadata.VotingPeriodInfo != nil {
 		return b.Metadata.VotingPeriodInfo.VotingPeriod.Kind
 	}
 	if b.Metadata.VotingPeriodKind != nil {
 		return *b.Metadata.VotingPeriodKind
 	}
-	return tezos.VotingPeriodInvalid
+	return mavryk.VotingPeriodInvalid
 }
 
 func (b Block) GetVotingPeriod() int64 {
@@ -140,43 +140,43 @@ func (b Block) Invoices() (upd []BalanceUpdate, ok bool) {
 
 // InvalidBlock represents invalid block hash along with the errors that led to it being declared invalid
 type InvalidBlock struct {
-	Block tezos.BlockHash `json:"block"`
-	Level int64           `json:"level"`
-	Error Errors          `json:"error"`
+	Block mavryk.BlockHash `json:"block"`
+	Level int64            `json:"level"`
+	Error Errors           `json:"error"`
 }
 
 // BlockHeader is a part of the Tezos block data
 type BlockHeader struct {
-	Level                           int64             `json:"level"`
-	Proto                           int               `json:"proto"`
-	Predecessor                     tezos.BlockHash   `json:"predecessor"`
-	Timestamp                       time.Time         `json:"timestamp"`
-	Fitness                         []tezos.HexBytes  `json:"fitness"`
-	PayloadHash                     tezos.PayloadHash `json:"payload_hash"`
-	PayloadRound                    int               `json:"payload_round"`
-	Priority                        int               `json:"priority"`
-	ProofOfWorkNonce                tezos.HexBytes    `json:"proof_of_work_nonce"`
-	Content                         *BlockContent     `json:"content,omitempty"`
-	LiquidityBakingEscapeVote       bool              `json:"liquidity_baking_escape_vote"`
-	LiquidityBakingToggleVote       tezos.FeatureVote `json:"liquidity_baking_toggle_vote"`
-	AdaptiveIssuanceVote            tezos.FeatureVote `json:"adaptive_issuance_vote"`
-	AdaptiveIssuanceActivationCycle *int64            `json:"adaptive_issuance_activation_cycle"`
+	Level                           int64              `json:"level"`
+	Proto                           int                `json:"proto"`
+	Predecessor                     mavryk.BlockHash   `json:"predecessor"`
+	Timestamp                       time.Time          `json:"timestamp"`
+	Fitness                         []mavryk.HexBytes  `json:"fitness"`
+	PayloadHash                     mavryk.PayloadHash `json:"payload_hash"`
+	PayloadRound                    int                `json:"payload_round"`
+	Priority                        int                `json:"priority"`
+	ProofOfWorkNonce                mavryk.HexBytes    `json:"proof_of_work_nonce"`
+	Content                         *BlockContent      `json:"content,omitempty"`
+	LiquidityBakingEscapeVote       bool               `json:"liquidity_baking_escape_vote"`
+	LiquidityBakingToggleVote       mavryk.FeatureVote `json:"liquidity_baking_toggle_vote"`
+	AdaptiveIssuanceVote            mavryk.FeatureVote `json:"adaptive_issuance_vote"`
+	AdaptiveIssuanceActivationCycle *int64             `json:"adaptive_issuance_activation_cycle"`
 
 	// only present when header is fetched explicitly
-	// Hash     tezos.BlockHash    `json:"hash"`
-	// Protocol tezos.ProtocolHash `json:"protocol"`
-	ChainId tezos.ChainIdHash `json:"chain_id"`
+	// Hash     mavryk.BlockHash    `json:"hash"`
+	// Protocol mavryk.ProtocolHash `json:"protocol"`
+	ChainId mavryk.ChainIdHash `json:"chain_id"`
 }
 
-func (h BlockHeader) LbVote() tezos.FeatureVote {
+func (h BlockHeader) LbVote() mavryk.FeatureVote {
 	if h.LiquidityBakingToggleVote.IsValid() {
 		return h.LiquidityBakingToggleVote
 	}
 	// sic! bool flag has opposite meaning
 	if h.LiquidityBakingEscapeVote {
-		return tezos.FeatureVoteOff
+		return mavryk.FeatureVoteOff
 	}
-	return tezos.FeatureVoteOn
+	return mavryk.FeatureVoteOn
 }
 
 // BlockContent is part of block 1 header that seeds the initial context
@@ -196,9 +196,9 @@ type LevelInfo struct {
 }
 
 type VotingPeriod struct {
-	Index         int64                  `json:"index"`
-	Kind          tezos.VotingPeriodKind `json:"kind"`
-	StartPosition int64                  `json:"start_position"`
+	Index         int64                   `json:"index"`
+	Kind          mavryk.VotingPeriodKind `json:"kind"`
+	StartPosition int64                   `json:"start_position"`
 }
 
 type VotingPeriodInfo struct {
@@ -209,19 +209,19 @@ type VotingPeriodInfo struct {
 
 // BlockMetadata is a part of the Tezos block data
 type BlockMetadata struct {
-	Protocol         tezos.ProtocolHash `json:"protocol"`
-	NextProtocol     tezos.ProtocolHash `json:"next_protocol"`
-	MaxOperationsTTL int                `json:"max_operations_ttl"`
-	Baker            tezos.Address      `json:"baker"`
-	Proposer         tezos.Address      `json:"proposer"`
-	ConsumedGas      int64              `json:"consumed_gas,string"`
-	ConsumedMilliGas int64              `json:"consumed_milli_gas,string"`
-	Deactivated      []tezos.Address    `json:"deactivated"`
-	BalanceUpdates   BalanceUpdates     `json:"balance_updates"`
+	Protocol         mavryk.ProtocolHash `json:"protocol"`
+	NextProtocol     mavryk.ProtocolHash `json:"next_protocol"`
+	MaxOperationsTTL int                 `json:"max_operations_ttl"`
+	Baker            mavryk.Address      `json:"baker"`
+	Proposer         mavryk.Address      `json:"proposer"`
+	ConsumedGas      int64               `json:"consumed_gas,string"`
+	ConsumedMilliGas int64               `json:"consumed_milli_gas,string"`
+	Deactivated      []mavryk.Address    `json:"deactivated"`
+	BalanceUpdates   BalanceUpdates      `json:"balance_updates"`
 
 	// <v008
-	Level            *LevelInfo              `json:"level"`
-	VotingPeriodKind *tezos.VotingPeriodKind `json:"voting_period_kind"`
+	Level            *LevelInfo               `json:"level"`
+	VotingPeriodKind *mavryk.VotingPeriodKind `json:"voting_period_kind"`
 
 	// v008+
 	LevelInfo        *LevelInfo        `json:"level_info"`
@@ -234,8 +234,8 @@ type BlockMetadata struct {
 	AdaptiveIssuanceEma       int64             `json:"adaptive_issuance_vote_ema"`
 
 	// v015+
-	ProposerConsensusKey tezos.Address `json:"proposer_consensus_key"`
-	BakerConsensusKey    tezos.Address `json:"baker_consensus_key"`
+	ProposerConsensusKey mavryk.Address `json:"proposer_consensus_key"`
+	BakerConsensusKey    mavryk.Address `json:"baker_consensus_key"`
 }
 
 func (m BlockMetadata) GetLbEma() int64 {
@@ -264,7 +264,7 @@ func (m BlockMetadata) MilliGas() int64 {
 }
 
 // GetBlock returns information about a Tezos block
-// https://tezos.gitlab.io/mainnet/api/rpc.html#get-block-id
+// https://mavryk.gitlab.io/mainnet/api/rpc.html#get-block-id
 func (c *Client) GetBlock(ctx context.Context, id BlockID) (*Block, error) {
 	var block Block
 	u := fmt.Sprintf("chains/main/blocks/%s?metadata=always", id)
@@ -275,7 +275,7 @@ func (c *Client) GetBlock(ctx context.Context, id BlockID) (*Block, error) {
 }
 
 // GetBlockheader returns information about a Tezos block header
-// https://tezos.gitlab.io/mainnet/api/rpc.html#get-block-header-id
+// https://mavryk.gitlab.io/mainnet/api/rpc.html#get-block-header-id
 func (c *Client) GetBlockHeader(ctx context.Context, id BlockID) (*BlockHeader, error) {
 	var head BlockHeader
 	u := fmt.Sprintf("chains/main/blocks/%s/header", id)
@@ -286,7 +286,7 @@ func (c *Client) GetBlockHeader(ctx context.Context, id BlockID) (*BlockHeader, 
 }
 
 // GetBlockMetadata returns a block metadata.
-// https://tezos.gitlab.io/mainnet/api/rpc.html#chains-chain-id-blocks
+// https://mavryk.gitlab.io/mainnet/api/rpc.html#chains-chain-id-blocks
 func (c *Client) GetBlockMetadata(ctx context.Context, id BlockID) (*BlockMetadata, error) {
 	var meta BlockMetadata
 	u := fmt.Sprintf("chains/main/blocks/%s/metadata?metadata=always", id)
@@ -298,12 +298,12 @@ func (c *Client) GetBlockMetadata(ctx context.Context, id BlockID) (*BlockMetada
 
 // GetTips returns hashes of the current chain tip blocks, first in the array is the
 // current main chain.
-// https://tezos.gitlab.io/mainnet/api/rpc.html#chains-chain-id-blocks
-func (c *Client) GetTips(ctx context.Context, depth int, head tezos.BlockHash) ([][]tezos.BlockHash, error) {
+// https://mavryk.gitlab.io/mainnet/api/rpc.html#chains-chain-id-blocks
+func (c *Client) GetTips(ctx context.Context, depth int, head mavryk.BlockHash) ([][]mavryk.BlockHash, error) {
 	if depth == 0 {
 		depth = 1
 	}
-	tips := make([][]tezos.BlockHash, 0, 10)
+	tips := make([][]mavryk.BlockHash, 0, 10)
 	var u string
 	if head.IsValid() {
 		u = fmt.Sprintf("chains/main/blocks?length=%d&head=%s", depth, head)
@@ -317,7 +317,7 @@ func (c *Client) GetTips(ctx context.Context, depth int, head tezos.BlockHash) (
 }
 
 // GetTipHeader returns the head block's header.
-// https://tezos.gitlab.io/mainnet/api/rpc.html#chains-chain-id-blocks
+// https://mavryk.gitlab.io/mainnet/api/rpc.html#chains-chain-id-blocks
 func (c *Client) GetTipHeader(ctx context.Context) (*BlockHeader, error) {
 	var head BlockHeader
 	u := "chains/main/blocks/head/header"
@@ -342,15 +342,15 @@ func (b *Block) UpdateAllOriginatedScripts(ctx context.Context, c *Client) error
 				continue
 			}
 			switch o.Kind() {
-			case tezos.OpTypeOrigination:
+			case mavryk.OpTypeOrigination:
 				if err := updateOriginationScript(ctx, c, o, b.Hash); err != nil {
 					log.Errorf("script update for origination %d > %s: %v",
 						b.GetLevel(), op.Hash, err)
 				}
-			case tezos.OpTypeTransaction:
+			case mavryk.OpTypeTransaction:
 				tx := o.(*Transaction)
 				for _, iop := range tx.Metadata.InternalResults {
-					if iop.Kind != tezos.OpTypeOrigination {
+					if iop.Kind != mavryk.OpTypeOrigination {
 						continue
 					}
 					if err := updateInternalOriginationScript(ctx, c, iop, b.Hash); err != nil {
@@ -369,7 +369,7 @@ func (b *Block) UpdateAllOriginatedScripts(ctx context.Context, c *Client) error
 func (b *Block) UpdateHeaderOriginatedScripts(ctx context.Context, c *Client) error {
 	// handle implicit block header results (i.e. liquidity baking)
 	for _, ires := range b.Metadata.ImplicitOperationsResults {
-		if ires.Kind != tezos.OpTypeOrigination {
+		if ires.Kind != mavryk.OpTypeOrigination {
 			continue
 		}
 		if err := updateImplicitOriginationScript(ctx, c, ires, b.Hash); err != nil {

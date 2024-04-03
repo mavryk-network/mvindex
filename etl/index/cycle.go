@@ -8,9 +8,9 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 const CycleIndexKey = "cycle"
@@ -113,7 +113,7 @@ func (idx *CycleIndex) ConnectBlock(ctx context.Context, block *model.Block, bui
 	}
 
 	// init on cycle start
-	if block.Height == 1 || block.TZ.IsCycleStart() {
+	if block.Height == 1 || block.MV.IsCycleStart() {
 		idx.initCycle(block)
 	}
 
@@ -125,7 +125,7 @@ func (idx *CycleIndex) ConnectBlock(ctx context.Context, block *model.Block, bui
 	}
 
 	// mark snapshot (in old cycle!)
-	if snap := block.TZ.Snapshot; snap != nil && snap.Base >= 0 {
+	if snap := block.MV.Snapshot; snap != nil && snap.Base >= 0 {
 		// be sensitive to cycle length changes when back-dating blocks
 		params := block.Params
 		if block.Parent != nil {
@@ -239,7 +239,7 @@ func (idx *CycleIndex) Flush(ctx context.Context) error {
 func (idx *CycleIndex) initCycle(block *model.Block) {
 	p := block.Params
 	var issuance rpc.Issuance
-	for _, v := range block.TZ.Issuance {
+	for _, v := range block.MV.Issuance {
 		if v.Cycle == block.Cycle {
 			issuance = v
 			break

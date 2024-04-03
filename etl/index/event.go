@@ -8,8 +8,9 @@ import (
 	"fmt"
 
 	"blockwatch.cc/packdb/pack"
-	"github.com/mavryk-network/tzindex/etl/model"
-	"github.com/mavryk-network/tzindex/etl/task"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
 )
 
 const EventIndexKey = "event"
@@ -107,7 +108,7 @@ func (idx *EventIndex) ConnectBlock(ctx context.Context, block *model.Block, bui
 
 		// walk all events and add them
 		for _, v := range op.Raw.Meta().InternalResults {
-			if v.Kind != tezos.OpTypeEvent {
+			if v.Kind != mavryk.OpTypeEvent {
 				continue
 			}
 			src, ok := builder.AccountByAddress(v.Source)

@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/store"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 var (
@@ -57,8 +57,8 @@ func dbStoreChainTip(dbTx store.Tx, tip *model.ChainTip) error {
 }
 
 type IndexTip struct {
-	Hash   *tezos.BlockHash `json:"hash,omitempty"`
-	Height int64            `json:"height"`
+	Hash   *mavryk.BlockHash `json:"hash,omitempty"`
+	Height int64             `json:"height"`
 }
 
 func dbStoreIndexTip(dbTx store.Tx, key string, tip *IndexTip) error {

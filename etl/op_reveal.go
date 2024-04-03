@@ -8,9 +8,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 // manager operation, extends grace period
@@ -86,7 +86,7 @@ func (b *Builder) AppendRevealOp(ctx context.Context, oh *rpc.Operation, id mode
 			src.NTxSuccess--
 			src.NTxOut--
 			src.IsRevealed = false
-			src.Pubkey = tezos.InvalidKey
+			src.Pubkey = mavryk.InvalidKey
 		} else {
 			src.NTxFailed--
 		}

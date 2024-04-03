@@ -14,9 +14,9 @@ import (
 	"github.com/gorilla/mux"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/server"
-	"blockwatch.cc/tzindex/server/explorer"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/server"
+	"github.com/mavryk-network/mvindex/server/explorer"
 
 	"github.com/echa/config"
 	logpkg "github.com/echa/log"

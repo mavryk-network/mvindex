@@ -9,7 +9,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 var ErrMonitorClosed = errors.New("monitor closed")
@@ -24,16 +24,16 @@ type Monitor interface {
 
 // BlockHeaderLogEntry is a log entry returned for a new block when monitoring
 type BlockHeaderLogEntry struct {
-	Hash           tezos.BlockHash      `json:"hash"`
-	Level          int64                `json:"level"`
-	Proto          int                  `json:"proto"`
-	Predecessor    tezos.BlockHash      `json:"predecessor"`
-	Timestamp      time.Time            `json:"timestamp"`
-	ValidationPass int                  `json:"validation_pass"`
-	OperationsHash tezos.OpListListHash `json:"operations_hash"`
-	Fitness        []tezos.HexBytes     `json:"fitness"`
-	Context        tezos.ContextHash    `json:"context"`
-	ProtocolData   tezos.HexBytes       `json:"protocol_data"`
+	Hash           mavryk.BlockHash      `json:"hash"`
+	Level          int64                 `json:"level"`
+	Proto          int                   `json:"proto"`
+	Predecessor    mavryk.BlockHash      `json:"predecessor"`
+	Timestamp      time.Time             `json:"timestamp"`
+	ValidationPass int                   `json:"validation_pass"`
+	OperationsHash mavryk.OpListListHash `json:"operations_hash"`
+	Fitness        []mavryk.HexBytes     `json:"fitness"`
+	Context        mavryk.ContextHash    `json:"context"`
+	ProtocolData   mavryk.HexBytes       `json:"protocol_data"`
 }
 
 func (b *Block) LogEntry() *BlockHeaderLogEntry {
@@ -202,12 +202,12 @@ func (m *MempoolMonitor) Closed() <-chan struct{} {
 	return m.closed
 }
 
-// MonitorBlockHeader reads from the chain heads stream http://tezos.gitlab.io/mainnet/api/rpc.html#get-monitor-heads-chain-id
+// MonitorBlockHeader reads from the chain heads stream http://mavryk.gitlab.io/mainnet/api/rpc.html#get-monitor-heads-chain-id
 func (c *Client) MonitorBlockHeader(ctx context.Context, monitor *BlockHeaderMonitor) error {
 	return c.GetAsync(ctx, "monitor/heads/main", monitor)
 }
 
-// MonitorMempool reads from the chain heads stream http://tezos.gitlab.io/mainnet/api/rpc.html#get-monitor-heads-chain-id
+// MonitorMempool reads from the chain heads stream http://mavryk.gitlab.io/mainnet/api/rpc.html#get-monitor-heads-chain-id
 func (c *Client) MonitorMempool(ctx context.Context, monitor *MempoolMonitor) error {
 	return c.GetAsync(ctx, "chains/main/mempool/monitor_operations", monitor)
 }

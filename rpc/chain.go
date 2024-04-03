@@ -6,13 +6,13 @@ package rpc
 import (
 	"context"
 
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 // GetChainId returns the chain id (i.e. network id).
-// https://tezos.gitlab.io/shell/rpc.html#get-chains-chain-id-chain-id
-func (c *Client) GetChainId(ctx context.Context) (tezos.ChainIdHash, error) {
-	var id tezos.ChainIdHash
+// https://mavryk.gitlab.io/shell/rpc.html#get-chains-chain-id-chain-id
+func (c *Client) GetChainId(ctx context.Context) (mavryk.ChainIdHash, error) {
+	var id mavryk.ChainIdHash
 	err := c.Get(ctx, "chains/main/chain_id", &id)
 	return id, err
 }
@@ -24,7 +24,7 @@ type Status struct {
 
 // GetStatus returns whether the node is bootstrapped (i.e. has downloaded
 // the full chain) and in sync.
-// https://tezos.gitlab.io/shell/rpc.html#get-chains-chain-id-is-bootstrapped
+// https://mavryk.gitlab.io/shell/rpc.html#get-chains-chain-id-is-bootstrapped
 func (c *Client) GetStatus(ctx context.Context) (Status, error) {
 	var s Status
 	err := c.Get(ctx, "chains/main/is_bootstrapped", &s)
@@ -56,7 +56,7 @@ type VersionInfo struct {
 }
 
 // GetVersion returns node's version info.
-// https://tezos.gitlab.io/shell/rpc.html#get-version
+// https://mavryk.gitlab.io/shell/rpc.html#get-version
 func (c *Client) GetVersionInfo(ctx context.Context) (VersionInfo, error) {
 	var v VersionInfo
 	err := c.Get(ctx, "version", &v)

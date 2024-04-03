@@ -9,11 +9,11 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
 
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
+	"github.com/mavryk-network/mvindex/rpc"
 
 	lru "github.com/hashicorp/golang-lru/v2"
 )
@@ -352,12 +352,12 @@ func (idx *TicketIndex) reconcileEvents(
 ) ([]*model.TicketEvent, error) {
 
 	// track ticket balances assuming RPC response contains FIFO order
-	var sumIn, sumOut, sumMinted, sumBurned, sumTransfer tezos.Z
+	var sumIn, sumOut, sumMinted, sumBurned, sumTransfer mavryk.Z
 
 	// track running balances
 	type flow struct {
 		account model.AccountID
-		amount  tezos.Z
+		amount  mavryk.Z
 		isOut   bool
 	}
 
@@ -392,7 +392,7 @@ func (idx *TicketIndex) reconcileEvents(
 			if len(sinks) == 0 {
 				break
 			}
-			amount := tezos.MinZ(src.amount, sinks[0].amount)
+			amount := mavryk.MinZ(src.amount, sinks[0].amount)
 
 			// transfer event
 			events = append(events, &model.TicketEvent{
@@ -435,7 +435,7 @@ func (idx *TicketIndex) reconcileEvents(
 			Amount:   src.amount,
 		})
 		sumBurned = sumBurned.Add(src.amount)
-		src.amount = tezos.Zero
+		src.amount = mavryk.Zero
 	}
 
 	// any amount still in sinks is minted

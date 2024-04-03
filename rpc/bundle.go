@@ -7,7 +7,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 type Bundle struct {
@@ -37,17 +37,17 @@ func (b Bundle) Cycle() int64 {
 	return b.Block.GetCycle()
 }
 
-func (b Bundle) Hash() (h tezos.BlockHash) {
+func (b Bundle) Hash() (h mavryk.BlockHash) {
 	h = b.Block.Hash
 	return
 }
 
-func (b Bundle) ParentHash() (h tezos.BlockHash) {
+func (b Bundle) ParentHash() (h mavryk.BlockHash) {
 	h = b.Block.Header.Predecessor
 	return
 }
 
-func (b Bundle) Protocol() (h tezos.ProtocolHash) {
+func (b Bundle) Protocol() (h mavryk.ProtocolHash) {
 	h = b.Block.Protocol
 	return
 }
@@ -104,7 +104,7 @@ func (b Bundle) IsVoteStart() bool {
 	// are broken).
 	//
 	// See
-	// https://tezos.gitlab.io/protocols/010_granada.html#bogus-rpc-results
+	// https://mavryk.gitlab.io/protocols/010_granada.html#bogus-rpc-results
 	//
 	// Block      Proto     Cycle Start   Cycle End   Vote Start   Vote End
 	// --------------------------------------------------------------------

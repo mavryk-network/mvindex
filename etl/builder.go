@@ -11,12 +11,12 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/vec"
-	"blockwatch.cc/tzindex/etl/cache"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
-	"blockwatch.cc/tzindex/rpc"
-	"github.com/mavryk-network/tzgo/micheline"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/cache"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 type Builder struct {
@@ -153,7 +153,7 @@ func (b *Builder) DeactivateBaker(bkr *model.Baker) {
 	bkr.IsDirty = true
 }
 
-func (b *Builder) AccountByAddress(addr tezos.Address) (*model.Account, bool) {
+func (b *Builder) AccountByAddress(addr mavryk.Address) (*model.Account, bool) {
 	key := b.accCache.AddressHashKey(addr)
 	bkr, ok := b.bakerHashMap[key]
 	if ok && bkr.Address == addr {
@@ -189,7 +189,7 @@ func (b *Builder) LoadAccountByAccountId(ctx context.Context, id model.AccountID
 	return acc, nil
 }
 
-func (b *Builder) BakerByAddress(addr tezos.Address) (*model.Baker, bool) {
+func (b *Builder) BakerByAddress(addr mavryk.Address) (*model.Baker, bool) {
 	key := b.accCache.AddressHashKey(addr)
 	bkr, ok := b.bakerHashMap[key]
 	if ok && bkr.Address == addr {
@@ -225,7 +225,7 @@ func (b *Builder) LoadContractByAccountId(ctx context.Context, id model.AccountI
 	return con, nil
 }
 
-func (b *Builder) LoadAccountByAddress(ctx context.Context, addr tezos.Address) (*model.Account, error) {
+func (b *Builder) LoadAccountByAddress(ctx context.Context, addr mavryk.Address) (*model.Account, error) {
 	acc, ok := b.AccountByAddress(addr)
 	if ok {
 		return acc, nil
@@ -289,7 +289,7 @@ func (b *Builder) Init(ctx context.Context, tip *model.ChainTip, c *rpc.Client) 
 	// deployment the protocol version in the header has already switched
 	// to the next protocol
 	version := b.parent.Version
-	if b.parent.TZ.Block.IsProtocolUpgrade() && version > 0 {
+	if b.parent.MV.Block.IsProtocolUpgrade() && version > 0 {
 		version--
 	}
 	b.parent.Params, err = b.idx.ParamsByDeployment(version)
@@ -335,7 +335,7 @@ func (b *Builder) Build(ctx context.Context, tz *rpc.Bundle) (*model.Block, erro
 	}
 
 	// build genesis accounts at height 1 and return
-	if b.block.TZ.Block.Header.Content != nil {
+	if b.block.MV.Block.Header.Content != nil {
 		return b.BuildGenesisBlock(ctx)
 	}
 
@@ -564,8 +564,8 @@ func (b *Builder) CleanReorg() {
 
 func (b *Builder) InitAccounts(ctx context.Context) error {
 	// collect unique accounts/addresses
-	set := tezos.NewAddressSet()
-	addUnique := func(a tezos.Address) {
+	set := mavryk.NewAddressSet()
+	addUnique := func(a mavryk.Address) {
 		if !a.IsValid() {
 			return
 		}
@@ -576,17 +576,17 @@ func (b *Builder) InitAccounts(ctx context.Context) error {
 
 	// collect all addresses referenced in this block's header and operations
 	// including addresses from contract parameters, storage, bigmap updates
-	if err := b.block.TZ.Block.CollectAddresses(addUnique); err != nil {
+	if err := b.block.MV.Block.CollectAddresses(addUnique); err != nil {
 		return err
 	}
 
 	// collect from future cycle rights when available
-	for _, r := range b.block.TZ.Baking {
+	for _, r := range b.block.MV.Baking {
 		for _, rr := range r {
 			addUnique(rr.Address())
 		}
 	}
-	for _, r := range b.block.TZ.Endorsing {
+	for _, r := range b.block.MV.Endorsing {
 		for _, rr := range r {
 			addUnique(rr.Address())
 		}
@@ -715,7 +715,7 @@ func (b *Builder) InitAccounts(ctx context.Context) error {
 	// Note: blocks 0 and 1 don't have a baker, blocks 0-2 have no endorsements
 	// Note: Ithaca introduces a block proposer (build payload) which may be
 	// different from the baker, both get rewards
-	if addr := b.block.TZ.Block.Metadata.Baker; addr.IsValid() {
+	if addr := b.block.MV.Block.Metadata.Baker; addr.IsValid() {
 		baker, ok := b.BakerByAddress(addr)
 		if !ok {
 			return fmt.Errorf("missing baker account %s", addr)
@@ -725,7 +725,7 @@ func (b *Builder) InitAccounts(ctx context.Context) error {
 		b.block.BakerConsensusKeyId = baker.AccountId
 	}
 
-	if addr := b.block.TZ.Block.Metadata.Proposer; addr.IsValid() {
+	if addr := b.block.MV.Block.Metadata.Proposer; addr.IsValid() {
 		proposer, ok := b.BakerByAddress(addr)
 		if !ok {
 			return fmt.Errorf("missing proposer account %s", addr)
@@ -811,7 +811,7 @@ func (b *Builder) LoadOfflineRightsHolders(ctx context.Context) error {
 		return nil
 	}
 
-	if b.block.TZ.IsCycleStart() {
+	if b.block.MV.IsCycleStart() {
 		// 1 use endorse rights from last block of previous cycle
 		adj := b.parent.Params.BlocksPerCycle - 1
 		for n, bits := range b.endorseRights {
@@ -850,7 +850,7 @@ func (b *Builder) LoadOfflineRightsHolders(ctx context.Context) error {
 			return err
 		}
 	} else {
-		ofs := b.block.TZ.GetCyclePosition()
+		ofs := b.block.MV.GetCyclePosition()
 		// use endorse rights from previous block
 		for n, bits := range b.endorseRights {
 			if bits.IsSet(int(ofs - 1)) {
@@ -876,7 +876,7 @@ func (b *Builder) LoadOfflineRightsHolders(ctx context.Context) error {
 
 	// if prio/round is > 0, identify absent first baker
 	if b.block.Round > 0 {
-		ofs := b.block.TZ.GetCyclePosition()
+		ofs := b.block.MV.GetCyclePosition()
 		for n, bits := range b.bakeRights {
 			if bits.IsSet(int(ofs)) {
 				b.block.OfflineBaker = n
@@ -889,7 +889,7 @@ func (b *Builder) LoadOfflineRightsHolders(ctx context.Context) error {
 
 func (b *Builder) OnDeactivate(ctx context.Context, rollback bool) error {
 	// if b.block.Params.IsCycleStart(b.block.Height) && b.block.Height > 0 {
-	if b.block.TZ.IsCycleStart() && b.block.Height > 0 {
+	if b.block.MV.IsCycleStart() && b.block.Height > 0 {
 		// deactivate based on grace period
 		for _, bkr := range b.bakerMap {
 			if bkr.IsActive && bkr.GracePeriod < b.block.Cycle {
@@ -905,7 +905,7 @@ func (b *Builder) OnDeactivate(ctx context.Context, rollback bool) error {
 
 		// cross check if we have missed a deactivation from cycle before
 		// we still keep the deactivated list around in parent block
-		for _, v := range b.parent.TZ.Block.Metadata.Deactivated {
+		for _, v := range b.parent.MV.Block.Metadata.Deactivated {
 			bkr, ok := b.BakerByAddress(v)
 			if !ok {
 				return fmt.Errorf("deactivate: missing baker account %s", v)
@@ -927,7 +927,7 @@ func (b *Builder) OnDeactivate(ctx context.Context, rollback bool) error {
 }
 
 func (b *Builder) OnUpgrade(ctx context.Context, rollback bool) error {
-	from, to := b.parent.TZ.Protocol(), b.block.TZ.Protocol()
+	from, to := b.parent.MV.Protocol(), b.block.MV.Protocol()
 	if from != to {
 		next := b.block.Params
 		prev, err := b.idx.ParamsByProtocol(from)
@@ -948,49 +948,49 @@ func (b *Builder) OnUpgrade(ctx context.Context, rollback bool) error {
 				return err
 			}
 		}
-	} else if b.block.TZ.IsCycleStart() {
+	} else if b.block.MV.IsCycleStart() {
 		// update params at start of cycle (to capture early ramp up data)
 		b.idx.reg.Register(b.block.Params)
 
 		// check for activation votes
-		if b.block.TZ.Block.IsAiActivationUpgrade() {
+		if b.block.MV.Block.IsAiActivationUpgrade() {
 			if err := b.MigrateAdaptiveIssuance(ctx, b.block.Params); err != nil {
 				return err
 			}
 		}
 	}
 
-	// temp fix for oxford light mode migration bug
-	_ = b.FixOxfordMigration(ctx)
+	// temp fix for atlas light mode migration bug
+	_ = b.FixAtlasMigration(ctx)
 
 	return nil
 }
 
 func (b *Builder) LoadConstants(ctx context.Context) error {
 	// analyze contract originations and load referenced global constants
-	requiredConstants := make([]tezos.ExprHash, 0)
-	for _, ol := range b.block.TZ.Block.Operations {
+	requiredConstants := make([]mavryk.ExprHash, 0)
+	for _, ol := range b.block.MV.Block.Operations {
 		for _, oh := range ol {
 			for _, o := range oh.Contents {
 				switch kind := o.Kind(); kind {
-				case tezos.OpTypeOrigination:
+				case mavryk.OpTypeOrigination:
 					// direct
 					oop := o.(*rpc.Origination)
 					if oop.Script != nil && oop.Script.Features().Contains(micheline.FeatureGlobalConstant) {
 						requiredConstants = append(requiredConstants, oop.Script.Constants()...)
 					}
-				case tezos.OpTypeTransaction:
+				case mavryk.OpTypeTransaction:
 					// may contain internal originations
 					top := o.(*rpc.Transaction)
 					for _, iop := range top.Metadata.InternalResults {
-						if iop.Kind == tezos.OpTypeOrigination {
+						if iop.Kind == mavryk.OpTypeOrigination {
 							if iop.Script != nil && iop.Script.Features().Contains(micheline.FeatureGlobalConstant) {
 								requiredConstants = append(requiredConstants, iop.Script.Constants()...)
 							}
 						}
 					}
 
-				case tezos.OpTypeRegisterConstant:
+				case mavryk.OpTypeRegisterConstant:
 					// register new constants in case they are used right away
 					cop := o.(*rpc.ConstantRegistration)
 					b.constDict.Add(cop.Metadata.Result.GlobalAddress, cop.Value)
@@ -1002,7 +1002,7 @@ func (b *Builder) LoadConstants(ctx context.Context) error {
 	for {
 		// constants can recursively include other constants, so we must keep going
 		// until everything is resolved
-		more := make([]tezos.ExprHash, 0)
+		more := make([]mavryk.ExprHash, 0)
 		for _, v := range requiredConstants {
 			if b.constDict.Has(v) {
 				continue

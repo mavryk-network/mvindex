@@ -17,11 +17,11 @@ import (
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
 	"blockwatch.cc/packdb/vec"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
-	"blockwatch.cc/tzindex/server"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -328,7 +328,7 @@ func StreamFlowTable(ctx *server.Context, args *TableRequest) (interface{}, int)
 			switch mode {
 			case pack.FilterModeEqual, pack.FilterModeNotEqual:
 				// single-address lookup and compile condition
-				addr, err := tezos.ParseAddress(val[0])
+				addr, err := mavryk.ParseAddress(val[0])
 				if err != nil || !addr.IsValid() {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", val[0]), err))
 				}
@@ -347,7 +347,7 @@ func StreamFlowTable(ctx *server.Context, args *TableRequest) (interface{}, int)
 				// multi-address lookup and compile condition
 				ids := make([]uint64, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					addr, err := tezos.ParseAddress(v)
+					addr, err := mavryk.ParseAddress(v)
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", v), err))
 					}
@@ -431,7 +431,7 @@ func StreamFlowTable(ctx *server.Context, args *TableRequest) (interface{}, int)
 					// consider comma separated lists, convert type to int and back to string list
 					typs := make([]uint8, 0)
 					for _, t := range strings.Split(v, ",") {
-						typ := tezos.ParseAddressType(t)
+						typ := mavryk.ParseAddressType(t)
 						if !typ.IsValid() {
 							panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid account type '%s'", val[0]), nil))
 						}

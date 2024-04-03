@@ -18,11 +18,11 @@ import (
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
 	"blockwatch.cc/packdb/vec"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
-	"github.com/mavryk-network/tzgo/micheline"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -50,9 +50,9 @@ func init() {
 // configurable marshalling helper
 type BigmapUpdateItem struct {
 	model.BigmapUpdate
-	verbose bool                        // cond. marshal
-	columns util.StringList             // cond. cols & order when brief
-	ops     map[model.OpID]tezos.OpHash // op map
+	verbose bool                         // cond. marshal
+	columns util.StringList              // cond. cols & order when brief
+	ops     map[model.OpID]mavryk.OpHash // op map
 	ctx     *server.Context
 }
 
@@ -207,7 +207,7 @@ func StreamBigmapUpdateTable(ctx *server.Context, args *TableRequest) (interface
 	}
 
 	// prepare lookup caches
-	opMap := make(map[model.OpID]tezos.OpHash)
+	opMap := make(map[model.OpID]mavryk.OpHash)
 	bigmapIds := make([]int64, 0)
 
 	// pre-parse bigmap ids required for hash lookups
@@ -390,7 +390,7 @@ func StreamBigmapUpdateTable(ctx *server.Context, args *TableRequest) (interface
 			switch mode {
 			case pack.FilterModeEqual, pack.FilterModeNotEqual:
 				// single-hash
-				h, err := tezos.ParseExprHash(val[0])
+				h, err := mavryk.ParseExprHash(val[0])
 				if err != nil {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid key hash '%s'", val[0]), err))
 				}
@@ -412,9 +412,9 @@ func StreamBigmapUpdateTable(ctx *server.Context, args *TableRequest) (interface
 				}
 			case pack.FilterModeIn, pack.FilterModeNotIn:
 				// multi-hash lookup
-				hashes := make([]tezos.ExprHash, 0)
+				hashes := make([]mavryk.ExprHash, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					h, err := tezos.ParseExprHash(v)
+					h, err := mavryk.ParseExprHash(v)
 					if err != nil {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid key hash '%s'", v), err))
 					}
@@ -480,8 +480,8 @@ func StreamBigmapUpdateTable(ctx *server.Context, args *TableRequest) (interface
 		// lookup accounts from id
 		// ctx.Log.Tracef("Looking up %d ops", len(find))
 		type XOp struct {
-			Id   model.OpID   `pack:"I,pk"`
-			Hash tezos.OpHash `pack:"H"`
+			Id   model.OpID    `pack:"I,pk"`
+			Hash mavryk.OpHash `pack:"H"`
 		}
 		op := &XOp{}
 		err = pack.NewQuery(ctx.RequestID+".bigmap_lookup").

@@ -12,8 +12,9 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"github.com/mavryk-network/tzindex/etl/model"
-	"github.com/mavryk-network/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 func (m *Indexer) LookupOp(ctx context.Context, opIdent string, r ListRequest) ([]*model.Op, error) {
@@ -23,9 +24,9 @@ func (m *Indexer) LookupOp(ctx context.Context, opIdent string, r ListRequest) (
 	}
 	q := pack.NewQuery("api.find_tx").WithTable(table).WithLimit(int(r.Limit))
 	switch {
-	case len(opIdent) == tezos.HashTypeOperation.B58Len || strings.HasPrefix(opIdent, tezos.HashTypeOperation.B58Prefix):
+	case len(opIdent) == mavryk.HashTypeOperation.B58Len || strings.HasPrefix(opIdent, mavryk.HashTypeOperation.B58Prefix):
 		// assume it's a hash
-		oh, err := tezos.ParseOpHash(opIdent)
+		oh, err := mavryk.ParseOpHash(opIdent)
 		if err != nil {
 			return nil, model.ErrInvalidOpHash
 		}
@@ -57,20 +58,20 @@ func (m *Indexer) LookupOp(ctx context.Context, opIdent string, r ListRequest) (
 	return ops, nil
 }
 
-func (m *Indexer) LookupOpHash(ctx context.Context, opid model.OpID) tezos.OpHash {
+func (m *Indexer) LookupOpHash(ctx context.Context, opid model.OpID) mavryk.OpHash {
 	table, err := m.Table(model.OpTableKey)
 	if err != nil {
-		return tezos.OpHash{}
+		return mavryk.OpHash{}
 	}
 	type XOp struct {
-		Hash tezos.OpHash `pack:"H"`
+		Hash mavryk.OpHash `pack:"H"`
 	}
 	o := &XOp{}
 	err = pack.NewQuery("api.find_tx").
 		WithTable(table).
 		AndEqual("I", opid).Execute(ctx, o)
 	if err != nil {
-		return tezos.OpHash{}
+		return mavryk.OpHash{}
 	}
 	return o.Hash
 }
@@ -82,9 +83,9 @@ func (m *Indexer) LookupEndorsement(ctx context.Context, opIdent string) ([]*mod
 	}
 	q := pack.NewQuery("api.find_endorsement").WithTable(table)
 	switch {
-	case len(opIdent) == tezos.HashTypeOperation.B58Len || strings.HasPrefix(opIdent, tezos.HashTypeOperation.B58Prefix):
+	case len(opIdent) == mavryk.HashTypeOperation.B58Len || strings.HasPrefix(opIdent, mavryk.HashTypeOperation.B58Prefix):
 		// assume it's a hash
-		oh, err := tezos.ParseOpHash(opIdent)
+		oh, err := mavryk.ParseOpHash(opIdent)
 		if err != nil {
 			return nil, model.ErrInvalidOpHash
 		}

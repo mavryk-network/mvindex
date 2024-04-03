@@ -9,10 +9,10 @@ import (
 	"fmt"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/metadata"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/metadata"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
 )
 
 const MetadataIndexKey = "metadata"
@@ -249,7 +249,7 @@ func (idx *MetadataIndex) Flush(ctx context.Context) error {
 	return nil
 }
 
-func (idx *MetadataIndex) FindOrCreateMetaModel(ctx context.Context, addr tezos.Address, id model.AccountID) (*model.Metadata, error) {
+func (idx *MetadataIndex) FindOrCreateMetaModel(ctx context.Context, addr mavryk.Address, id model.AccountID) (*model.Metadata, error) {
 	var m model.Metadata
 	err := pack.NewQuery("find_meta").
 		WithTable(idx.table).

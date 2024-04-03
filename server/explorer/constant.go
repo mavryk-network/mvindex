@@ -9,10 +9,10 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/mavryk-network/tzgo/micheline"
-	"github.com/mavryk-network/tzgo/tezos"
-	"github.com/mavryk-network/tzindex/etl/model"
-	"github.com/mavryk-network/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 func init() {
@@ -77,7 +77,7 @@ func loadConstant(ctx *server.Context) *model.Constant {
 	if ccIdent, ok := mux.Vars(ctx.Request)["ident"]; !ok || ccIdent == "" {
 		panic(server.EBadRequest(server.EC_RESOURCE_ID_MISSING, "missing constant hash", nil))
 	} else {
-		hash, err := tezos.ParseExprHash(ccIdent)
+		hash, err := mavryk.ParseExprHash(ccIdent)
 		if err != nil {
 			panic(server.EBadRequest(server.EC_RESOURCE_ID_MALFORMED, "invalid exprhash", err))
 		}

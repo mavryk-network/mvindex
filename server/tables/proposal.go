@@ -17,10 +17,10 @@ import (
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
 	"blockwatch.cc/packdb/vec"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -49,10 +49,10 @@ func init() {
 // configurable marshalling helper
 type Proposal struct {
 	model.Proposal
-	verbose bool                        // cond. marshal
-	columns util.StringList             // cond. cols & order when brief
-	ctx     *server.Context             // blockchain amount conversion
-	ops     map[model.OpID]tezos.OpHash // op map
+	verbose bool                         // cond. marshal
+	columns util.StringList              // cond. cols & order when brief
+	ctx     *server.Context              // blockchain amount conversion
+	ops     map[model.OpID]mavryk.OpHash // op map
 }
 
 func (p *Proposal) MarshalJSON() ([]byte, error) {
@@ -215,7 +215,7 @@ func StreamProposalTable(ctx *server.Context, args *TableRequest) (interface{}, 
 		WithFields(srcNames...).
 		WithLimit(int(args.Limit)).
 		WithOrder(args.Order)
-	opMap := make(map[model.OpID]tezos.OpHash)
+	opMap := make(map[model.OpID]mavryk.OpHash)
 
 	// build dynamic filter conditions from query (will panic on error)
 	for key, val := range ctx.Request.URL.Query() {
@@ -247,7 +247,7 @@ func StreamProposalTable(ctx *server.Context, args *TableRequest) (interface{}, 
 			// special hash type to []byte conversion
 			hashes := make([][]byte, len(val))
 			for i, v := range val {
-				h, err := tezos.ParseProtocolHash(v)
+				h, err := mavryk.ParseProtocolHash(v)
 				if err != nil {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid protocol hash '%s'", val), err))
 				}
@@ -266,7 +266,7 @@ func StreamProposalTable(ctx *server.Context, args *TableRequest) (interface{}, 
 					q = q.And(field, mode, 0)
 				} else {
 					// single-address lookup and compile condition
-					addr, err := tezos.ParseAddress(val[0])
+					addr, err := mavryk.ParseAddress(val[0])
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", val[0]), err))
 					}
@@ -286,7 +286,7 @@ func StreamProposalTable(ctx *server.Context, args *TableRequest) (interface{}, 
 				// multi-address lookup and compile condition
 				ids := make([]uint64, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					addr, err := tezos.ParseAddress(v)
+					addr, err := mavryk.ParseAddress(v)
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", v), err))
 					}
@@ -431,8 +431,8 @@ func StreamProposalTable(ctx *server.Context, args *TableRequest) (interface{}, 
 		if len(find) > 0 {
 			// lookup ops from id
 			type XOp struct {
-				Id   model.OpID   `pack:"I,pk"`
-				Hash tezos.OpHash `pack:"H"`
+				Id   model.OpID    `pack:"I,pk"`
+				Hash mavryk.OpHash `pack:"H"`
 			}
 			op := &XOp{}
 			err = pack.NewQuery(ctx.RequestID+".proposal_op_lookup").

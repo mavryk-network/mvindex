@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"blockwatch.cc/tzindex/etl/model"
 	logpkg "github.com/echa/log"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 // log is a logger that is initialized with no output filters.  This

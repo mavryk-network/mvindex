@@ -22,9 +22,9 @@
 *.db
 db/
 vendor/
-tzindex
-!tzindex/
-tzalias
-!tzalias/
-tztop
-!tztop/
+mvindex
+!mvindex/
+mvalias
+!mvalias/
+mvtop
+!mvtop/

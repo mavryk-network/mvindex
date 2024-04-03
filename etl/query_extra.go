@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 type Growth struct {

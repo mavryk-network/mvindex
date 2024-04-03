@@ -8,26 +8,26 @@ import (
 	"fmt"
 	"strconv"
 
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 // Baker holds information about an active baker
 type Baker struct {
 	// extra info
-	Address tezos.Address `json:"-"`
-	Height  int64         `json:"-"`
-	Block   string        `json:"-"`
+	Address mavryk.Address `json:"-"`
+	Height  int64          `json:"-"`
+	Block   string         `json:"-"`
 
 	// tezos data
-	Deactivated          bool            `json:"deactivated"`
-	Balance              int64           `json:"balance,string"`
-	DelegatedContracts   []tezos.Address `json:"delegated_contracts"`
-	FrozenBalance        int64           `json:"frozen_balance,string"`
-	FrozenBalanceByCycle []CycleBalance  `json:"frozen_balance_by_cycle"`
-	GracePeriod          int64           `json:"grace_period"`
-	StakingBalance       int64           `json:"staking_balance,string"`
-	DelegatedBalance     int64           `json:"delegated_balance,string"`
-	VotingPower          Int64orString   `json:"voting_power"`
+	Deactivated          bool             `json:"deactivated"`
+	Balance              int64            `json:"balance,string"`
+	DelegatedContracts   []mavryk.Address `json:"delegated_contracts"`
+	FrozenBalance        int64            `json:"frozen_balance,string"`
+	FrozenBalanceByCycle []CycleBalance   `json:"frozen_balance_by_cycle"`
+	GracePeriod          int64            `json:"grace_period"`
+	StakingBalance       int64            `json:"staking_balance,string"`
+	DelegatedBalance     int64            `json:"delegated_balance,string"`
+	VotingPower          Int64orString    `json:"voting_power"`
 
 	// v012+
 	FullBalance           int64 `json:"full_balance,string"`
@@ -36,8 +36,8 @@ type Baker struct {
 	FrozenDepositsLimit   int64 `json:"frozen_deposits_limit,string"`
 
 	// v015+
-	ActiveConsensusKey   tezos.Address `json:"active_consensus_key"`
-	PendingConsensusKeys []CycleKey    `json:"pending_consensus_keys"`
+	ActiveConsensusKey   mavryk.Address `json:"active_consensus_key"`
+	PendingConsensusKeys []CycleKey     `json:"pending_consensus_keys"`
 
 	// v018+
 	TotalDelegatedStake int64 `json:"total_delegated_stake,string"`
@@ -45,8 +45,8 @@ type Baker struct {
 }
 
 type CycleKey struct {
-	Cycle int64         `json:"cycle"`
-	Baker tezos.Address `json:"pkh"`
+	Cycle int64          `json:"cycle"`
+	Baker mavryk.Address `json:"pkh"`
 }
 
 type CycleBalance struct {
@@ -56,7 +56,7 @@ type CycleBalance struct {
 	Rewards int64 `json:"rewards,string"`
 }
 
-type BakerList []tezos.Address
+type BakerList []mavryk.Address
 
 // ListActiveBakers returns information about all active delegates at a block.
 func (c *Client) ListActiveBakers(ctx context.Context, id BlockID) (BakerList, error) {
@@ -77,7 +77,7 @@ func (c *Client) ListActiveBakers(ctx context.Context, id BlockID) (BakerList, e
 }
 
 // GetBakerInfo returns information about a delegate at a specific height.
-func (c *Client) GetBakerInfo(ctx context.Context, addr tezos.Address, id BlockID) (*Baker, error) {
+func (c *Client) GetBakerInfo(ctx context.Context, addr mavryk.Address, id BlockID) (*Baker, error) {
 	b := &Baker{
 		Address: addr,
 		Height:  id.Int64(),
@@ -91,7 +91,7 @@ func (c *Client) GetBakerInfo(ctx context.Context, addr tezos.Address, id BlockI
 }
 
 // GetBakerBalance returns a delegate's balance
-func (c *Client) GetBakerBalance(ctx context.Context, addr tezos.Address, id BlockID) (int64, error) {
+func (c *Client) GetBakerBalance(ctx context.Context, addr mavryk.Address, id BlockID) (int64, error) {
 	u := fmt.Sprintf("chains/main/blocks/%s/context/delegates/%s/balance", id, addr)
 	var bal string
 	err := c.Get(ctx, u, &bal)
@@ -102,11 +102,11 @@ func (c *Client) GetBakerBalance(ctx context.Context, addr tezos.Address, id Blo
 }
 
 // GetBakerKey returns a delegate's current consensus key
-func (c *Client) GetBakerKey(ctx context.Context, addr tezos.Address, id BlockID) (tezos.Key, error) {
+func (c *Client) GetBakerKey(ctx context.Context, addr mavryk.Address, id BlockID) (mavryk.Key, error) {
 	u := fmt.Sprintf("chains/main/blocks/%s/context/delegates/%s/consensus_key", id, addr)
 	type ActiveConsensusKey struct {
 		Active struct {
-			Pk tezos.Key `json:"pk"`
+			Pk mavryk.Key `json:"pk"`
 		} `json:"active"`
 	}
 	var key ActiveConsensusKey

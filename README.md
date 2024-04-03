@@ -1,17 +1,19 @@
-# Blockwatch Tezos Indexer
+# Blockwatch Mavryk Indexer
 
 © 2020-2024 Blockwatch Data Inc., All rights reserved.
 
-TzIndex is [Blockwatch](https://blockwatch.cc)'s all-in-one zero-conf blockchain indexer for Tezos. A fast, convenient and resource-friendly way to gain tactical insights and build dapps on top of Tezos. Pro version available on request, see [License](https://github.com/blockwatch-cc/tzindex#license).
+Forked from [Blockwatch](https://blockwatch.cc)'s all-in-one zero-conf blockchain indexer TzIndex (https://github.com/blockwatch-cc/tzindex).
+
+MvIndex is [Mavryk Dynamics](https://mavrykdynamics.com)' all-in-one zero-conf blockchain indexer for Mavryk. A fast, convenient and resource-friendly way to gain tactical insights and build dapps on top of Mavryk. Pro version available on request, see [License](https://github.com/mavryk-network/mvindex#license).
 
 For support, talk to us on [Discord](https://discord.gg/D5e98Hw) or [Twitter](https://twitter.com/blockwatch_data).
 
 **Core Features**
 
-- supports protocols up to Oxford (v018)
+- supports protocols up to Atlas (v001)
 - indexes and cross-checks full on-chain state
 - feature-rich [REST API](https://docs.tzpro.io/docs/api/index) with objects, bulk tables and time-series
-- auto-detects and locks Tezos network (never mixes data from different networks)
+- auto-detects and locks Mavryk network (never mixes data from different networks)
 - indexes all accounts and smart-contracts (including genesis data)
 - follows chain reorgs as they are resolved
 - can passively monitor for new blocks
@@ -24,7 +26,7 @@ For support, talk to us on [Discord](https://discord.gg/D5e98Hw) or [Twitter](ht
 - flexible metadata support
 - pruning of unused historic snapshots
 - configurable indexing delay to avoid reorgs and serve finalized data only
-- decodes on-chain (tezos domains reverse records) and off-chain (tezos profiles) account metadata
+- decodes on-chain (mavryk domains reverse records) and off-chain (mavryk profiles) account metadata
 - identifies and decodes mint/burn/transfer of a broad range of FA tokens
 
 **Supported indexes and data tables**
@@ -42,7 +44,7 @@ For support, talk to us on [Discord](https://discord.gg/D5e98Hw) or [Twitter](ht
 - **elections**, **votes**, **proposals** and **ballots** capturing all on-chain governance activities
 - **snapshots**: balances of active delegates & delegators at all snapshot blocks
 - baker **income**: per-cycle statistics on baker income, efficiency, etc
-- **metadata**: standardized and custom account metadata (tezos domains reverse record and spruce tzprofile support)
+- **metadata**: standardized and custom account metadata (mavryk domains reverse record and spruce tzprofile support)
 - **constants**: global constants (e.g. smart contract code/type macros to lower contract size and reuse common features)
 - **storage**: separate smart contract storage updates to decrease operation table cache pressure
 - **event**: emitted smart contract events
@@ -52,12 +54,12 @@ For support, talk to us on [Discord](https://discord.gg/D5e98Hw) or [Twitter](ht
 
 **Experimental Features**
 
-Some tzindex features are considered experimental such as
+Some mvindex features are considered experimental such as
 
-* tezos domains & tzprofiles metadata indexing
+* mavryk domains & tzprofiles metadata indexing
 * FA & NFT token indexing
 
-These features are generally stable, but generate extra load during indexing because data is fetched from off-chain APIs. If you really need this data, run tzindex with the `-experimental` flag. Read also the comments on off-chain data below.
+These features are generally stable, but generate extra load during indexing because data is fetched from off-chain APIs. If you really need this data, run mvindex with the `-experimental` flag. Read also the comments on off-chain data below.
 
 **Operation modes**
 
@@ -66,9 +68,9 @@ These features are generally stable, but generate extra load during indexing bec
 - **Validate** state validation mode for checking accounts and balances each block/cycle (CLI: `-validate`)
 - **Experimental** enable experimental features (CLI: `-experimental`)
 
-**Light mode** dramatically reduces our maintenance costs for TzIndex and is best suited for dapps where access to baking-related data is not necessary. Light mode saves roughly \~50% storage costs and \~50% indexing time while still keeping all data required for Dapps.
+**Light mode** dramatically reduces our maintenance costs for MvIndex and is best suited for dapps where access to baking-related data is not necessary. Light mode saves roughly \~50% storage costs and \~50% indexing time while still keeping all data required for Dapps.
 
-**Validate mode** works in combination with full and light mode. At each block it checks balances and states of all touched accounts against a Tezos archive node before any change is written to the database. At the end of each cycle, all known accounts in the indexer database are checked as well. This ensures 100% consistency although at the cost of a reduction in indexing speed.
+**Validate mode** works in combination with full and light mode. At each block it checks balances and states of all touched accounts against a Mavryk archive node before any change is written to the database. At the end of each cycle, all known accounts in the indexer database are checked as well. This ensures 100% consistency although at the cost of a reduction in indexing speed.
 
 
 ### Requirements
@@ -76,13 +78,13 @@ These features are generally stable, but generate extra load during indexing bec
 - Storage: 43GB (full Mainnet index, May 2023), 29G (light mode)
 - RAM:  8-64GB (configurable, use more memory for better query latency)
 - CPU:  2+ cores (configurable, use more for better query parallelism)
-- Tezos node in archive mode
+- Mavryk node in archive mode
 
-Runs against any Tezos Archive Node (also full nodes when cycle 0 history is not yet pruned). This can be a local node or one of the public Tezos RPC nodes on the Internet. Note that syncing from public nodes over the Internet works but may be slow.
+Runs against any Mavryk Archive Node (also full nodes when cycle 0 history is not yet pruned). This can be a local node or one of the public Mavryk RPC nodes on the Internet. Note that syncing from public nodes over the Internet works but may be slow.
 
 **IMPORTANT: WHEN USING OCTEZ V12+ YOU MUST RUN YOUR ARCHIVE NODE WITH `--metadata-size-limit unlimited`**
 
-Requires access to the following Tezos RPC calls
+Requires access to the following Mavryk RPC calls
 
 ```
 /chains/main/blocks/{blockid}
@@ -102,7 +104,7 @@ Requires access to the following Tezos RPC calls
 
 > With default settings you need a TzPro API key and a MAX subscription to be able to send 9M+ API calls for a full reindex.
 
-Starting with v18 TzIndex decodes FA tokens and Tezos Profiles. Both rely on off-chain data that cannot be fetched from a Tezos archive node. Tezos Profiles uses the Kepler protocol from Spruce Inc which hosts profile claims on a dedicated server which is rate limited. Some tokens store their metadata on-chain (many currency tokens do that) but most NFTs just store a url link on-chain. Metadata resolution and download are complex and often fragile because calls have to be made to reliable IPFS nodes but also many hosted servers which can go offline at any time. For best performance and user experience TzIndex pulls all token and profile metadata from the TzPro API as a default. You can change the source of metadata downloads in configuration.
+Starting with v18 MvIndex decodes FA tokens and Mavryk Profiles. Both rely on off-chain data that cannot be fetched from a Mavryk archive node. Mavryk Profiles uses the Kepler protocol from Spruce Inc which hosts profile claims on a dedicated server which is rate limited. Some tokens store their metadata on-chain (many currency tokens do that) but most NFTs just store a url link on-chain. Metadata resolution and download are complex and often fragile because calls have to be made to reliable IPFS nodes but also many hosted servers which can go offline at any time. For best performance and user experience MvIndex pulls all token and profile metadata from the TzPro API as a default. You can change the source of metadata downloads in configuration.
 
 ```
 # TzProfiles original server
@@ -114,7 +116,7 @@ Starting with v18 TzIndex decodes FA tokens and Tezos Profiles. Both rely on off
 # Token Metadata on TzPro
 -meta.token.url=https://api.tzpro.io/v1/tokens/{addr}/meta
 
-# Set your TzPro API key via env TZPRO_API_KEY or a CLI
+# Set your TzPro API key via env MVPRO_API_KEY or a CLI
 -meta.http.api_key=your_key_here
 ```
 
@@ -139,7 +141,7 @@ The contained Makefile supports local and Docker builds. For local builds you ne
 make build
 
 # or directly with Go
-go build ./cmd/tzindex.go
+go build ./cmd/mvindex.go
 
 # build docker images
 make image
@@ -147,24 +149,24 @@ make image
 
 ### How to run
 
-tzindex aims to be zero-conf and comes with sane defaults. All you need to do is point it to the RPC endpoint of a running Tezos node.
+mvindex aims to be zero-conf and comes with sane defaults. All you need to do is point it to the RPC endpoint of a running Mavryk node.
 
 ```
-tzindex -rpc.url tezos-node
+mvindex -rpc.url mavryk-node
 ```
 
-If you prefer running from docker, check out the docker directory. Official images are available for the [indexer](https://hub.docker.com/r/blockwatch/tzindex) and [frontend](https://hub.docker.com/r/blockwatch/tzstats) (note the frontend may not support advanced features of new protocols). You can run both, the indexer and the frontend in local Docker containers and have them connect to your Tezos node in a third container. Make sure all containers are connected to the same Docker network or if you choose different networks that they are known. Docker port forwarding on Linux usually works, on OSX its broken.
+If you prefer running from docker, check out the docker directory. Official images are available for the [indexer](https://hub.docker.com/r/mavrykdynamics/mvindex) and [frontend](https://hub.docker.com/r/blockwatch/tzstats) (note the frontend may not support advanced features of new protocols). You can run both, the indexer and the frontend in local Docker containers and have them connect to your Mavryk node in a third container. Make sure all containers are connected to the same Docker network or if you choose different networks that they are known. Docker port forwarding on Linux usually works, on OSX its broken.
 
 
 ### Configuration
 
 **Config file**
 
-On start-up tzindex tries loading its config from the `config.json` file in the current directory. You may override this name either on the command line using `-c myconf.json` or by setting the environment variable `TZ_CONFIG_FILE=/some/path/myconf.json`
+On start-up mvindex tries loading its config from the `config.json` file in the current directory. You may override this name either on the command line using `-c myconf.json` or by setting the environment variable `MV_CONFIG_FILE=/some/path/myconf.json`
 
 Config file sections
 ```
-rpc      - configures RPC connection to the Tezos node
+rpc      - configures RPC connection to the Mavryk node
 crawler  - configures the blockchain crawl logic
 db       - configures the embedded database
 server   - configures the built-in HTTP API server
@@ -175,24 +177,24 @@ See the default `config.json` in the `docker` subfolder for a detailed list of a
 
 **Environment variables**
 
-Env variables allow you to override settings from the config file or even specify all configuration settings in the process environment. This makes it easy to manage configuration in Docker and friends. Env variables are all uppercase, start with `TZ` and use an underscore `_` as separator between sub-topics.
+Env variables allow you to override settings from the config file or even specify all configuration settings in the process environment. This makes it easy to manage configuration in Docker and friends. Env variables are all uppercase, start with `MV` and use an underscore `_` as separator between sub-topics.
 
 ```
 # in config.json
 { "rpc": { "url" : "http://127.0.0.1:8732" }}
 
 # same as env variable
-TZ_RPC_URL=http://127.0.0.1:8732
+MV_RPC_URL=http://127.0.0.1:8732
 ```
 
 **Command line arguments**
 
-All TzIndex config options can be controlled via cli arguments.
+All MvIndex config options can be controlled via cli arguments.
 
 Global options:
 
 ```
-Usage: tzindex [flags]
+Usage: mvindex [flags]
 
 Flags
   -c file
@@ -278,7 +280,7 @@ Server
   -server.cache_max=24h             max cache expiry time for immutable API responses
 
 RPC
-  -rpc.url=http://127.0.0.1:8732    Tezos RPC host
+  -rpc.url=http://127.0.0.1:8732    Mavryk RPC host
   -rpc.disable_tls=true             use HTTP by default
   -rpc.insecure_tls=false           disable TLS certificate checks
   -rpc.proxy=                       set HTTP proxy

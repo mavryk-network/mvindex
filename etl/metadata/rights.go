@@ -6,7 +6,7 @@ package metadata
 import (
 	"time"
 
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 func init() {
@@ -69,14 +69,14 @@ const (
 )
 
 type Rights struct {
-	Date         time.Time     `json:"date,omitempty"`
-	Rights       string        `json:"rights,omitempty"`
-	License      string        `json:"license,omitempty"`
-	Minter       tezos.Address `json:"minter,omitempty"`
-	Authors      []string      `json:"authors,omitempty"`
-	Creators     []string      `json:"creators,omitempty"`
-	Contributors []string      `json:"contributors,omitempty"`
-	Publishers   []string      `json:"publishers,omitempty"`
+	Date         time.Time      `json:"date,omitempty"`
+	Rights       string         `json:"rights,omitempty"`
+	License      string         `json:"license,omitempty"`
+	Minter       mavryk.Address `json:"minter,omitempty"`
+	Authors      []string       `json:"authors,omitempty"`
+	Creators     []string       `json:"creators,omitempty"`
+	Contributors []string       `json:"contributors,omitempty"`
+	Publishers   []string       `json:"publishers,omitempty"`
 }
 
 func (d Rights) Namespace() string {

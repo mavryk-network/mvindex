@@ -8,9 +8,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 // can implicitly burn a fee when new account is created
@@ -108,7 +108,7 @@ func (b *Builder) AppendNormalTransactionOp(ctx context.Context, oh *rpc.Operati
 	op.StorageLimit = top.StorageLimit
 	op.IsContract = dst.IsContract && !dCon.Address.IsRollup()
 	op.IsRollup = dst.IsContract && dCon.Address.IsRollup()
-	op.IsBurnAddress = top.Destination == tezos.ZeroAddress
+	op.IsBurnAddress = top.Destination == mavryk.ZeroAddress
 
 	res := top.Result()
 	op.Status = res.Status
@@ -268,7 +268,7 @@ func (b *Builder) AppendNormalTransactionOp(ctx context.Context, oh *rpc.Operati
 	// apply internal operation result (may generate new op and flows)
 	for i, v := range top.Metadata.InternalResults {
 		// skip events, they are processed in event index
-		if v.Kind == tezos.OpTypeEvent {
+		if v.Kind == mavryk.OpTypeEvent {
 			continue
 		}
 		id.I = i
@@ -360,7 +360,7 @@ func (b *Builder) AppendInternalTransactionOp(
 	op.GasLimit = 0     // n.a. for internal ops
 	op.StorageLimit = 0 // n.a. for internal ops
 	op.Volume = iop.Amount
-	op.IsBurnAddress = tezos.ZeroAddress == iop.Destination
+	op.IsBurnAddress = mavryk.ZeroAddress == iop.Destination
 
 	res := iop.Result
 	op.Status = res.Status

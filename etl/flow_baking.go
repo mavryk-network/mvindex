@@ -4,8 +4,8 @@
 package etl
 
 import (
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 // Note: during chain bootstrap there used to be blocks without rewards
@@ -65,7 +65,7 @@ func (b *Builder) NewSeedNonceFlows(bal rpc.BalanceUpdates, id model.OpRef) []*m
 			case b.block.Params.Version < 18:
 				// unused
 			default:
-				// post-Oxford share goes to staking pool
+				// post-Atlas share goes to staking pool
 				f := model.NewFlow(b.block, b.block.Proposer.Account, nil, id)
 				f.Kind = model.FlowKindStake // target is frozen stake pool
 				f.Type = model.FlowTypeNonceRevelation
@@ -75,7 +75,7 @@ func (b *Builder) NewSeedNonceFlows(bal rpc.BalanceUpdates, id model.OpRef) []*m
 			}
 		case "contract":
 			// after Ithaca (not frozen, goes to block proposer)
-			// same in Oxford
+			// same in Atlas
 			f := model.NewFlow(b.block, b.block.Proposer.Account, nil, id)
 			f.Kind = model.FlowKindBalance
 			f.Type = model.FlowTypeNonceRevelation
@@ -88,7 +88,7 @@ func (b *Builder) NewSeedNonceFlows(bal rpc.BalanceUpdates, id model.OpRef) []*m
 }
 
 // works for double-bake, double-endorse, double-preendorse
-// oxford+ penalty ops do not slash anymore
+// atlas+ penalty ops do not slash anymore
 func (b *Builder) NewPenaltyFlows(accuser, offender *model.Baker, bal rpc.BalanceUpdates, id model.OpRef) []*model.Flow {
 	flows := make([]*model.Flow, 0)
 	for _, u := range bal {

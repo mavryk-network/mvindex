@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 // BakingRight holds simplified information about the right to bake a specific Tezos block
@@ -20,8 +20,8 @@ type BakingRight struct {
 	Round    int
 }
 
-func (r BakingRight) Address() tezos.Address {
-	a, _ := tezos.ParseAddress(r.Delegate)
+func (r BakingRight) Address() mavryk.Address {
+	a, _ := mavryk.ParseAddress(r.Delegate)
 	return a
 }
 
@@ -48,14 +48,14 @@ type EndorsingRight struct {
 	Power    int
 }
 
-func (r EndorsingRight) Address() tezos.Address {
-	a, _ := tezos.ParseAddress(r.Delegate)
+func (r EndorsingRight) Address() mavryk.Address {
+	a, _ := mavryk.ParseAddress(r.Delegate)
 	return a
 }
 
 type StakeInfo struct {
-	ActiveStake ActiveStake   `json:"active_stake"`
-	Baker       tezos.Address `json:"baker"`
+	ActiveStake ActiveStake    `json:"active_stake"`
+	Baker       mavryk.Address `json:"baker"`
 }
 
 // v12+ .. v17: single integer
@@ -113,7 +113,7 @@ type SnapshotOwners struct {
 
 type SnapshotRoll struct {
 	RollId   int64
-	OwnerKey tezos.Key
+	OwnerKey mavryk.Key
 }
 
 func (r *SnapshotRoll) UnmarshalJSON(data []byte) error {
@@ -427,7 +427,7 @@ func (c *Client) ListSnapshotRollOwners(ctx context.Context, id BlockID, cycle, 
 }
 
 // GetEndorsingSlotOwner returns the address if the baker who owns endorsing slot in block.
-func (c *Client) GetEndorsingSlotOwner(ctx context.Context, id BlockID, slot int, p *Params) (tezos.Address, error) {
+func (c *Client) GetEndorsingSlotOwner(ctx context.Context, id BlockID, slot int, p *Params) (mavryk.Address, error) {
 	u := fmt.Sprintf("chains/main/blocks/%s/helpers/endorsing_rights?all=true", id)
 	if p.Version < 12 && p.IsPreIthacaNetworkAtStart() {
 		type Rights struct {
@@ -437,12 +437,12 @@ func (c *Client) GetEndorsingSlotOwner(ctx context.Context, id BlockID, slot int
 		}
 		rights := make([]Rights, 0)
 		if err := c.Get(ctx, u, &rights); err != nil {
-			return tezos.ZeroAddress, err
+			return mavryk.ZeroAddress, err
 		}
 		for _, r := range rights {
 			for _, v := range r.Slots {
 				if v == slot {
-					addr, _ := tezos.ParseAddress(r.Delegate)
+					addr, _ := mavryk.ParseAddress(r.Delegate)
 					return addr, nil
 				}
 			}
@@ -457,22 +457,22 @@ func (c *Client) GetEndorsingSlotOwner(ctx context.Context, id BlockID, slot int
 		}
 		rights := make([]Rights, 0)
 		if err := c.Get(ctx, u, &rights); err != nil {
-			return tezos.ZeroAddress, err
+			return mavryk.ZeroAddress, err
 		}
 		for _, v := range rights {
 			for _, r := range v.Delegates {
 				if r.Slot == slot {
-					addr, _ := tezos.ParseAddress(r.Delegate)
+					addr, _ := mavryk.ParseAddress(r.Delegate)
 					return addr, nil
 				}
 			}
 		}
 	}
-	return tezos.ZeroAddress, fmt.Errorf("Endorsing slot not found")
+	return mavryk.ZeroAddress, fmt.Errorf("Endorsing slot not found")
 }
 
 // GetBakingRightOwner returns the address if the baker who owns endorsing slot in block.
-func (c *Client) GetBakingRightOwner(ctx context.Context, id BlockID, round int, p *Params) (tezos.Address, error) {
+func (c *Client) GetBakingRightOwner(ctx context.Context, id BlockID, round int, p *Params) (mavryk.Address, error) {
 	maxSelector := "max_priority=%d"
 	if p.Version >= 12 && p.IsPreIthacaNetworkAtStart() {
 		maxSelector = "max_round=%d"
@@ -483,14 +483,14 @@ func (c *Client) GetBakingRightOwner(ctx context.Context, id BlockID, round int,
 	rights := make([]BakingRight, 0)
 	u := fmt.Sprintf("chains/main/blocks/%s/helpers/baking_rights?all=true&"+maxSelector, id, round)
 	if err := c.Get(ctx, u, &rights); err != nil {
-		return tezos.ZeroAddress, err
+		return mavryk.ZeroAddress, err
 	}
 	for _, r := range rights {
 		if r.Round != round {
 			continue
 		}
-		addr, _ := tezos.ParseAddress(r.Delegate)
+		addr, _ := mavryk.ParseAddress(r.Delegate)
 		return addr, nil
 	}
-	return tezos.ZeroAddress, fmt.Errorf("Baking round not found")
+	return mavryk.ZeroAddress, fmt.Errorf("Baking round not found")
 }

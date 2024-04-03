@@ -11,7 +11,7 @@ const (
 	aliasNs     = "alias"
 	aliasSchema = `{
   "$schema": "http://json-schema.org/draft/2019-09/schema#",
-  "$id": "https://api.tzpro.io/metadata/schemas/alias.json",
+  "$id": "https://api.mvpro.io/metadata/schemas/alias.json",
   "title": "Alias",
   "type": "object",
   "required": [ "name", "kind" ],

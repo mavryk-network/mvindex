@@ -12,28 +12,28 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 func (b *Builder) AuditState(ctx context.Context, offset int64) error {
 	// skip audit at migration blocks (next protocol changes)
-	if b.block.TZ.Block.IsProtocolUpgrade() {
+	if b.block.MV.Block.IsProtocolUpgrade() {
 		log.Info("Skipping audit at migration block since effects are not yet published in block receipts.")
 		return nil
 	}
 
 	// every cycle check all stored accounts
 	// only run full check when not in rollback mode
-	if b.block.TZ.IsCycleStart() && offset == 0 {
+	if b.block.MV.IsCycleStart() && offset == 0 {
 		return b.AuditAccountDatabase(ctx, true)
 		// } else {
 		// 	return nil
 	}
 
 	block := rpc.BlockLevel(b.block.Height - offset)
-	isCycleEnd := b.block.TZ.IsCycleEnd()
+	isCycleEnd := b.block.MV.IsCycleEnd()
 
 	plog := logpkg.NewProgressLogger(log).SetAction("Verified").SetEvent("account")
 
@@ -77,12 +77,12 @@ aloop:
 		}
 		// skip non-activated accounts and rollups
 		switch acc.Type {
-		case tezos.AddressTypeBlinded, tezos.AddressTypeTxRollup, tezos.AddressTypeSmartRollup:
+		case mavryk.AddressTypeBlinded, mavryk.AddressTypeTxRollup, mavryk.AddressTypeSmartRollup:
 			continue aloop
 		}
 
 		// run a sanity check
-		if acc.IsRevealed && acc.Type != tezos.AddressTypeContract {
+		if acc.IsRevealed && acc.Type != mavryk.AddressTypeContract {
 			if !acc.Pubkey.IsValid() {
 				logError("invalid pubkey: acc=%s key=%s", acc, acc.Pubkey.String())
 			}
@@ -198,7 +198,7 @@ bloop:
 			logError("baker delegated balance mismatch for %s: index=%d node=%d", bkr, bkr.DelegatedBalance, state.DelegatedBalance)
 			failed++
 		}
-		// state.FrozenDepositsLimit disappears in oxford
+		// state.FrozenDepositsLimit disappears in atlas
 		if state.FrozenDepositsLimit > 0 && bkr.DepositsLimit > -1 {
 			if state.FrozenDepositsLimit != bkr.DepositsLimit {
 				logError("baker deposits limit mismatch for %s: index=%d node=%d", bkr, bkr.DepositsLimit, state.FrozenDepositsLimit)
@@ -206,7 +206,7 @@ bloop:
 			}
 		}
 
-		// TODO: oxford check
+		// TODO: atlas check
 		// state.TotalDelegatedStake
 
 		plog.Log(1)
@@ -352,7 +352,7 @@ bloop:
 				return err
 			}
 			// skip non-activated accounts
-			if acc.Type == tezos.AddressTypeBlinded {
+			if acc.Type == mavryk.AddressTypeBlinded {
 				acc.Free()
 				return nil
 			}
@@ -382,7 +382,7 @@ aloop:
 		// skip non-activated accounts and rollups
 		var skip bool
 		switch acc.Type {
-		case tezos.AddressTypeBlinded, tezos.AddressTypeTxRollup, tezos.AddressTypeSmartRollup:
+		case mavryk.AddressTypeBlinded, mavryk.AddressTypeTxRollup, mavryk.AddressTypeSmartRollup:
 			skip = true
 		}
 		if skip {
@@ -403,7 +403,7 @@ aloop:
 		}
 
 		// check key matches address
-		if acc.IsRevealed && acc.Type != tezos.AddressTypeContract {
+		if acc.IsRevealed && acc.Type != mavryk.AddressTypeContract {
 			if key.IsValid() && acc.Address != key.Address() {
 				if nofail {
 					log.Errorf("pubkey mismatch: acc=%s type=%s bad-key=%s", acc.Address, key.Type, key)

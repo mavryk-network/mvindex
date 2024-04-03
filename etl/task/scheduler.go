@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzindex/etl/task/client"
 	"github.com/echa/config"
 	"github.com/echa/log"
+	"github.com/mavryk-network/mvindex/etl/task/client"
 )
 
 type TaskCompletionCallback func(context.Context, *TaskResult) error

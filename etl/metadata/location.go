@@ -38,7 +38,7 @@ const (
 	locationNs     = "location"
 	locationSchema = `{
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://api.tzpro.io/metadata/schemas/location.json",
+	"$id": "https://api.mvpro.io/metadata/schemas/location.json",
 	"title": "Location Info",
     "description": "A geographical location and coordinates.",
 	"type": "object",

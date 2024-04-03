@@ -12,7 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 // keep a cache of past cycles to avoid expensive database lookups

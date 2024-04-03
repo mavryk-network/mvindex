@@ -6,8 +6,8 @@ package rpc
 import (
 	"encoding/json"
 
-	"github.com/mavryk-network/tzgo/micheline"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
 )
 
 // Ensure TxRollup implements the TypedOperation interface.
@@ -19,7 +19,7 @@ type TxRollup struct {
 	Manager
 
 	// most rollup ops
-	Rollup tezos.Address `json:"rollup"`
+	Rollup mavryk.Address `json:"rollup"`
 
 	// tx_rollup_origination has no data
 
@@ -37,13 +37,13 @@ type TxRollup struct {
 }
 
 type TxRollupResult struct {
-	OriginatedRollup tezos.Address `json:"originated_rollup"` // v013 tx_rollup_originate
-	Level            int64         `json:"level"`             // v013 ?? here or in metadata??
+	OriginatedRollup mavryk.Address `json:"originated_rollup"` // v013 tx_rollup_originate
+	Level            int64          `json:"level"`             // v013 ?? here or in metadata??
 }
 
 // Addresses adds all addresses used in this operation to the set.
 // Implements TypedOperation interface.
-func (t TxRollup) Addresses(set *tezos.AddressSet) {
+func (t TxRollup) Addresses(set *mavryk.AddressSet) {
 	set.AddUnique(t.Source)
 	if a := t.Target(); a.IsValid() {
 		set.AddUnique(a)
@@ -59,17 +59,17 @@ func (r *TxRollup) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	switch r.Kind() {
-	case tezos.OpTypeTxRollupSubmitBatch:
+	case mavryk.OpTypeTxRollupSubmitBatch:
 		return json.Unmarshal(data, &r.Batch)
-	case tezos.OpTypeTxRollupRejection:
+	case mavryk.OpTypeTxRollupRejection:
 		return json.Unmarshal(data, &r.Reject)
-	case tezos.OpTypeTxRollupDispatchTickets:
+	case mavryk.OpTypeTxRollupDispatchTickets:
 		return json.Unmarshal(data, &r.Dispatch)
 	}
 	return nil
 }
 
-func (r *TxRollup) Target() tezos.Address {
+func (r *TxRollup) Target() mavryk.Address {
 	if r.Dispatch.TxRollup.IsValid() {
 		return r.Dispatch.TxRollup
 	}
@@ -81,27 +81,27 @@ func (r *TxRollup) EncodeParameters() micheline.Parameters {
 		Entrypoint: r.Kind().String(),
 	}
 	switch r.Kind() {
-	case tezos.OpTypeTxRollupSubmitBatch:
+	case mavryk.OpTypeTxRollupSubmitBatch:
 		params.Value = r.Batch.Prim()
-	case tezos.OpTypeTxRollupCommit:
+	case mavryk.OpTypeTxRollupCommit:
 		params.Value = r.Commit.Prim()
-	case tezos.OpTypeTxRollupReturnBond:
+	case mavryk.OpTypeTxRollupReturnBond:
 		// no data
 		params.Value = micheline.InvalidPrim
-	case tezos.OpTypeTxRollupFinalizeCommitment,
-		tezos.OpTypeTxRollupRemoveCommitment:
+	case mavryk.OpTypeTxRollupFinalizeCommitment,
+		mavryk.OpTypeTxRollupRemoveCommitment:
 		// level in receipt
 		params.Value = micheline.NewInt64(r.Metadata.Result.Level)
-	case tezos.OpTypeTxRollupRejection:
+	case mavryk.OpTypeTxRollupRejection:
 		params.Value = r.Reject.Prim()
-	case tezos.OpTypeTxRollupDispatchTickets:
+	case mavryk.OpTypeTxRollupDispatchTickets:
 		params.Value = r.Dispatch.Prim()
 	}
 	return params
 }
 
 type TxRollupBatch struct {
-	Content tezos.HexBytes `json:"content"`
+	Content mavryk.HexBytes `json:"content"`
 	// BurnLimit int64          `json:"burn_limit,string,omitempty"`
 }
 
@@ -110,7 +110,7 @@ func DecodeTxRollupBatch(data []byte) (*TxRollupBatch, error) {
 	if err := p.UnmarshalBinary(data); err != nil {
 		return nil, err
 	}
-	return &TxRollupBatch{Content: tezos.HexBytes(p.Value.Bytes)}, nil
+	return &TxRollupBatch{Content: mavryk.HexBytes(p.Value.Bytes)}, nil
 }
 
 func (b TxRollupBatch) Prim() micheline.Prim {
@@ -171,7 +171,7 @@ func (c TxRollupCommit) MarshalJSON() ([]byte, error) {
 type TxRollupRejection struct {
 	Level                     int64           `json:"level"`
 	Message                   json.RawMessage `json:"message,omitempty"`
-	MessagePosition           tezos.Z         `json:"message_position"`
+	MessagePosition           mavryk.Z        `json:"message_position"`
 	MessagePath               []string        `json:"message_path,omitempty"`
 	MessageResultHash         string          `json:"message_result_hash"`
 	MessageResultPath         []string        `json:"message_result_path,omitempty"`
@@ -204,7 +204,7 @@ func DecodeTxRollupRejection(data []byte) (*TxRollupRejection, error) {
 
 type TxRollupDispatch struct {
 	Level        int64           `json:"level"`
-	TxRollup     tezos.Address   `json:"tx_rollup"`
+	TxRollup     mavryk.Address  `json:"tx_rollup"`
 	ContextHash  string          `json:"context_hash"`
 	MessageIndex int64           `json:"message_index"`
 	TicketsInfo  json.RawMessage `json:"tickets_info"`

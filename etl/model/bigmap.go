@@ -10,8 +10,8 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"github.com/cespare/xxhash/v2"
-	"github.com/mavryk-network/tzgo/micheline"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
 )
 
 var (
@@ -73,7 +73,7 @@ func (m BigmapAlloc) IndexOpts(key string) pack.Options {
 	return pack.NoOptions
 }
 
-func GetKeyId(bigmapid int64, kh tezos.ExprHash) uint64 {
+func GetKeyId(bigmapid int64, kh mavryk.ExprHash) uint64 {
 	var buf [40]byte
 	binary.BigEndian.PutUint64(buf[:], uint64(bigmapid))
 	copy(buf[8:], kh[:])
@@ -235,7 +235,7 @@ func (b *BigmapValue) GetValue(typ micheline.Type) micheline.Value {
 	return micheline.NewValue(typ, prim)
 }
 
-func (b *BigmapValue) GetKeyHash() tezos.ExprHash {
+func (b *BigmapValue) GetKeyHash() mavryk.ExprHash {
 	return micheline.KeyHash(b.Key)
 }
 
@@ -345,7 +345,7 @@ func (b *BigmapUpdate) GetKey(typ micheline.Type) (micheline.Key, error) {
 	return micheline.DecodeKey(typ, b.Key)
 }
 
-func (b *BigmapUpdate) GetKeyHash() tezos.ExprHash {
+func (b *BigmapUpdate) GetKeyHash() mavryk.ExprHash {
 	return micheline.KeyHash(b.Key)
 }
 

@@ -29,7 +29,7 @@ type RestServer struct {
 }
 
 var (
-	UserAgent  = "Blockwatch-TzIndex/1.0"
+	UserAgent  = "Mavryk-MvIndex/1.0"
 	ApiVersion string
 	debugHttp  bool
 	srv        *RestServer

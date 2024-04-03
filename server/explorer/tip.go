@@ -11,23 +11,23 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 type BlockchainTip struct {
-	Name        string             `json:"name"`
-	Network     string             `json:"network"`
-	Symbol      string             `json:"symbol"`
-	ChainId     tezos.ChainIdHash  `json:"chain_id"`
-	GenesisTime time.Time          `json:"genesis_time"`
-	BestHash    tezos.BlockHash    `json:"block_hash"`
-	Timestamp   time.Time          `json:"timestamp"`
-	Height      int64              `json:"height"`
-	Cycle       int64              `json:"cycle"`
-	Protocol    tezos.ProtocolHash `json:"protocol"`
+	Name        string              `json:"name"`
+	Network     string              `json:"network"`
+	Symbol      string              `json:"symbol"`
+	ChainId     mavryk.ChainIdHash  `json:"chain_id"`
+	GenesisTime time.Time           `json:"genesis_time"`
+	BestHash    mavryk.BlockHash    `json:"block_hash"`
+	Timestamp   time.Time           `json:"timestamp"`
+	Height      int64               `json:"height"`
+	Cycle       int64               `json:"cycle"`
+	Protocol    mavryk.ProtocolHash `json:"protocol"`
 
 	TotalAccounts  int64 `json:"total_accounts"`
 	TotalContracts int64 `json:"total_contracts"`

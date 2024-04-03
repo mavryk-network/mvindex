@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:experimental
 # build stage
-FROM          golang:1.21-alpine AS tzindex-builder
-ARG           REPO=mavrykdynamics/tzindex
-ARG           BUILD_TARGET=tzindex
+FROM          golang:1.21-alpine AS mvindex-builder
+ARG           REPO=mavrykdynamics/mvindex
+ARG           BUILD_TARGET=mvindex
 ARG           BUILD_VERSION=dev
 ARG           BUILD_COMMIT=none
 LABEL         autodelete="true"
@@ -15,13 +15,13 @@ RUN           go install github.com/echa/gttp
 
 # final stage
 FROM          alpine:3.19
-ARG           BUILD_TARGET=tzindex
-ARG           USER=tzindex
+ARG           BUILD_TARGET=mvindex
+ARG           USER=mvindex
 ENV           BUILD_TARGET=${BUILD_TARGET}
 RUN           apk --no-cache add ca-certificates 'su-exec>=0.2' jq \
               && addgroup $USER -g 500 \
 			  && adduser -u 500 -D -h /home/$USER -S -s /sbin/nologin -G $USER $USER
-COPY          --from=tzindex-builder /go/bin/* /usr/local/bin/
+COPY          --from=mvindex-builder /go/bin/* /usr/local/bin/
 COPY          docker/docker-entrypoint.sh /usr/local/bin/
 COPY          docker/config.json /home/$USER/
 RUN           chmod +x /usr/local/bin/${BUILD_TARGET}

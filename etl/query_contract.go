@@ -8,12 +8,12 @@ import (
 	"sort"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzindex/etl/model"
-	"github.com/mavryk-network/tzgo/micheline"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
-func (m *Indexer) LookupContract(ctx context.Context, addr tezos.Address) (*model.Contract, error) {
+func (m *Indexer) LookupContract(ctx context.Context, addr mavryk.Address) (*model.Contract, error) {
 	if !addr.IsValid() {
 		return nil, model.ErrInvalidAddress
 	}
@@ -166,7 +166,7 @@ func (m *Indexer) ListContracts(ctx context.Context, r ListRequest) ([]*model.Co
 	}
 }
 
-func (m *Indexer) LookupConstant(ctx context.Context, hash tezos.ExprHash) (*model.Constant, error) {
+func (m *Indexer) LookupConstant(ctx context.Context, hash mavryk.ExprHash) (*model.Constant, error) {
 	if !hash.IsValid() {
 		return nil, model.ErrInvalidExprHash
 	}

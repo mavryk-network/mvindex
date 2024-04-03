@@ -6,7 +6,7 @@ package metadata
 import (
 	"time"
 
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 func init() {
@@ -18,7 +18,7 @@ const (
 	tz21Ns     = "tz21"
 	tz21Schema = `{
   "$schema": "http://json-schema.org/draft/2019-09/schema#",
-  "$id": "https://api.tzpro.io/metadata/schemas/tz21.json",
+  "$id": "https://api.mvpro.io/metadata/schemas/tz21.json",
   "title": "Rich Metadata",
   "type": "object",
   "additionalProperties": true,
@@ -261,7 +261,7 @@ type Tz21 struct {
 
 type Tz21Asset struct {
 	Description        string          `json:"description"`
-	Minter             tezos.Address   `json:"minter"`
+	Minter             mavryk.Address  `json:"minter"`
 	Creators           []string        `json:"creators"`
 	Contributors       []string        `json:"contributors"`
 	Publishers         []string        `json:"publishers"`

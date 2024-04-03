@@ -6,7 +6,7 @@ package rpc
 import (
 	"time"
 
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 // Params contains a subset of protocol configuration settings that are relevant
@@ -14,15 +14,15 @@ import (
 // with a custom data struct.
 type Params struct {
 	// chain identity, not part of RPC
-	Network     string             `json:"network,omitempty"`
-	Symbol      string             `json:"symbol,omitempty"`
-	Deployment  int                `json:"deployment"`
-	Version     int                `json:"version"`
-	ChainId     tezos.ChainIdHash  `json:"chain_id"`
-	Protocol    tezos.ProtocolHash `json:"protocol"`
-	StartHeight int64              `json:"start_height"` // protocol start (may be != cycle start!!)
-	EndHeight   int64              `json:"end_height"`   // protocol end (may be != cycle end!!)
-	Decimals    int                `json:"decimals"`
+	Network     string              `json:"network,omitempty"`
+	Symbol      string              `json:"symbol,omitempty"`
+	Deployment  int                 `json:"deployment"`
+	Version     int                 `json:"version"`
+	ChainId     mavryk.ChainIdHash  `json:"chain_id"`
+	Protocol    mavryk.ProtocolHash `json:"protocol"`
+	StartHeight int64               `json:"start_height"` // protocol start (may be != cycle start!!)
+	EndHeight   int64               `json:"end_height"`   // protocol end (may be != cycle end!!)
+	Decimals    int                 `json:"decimals"`
 
 	// sizes
 	MinimalStake        int64 `json:"minimal_stake,omitempty"`
@@ -77,7 +77,7 @@ type Params struct {
 func NewParams() *Params {
 	return &Params{
 		Network:          "unknown",
-		Symbol:           "XTZ",
+		Symbol:           "MVRK",
 		Decimals:         6,
 		NumVotingPeriods: 5,          // initial:4, v008+:5
 		MaxOperationsTTL: 240,        // initial:60, v011+:120, v016+:240
@@ -89,7 +89,7 @@ func NewParams() *Params {
 	}
 }
 
-func (p *Params) WithChainId(id tezos.ChainIdHash) *Params {
+func (p *Params) WithChainId(id mavryk.ChainIdHash) *Params {
 	p.ChainId = id
 	if p.Network == "unknown" {
 		switch id {
@@ -97,16 +97,14 @@ func (p *Params) WithChainId(id tezos.ChainIdHash) *Params {
 			p.Network = "Mainnet"
 		case Ghostnet:
 			p.Network = "Ghostnet"
-		case Nairobinet:
-			p.Network = "Nairobinet"
-		case Oxfordnet:
-			p.Network = "Oxfordnet"
+		case Atlasnet:
+			p.Network = "Atlasnet"
 		}
 	}
 	return p
 }
 
-func (p *Params) WithProtocol(h tezos.ProtocolHash) *Params {
+func (p *Params) WithProtocol(h mavryk.ProtocolHash) *Params {
 	var ok bool
 	p.Protocol = h
 	p.Version, ok = Versions[h]

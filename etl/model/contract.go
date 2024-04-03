@@ -13,9 +13,9 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzindex/rpc"
-	"github.com/mavryk-network/tzgo/micheline"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 const ContractTableKey = "contract"
@@ -39,7 +39,7 @@ func (id ContractID) U64() uint64 {
 // Contract holds code and info about smart contracts on the Tezos blockchain.
 type Contract struct {
 	RowId          ContractID           `pack:"I,pk"      json:"row_id"`
-	Address        tezos.Address        `pack:"H,bloom=3" json:"address"`
+	Address        mavryk.Address       `pack:"H,bloom=3" json:"address"`
 	AccountId      AccountID            `pack:"A,u32"     json:"account_id"`
 	CreatorId      AccountID            `pack:"C,u32"     json:"creator_id"`
 	FirstSeen      int64                `pack:"f,i32"     json:"first_seen"`
@@ -312,7 +312,7 @@ func (c *Contract) Rollback(drop, last *Op, p *rpc.Params) {
 
 func (c Contract) IsRollup() bool {
 	switch c.Address.Type() {
-	case tezos.AddressTypeTxRollup, tezos.AddressTypeSmartRollup:
+	case mavryk.AddressTypeTxRollup, mavryk.AddressTypeSmartRollup:
 		return true
 	default:
 		return false
@@ -355,9 +355,9 @@ func (c *Contract) ListSmartRollupCallStats() map[string]int {
 
 func (c *Contract) ListCallStats() map[string]int {
 	switch c.Address.Type() {
-	case tezos.AddressTypeTxRollup:
+	case mavryk.AddressTypeTxRollup:
 		return c.ListTxRollupCallStats()
-	case tezos.AddressTypeSmartRollup:
+	case mavryk.AddressTypeSmartRollup:
 		return c.ListSmartRollupCallStats()
 	}
 	// list entrypoint names first

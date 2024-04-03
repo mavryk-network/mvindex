@@ -9,7 +9,7 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/vec"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 const RightsTableKey = "rights"
@@ -37,7 +37,7 @@ type Right struct {
 
 type BaseRight struct {
 	AccountId      AccountID
-	Type           tezos.RightType
+	Type           mavryk.RightType
 	IsUsed         bool
 	IsLost         bool
 	IsStolen       bool
@@ -110,8 +110,8 @@ func (r *Right) Reset() {
 	r.Seeded.Reset()
 }
 
-func (r Right) ToBase(pos int, typ tezos.RightType) (BaseRight, bool) {
-	if typ == tezos.RightTypeBaking && (r.Bake.IsSet(pos) || r.Baked.IsSet(pos)) {
+func (r Right) ToBase(pos int, typ mavryk.RightType) (BaseRight, bool) {
+	if typ == mavryk.RightTypeBaking && (r.Bake.IsSet(pos) || r.Baked.IsSet(pos)) {
 		return BaseRight{
 			AccountId:      r.AccountId,
 			Type:           typ,
@@ -122,7 +122,7 @@ func (r Right) ToBase(pos int, typ tezos.RightType) (BaseRight, bool) {
 			IsSeedRevealed: r.Seeded.IsSet(pos),
 		}, true
 	}
-	if typ == tezos.RightTypeEndorsing && r.Endorse.IsSet(pos) {
+	if typ == mavryk.RightTypeEndorsing && r.Endorse.IsSet(pos) {
 		return BaseRight{
 			AccountId: r.AccountId,
 			Type:      typ,

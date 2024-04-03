@@ -4,8 +4,8 @@
 package etl
 
 import (
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 // Fees for manager operations (optional, i.e. sender may set to zero,

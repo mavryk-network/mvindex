@@ -10,14 +10,14 @@ import (
 	"net/http"
 	"net/url"
 
-	"blockwatch.cc/tzindex/etl/index"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
 	"github.com/echa/config"
+	"github.com/mavryk-network/mvindex/etl/index"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 
 	// metadata decoders
-	_ "blockwatch.cc/tzindex/etl/metadata/decoder/domain"
-	_ "blockwatch.cc/tzindex/etl/metadata/decoder/profile"
+	_ "github.com/mavryk-network/mvindex/etl/metadata/decoder/domain"
+	_ "github.com/mavryk-network/mvindex/etl/metadata/decoder/profile"
 )
 
 func newHTTPClient() (*http.Client, error) {

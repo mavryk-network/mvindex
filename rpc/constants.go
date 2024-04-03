@@ -51,14 +51,14 @@ type Constants struct {
 	MinimalBlockDelay int `json:"minimal_block_delay,string"`
 
 	// New in v12
-	BlocksPerSnapshot           int64 `json:"blocks_per_stake_snapshot"`
-	BakingRewardFixedPortion    int64 `json:"baking_reward_fixed_portion,string"`
-	BakingRewardBonusPerSlot    int64 `json:"baking_reward_bonus_per_slot,string"`
-	EndorsingRewardPerSlot      int64 `json:"endorsing_reward_per_slot,string"`
-	LimitOfDelegationOverBaking int   `json:"limit_of_delegation_over_baking"`
-	MaxOperationsTimeToLive     int64 `json:"max_operations_time_to_live"`
-	DelayIncrementPerRound      int   `json:"delay_increment_per_round,string"`
-	LiquidityBakingSubsidy      int64 `json:"liquidity_baking_subsidy,string"`
+	BlocksPerStakeSnapshot   int64 `json:"blocks_per_stake_snapshot"`
+	BakingRewardFixedPortion int64 `json:"baking_reward_fixed_portion,string"`
+	BakingRewardBonusPerSlot int64 `json:"baking_reward_bonus_per_slot,string"`
+	EndorsingRewardPerSlot   int64 `json:"endorsing_reward_per_slot,string"`
+	FrozenDepositsPercentage int   `json:"frozen_deposits_percentage"`
+	MaxOperationsTimeToLive  int64 `json:"max_operations_time_to_live"`
+	DelayIncrementPerRound   int   `json:"delay_increment_per_round,string"`
+	LiquidityBakingSubsidy   int64 `json:"liquidity_baking_subsidy,string"`
 
 	// New in v13
 	CyclesPerVotingPeriod int64 `json:"cycles_per_voting_period"`
@@ -195,7 +195,7 @@ func (c Constants) Params() *Params {
 	p.PreservedCycles = c.PreservedCycles
 	p.BlocksPerCycle = c.BlocksPerCycle
 	p.BlocksPerCommitment = c.BlocksPerCommitment
-	p.BlocksPerSnapshot = c.BlocksPerRollSnapshot + c.BlocksPerSnapshot // either/or
+	p.BlocksPerSnapshot = c.BlocksPerRollSnapshot + c.BlocksPerStakeSnapshot // either/or
 
 	// timing
 	if len(c.TimeBetweenBlocks) > 0 {

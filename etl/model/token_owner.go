@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 const (
@@ -34,16 +34,16 @@ type TokenOwner struct {
 	Account      AccountID    `pack:"A,bloom=3" json:"account"`
 	Ledger       AccountID    `pack:"L,bloom=3" json:"ledger"`
 	Token        TokenID      `pack:"T,bloom=3" json:"token"`
-	Balance      tezos.Z      `pack:"B,snappy"  json:"balance"`       // current balance
+	Balance      mavryk.Z     `pack:"B,snappy"  json:"balance"`       // current balance
 	FirstBlock   int64        `pack:"<,i32"     json:"first_seen"`    // height
 	LastBlock    int64        `pack:">,i32"     json:"last_seen"`     // height
 	NumTransfers int          `pack:"x,i32"     json:"num_transfers"` // #xfers this owner/token combi sent or recv
 	NumMints     int          `pack:"y,i32"     json:"num_mints"`     // #mints this owner/token combi
 	NumBurns     int          `pack:"z,i32"     json:"num_burns"`     // #burns this owner/token combi
-	VolSent      tezos.Z      `pack:"s,snappy"  json:"vol_sent"`      // running total
-	VolRecv      tezos.Z      `pack:"r,snappy"  json:"vol_recv"`      // running total
-	VolMint      tezos.Z      `pack:"m,snappy"  json:"vol_mint"`      // running total
-	VolBurn      tezos.Z      `pack:"b,snappy"  json:"vol_burn"`      // running total
+	VolSent      mavryk.Z     `pack:"s,snappy"  json:"vol_sent"`      // running total
+	VolRecv      mavryk.Z     `pack:"r,snappy"  json:"vol_recv"`      // running total
+	VolMint      mavryk.Z     `pack:"m,snappy"  json:"vol_mint"`      // running total
+	VolBurn      mavryk.Z     `pack:"b,snappy"  json:"vol_burn"`      // running total
 
 	// internal, used for stats
 	WasZero bool `pack:"-"  json:"-"`
@@ -184,7 +184,7 @@ func IsLedgerOwner(ctx context.Context, t *pack.Table, ownerId, ledgerId Account
 		WithLimit(1).
 		AndEqual("account", ownerId).
 		AndEqual("ledger", ledgerId).
-		AndNotEqual("balance", tezos.Zero).
+		AndNotEqual("balance", mavryk.Zero).
 		Count(ctx)
 	return cnt > 0, err
 }

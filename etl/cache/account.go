@@ -9,8 +9,8 @@ import (
 
 	"github.com/cespare/xxhash/v2"
 	lru "github.com/hashicorp/golang-lru/v2"
-	"github.com/mavryk-network/tzgo/tezos"
-	"github.com/mavryk-network/tzindex/etl/model"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 var AccountCacheSizeMaxSize = 16384 // entries
@@ -37,11 +37,11 @@ func (c *AccountCache) AccountHashKey(a *model.Account) uint64 {
 	return c.hashKey(a.Address)
 }
 
-func (c *AccountCache) AddressHashKey(a tezos.Address) uint64 {
+func (c *AccountCache) AddressHashKey(a mavryk.Address) uint64 {
 	return c.hashKey(a)
 }
 
-func (c *AccountCache) hashKey(a tezos.Address) uint64 {
+func (c *AccountCache) hashKey(a mavryk.Address) uint64 {
 	return xxhash.Sum64(a[:])
 }
 
@@ -69,7 +69,7 @@ func (c *AccountCache) Purge() {
 	}
 }
 
-func (c *AccountCache) GetAddress(addr tezos.Address) (uint64, *model.Account, bool) {
+func (c *AccountCache) GetAddress(addr mavryk.Address) (uint64, *model.Account, bool) {
 	key := c.AddressHashKey(addr)
 	val, ok := c.cache.Get(key)
 	if !ok {

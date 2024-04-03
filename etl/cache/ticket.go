@@ -6,8 +6,8 @@ package cache
 import (
 	"sync/atomic"
 
-	"blockwatch.cc/tzindex/etl/model"
 	lru "github.com/hashicorp/golang-lru/v2"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 const (

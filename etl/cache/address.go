@@ -9,8 +9,8 @@ import (
 	"sort"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzindex/etl/model"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 // a cache of on-chain addresses id->hash
@@ -53,21 +53,21 @@ func (c AddressCache) Stats() Stats {
 	return s
 }
 
-func (c *AddressCache) GetAddress(id model.AccountID) tezos.Address {
+func (c *AddressCache) GetAddress(id model.AccountID) mavryk.Address {
 	offs := int(id.U64()-1) * addrLen
 	if len(c.hashes) > offs {
 		c.stats.CountHits(1)
-		return tezos.Address(c.hashes[offs:]).Clone()
+		return mavryk.Address(c.hashes[offs:]).Clone()
 	}
 	c.stats.CountMisses(1)
-	return tezos.InvalidAddress
+	return mavryk.InvalidAddress
 }
 
 func (c *AddressCache) Build(ctx context.Context, table *pack.Table) error {
 	c.hashes = c.hashes[:0]
 	type XAccount struct {
 		RowId   model.AccountID `pack:"I"`
-		Address tezos.Address   `pack:"H"`
+		Address mavryk.Address  `pack:"H"`
 	}
 	a := XAccount{}
 	c.stats.CountUpdates(1)
@@ -102,7 +102,7 @@ func (c *AddressCache) Update(accounts map[model.AccountID]*model.Account) error
 	// collect all NEW and UPDATED addresses from this block
 	type XAccount struct {
 		RowId   model.AccountID
-		Address tezos.Address
+		Address mavryk.Address
 	}
 	ins := make([]XAccount, 0)
 	upd := make([]XAccount, 0)

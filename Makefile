@@ -2,8 +2,8 @@
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 
 PLATFORM ?= alpine
-REPO ?= github.com/mavryk-network/tzindex
-BUILD_TARGET ?= tzindex
+REPO ?= github.com/mavryk-network/mvindex
+BUILD_TARGET ?= mvindex
 BUILD_TAG ?= master
 BUILD_VERSION ?= $(shell git describe ${BUILD_TAG} --tags --always)-$(PLATFORM)
 BUILD_COMMIT ?= $(shell git rev-parse --short ${BUILD_TAG})

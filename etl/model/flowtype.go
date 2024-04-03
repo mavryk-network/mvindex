@@ -95,10 +95,10 @@ const (
 	FlowTypeUpdateConsensusKey                    // 23 - Lima+
 	FlowTypeDrain                                 // 24 - Lima+
 	FlowTypeTransferTicket                        // 25 - Jakarta+
-	FlowTypeStake                                 // 26 - Oxford+
-	FlowTypeUnstake                               // 27 - Oxford+
-	FlowTypeFinalizeUnstake                       // 28 - Oxford+
-	FlowTypeSetDelegateParameters                 // 29 - Oxford+
+	FlowTypeStake                                 // 26 - Atlas+
+	FlowTypeUnstake                               // 27 - Atlas+
+	FlowTypeFinalizeUnstake                       // 28 - Atlas+
+	FlowTypeSetDelegateParameters                 // 29 - Atlas+
 	FlowTypeInvalid               = 255
 )
 

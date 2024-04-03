@@ -11,7 +11,7 @@ const (
 	assetNs     = "asset"
 	assetSchema = `{
     "$schema": "http://json-schema.org/draft/2019-09/schema#",
-    "$id": "https://api.tzpro.io/metadata/schemas/asset.json",
+    "$id": "https://api.mvpro.io/metadata/schemas/asset.json",
     "title": "Asset Info",
     "description": "A list of asset related settings.",
     "type": "object",

@@ -12,10 +12,10 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/vec"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 func init() {
@@ -121,7 +121,7 @@ func NewAccount(ctx *server.Context, a *model.Account, args server.Options) *Acc
 		expires:          ctx.Expires,
 	}
 
-	if a.Type == tezos.AddressTypeBlinded {
+	if a.Type == mavryk.AddressTypeBlinded {
 		acc.UnclaimedBalance = p.ConvertValue(a.UnclaimedBalance)
 	}
 
@@ -229,7 +229,7 @@ func loadAccount(ctx *server.Context) *model.Account {
 	if accIdent, ok := mux.Vars(ctx.Request)["ident"]; !ok || accIdent == "" {
 		panic(server.EBadRequest(server.EC_RESOURCE_ID_MISSING, "missing account address", nil))
 	} else {
-		addr, err := tezos.ParseAddress(accIdent)
+		addr, err := mavryk.ParseAddress(accIdent)
 		if err != nil {
 			panic(server.EBadRequest(server.EC_RESOURCE_ID_MALFORMED, "invalid address", err))
 		}
@@ -237,7 +237,7 @@ func loadAccount(ctx *server.Context) *model.Account {
 		if err != nil {
 			if errors.Is(err, model.ErrNoAccount) {
 				// cross-lookup activated account from blinded address
-				if addr.Type() != tezos.AddressTypeBlinded {
+				if addr.Type() != mavryk.AddressTypeBlinded {
 					panic(server.ENotFound(server.EC_RESOURCE_NOTFOUND, "no such account", err))
 				}
 				acc, err = ctx.Indexer.FindActivatedAccount(ctx, addr)

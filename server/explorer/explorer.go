@@ -9,8 +9,8 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/mavryk-network/tzgo/tezos"
-	"github.com/mavryk-network/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 func init() {
@@ -68,16 +68,16 @@ func GetBlockchainProtocols(ctx *server.Context) (interface{}, int) {
 
 type BlockchainConfig struct {
 	// chain identity
-	Name        string             `json:"name"`
-	Network     string             `json:"network"`
-	Symbol      string             `json:"symbol"`
-	ChainId     tezos.ChainIdHash  `json:"chain_id"`
-	Deployment  int                `json:"deployment"`
-	Version     int                `json:"version"`
-	Protocol    tezos.ProtocolHash `json:"protocol"`
-	StartHeight int64              `json:"start_height"`
-	EndHeight   int64              `json:"end_height"`
-	Decimals    int                `json:"decimals"`
+	Name        string              `json:"name"`
+	Network     string              `json:"network"`
+	Symbol      string              `json:"symbol"`
+	ChainId     mavryk.ChainIdHash  `json:"chain_id"`
+	Deployment  int                 `json:"deployment"`
+	Version     int                 `json:"version"`
+	Protocol    mavryk.ProtocolHash `json:"protocol"`
+	StartHeight int64               `json:"start_height"`
+	EndHeight   int64               `json:"end_height"`
+	Decimals    int                 `json:"decimals"`
 
 	MinimalStake      float64 `json:"minimal_stake"`
 	PreservedCycles   int64   `json:"preserved_cycles"`

@@ -8,7 +8,7 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/vec"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 // caches rights for up to 6 cycles (current + future preserved_cycles)

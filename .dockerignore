@@ -3,7 +3,7 @@ docs/
 *.db
 *.log
 *backup
-tzindex
-tzalias
-tztop
+mvindex
+mvalias
+mvtop
 vendor/

@@ -222,7 +222,7 @@ func (s *Supply) Update(b *Block, bakers map[AccountID]*Baker) {
 			}
 
 		case OpTypeUnstake:
-			// oxford staking: we only count unstaked coins here,
+			// atlas staking: we only count unstaked coins here,
 			// total stake is taken from bakers below
 			if op.IsSuccess {
 				s.Unstaking += op.Deposit // op.Volume

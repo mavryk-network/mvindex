@@ -4,11 +4,12 @@
 package explorer
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
 	"time"
 
-	"blockwatch.cc/tzindex/server"
+	"github.com/gorilla/mux"
+
+	"github.com/mavryk-network/mvindex/server"
 )
 
 func init() {

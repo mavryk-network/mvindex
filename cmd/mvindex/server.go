@@ -13,12 +13,12 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/store"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/index"
-	"blockwatch.cc/tzindex/etl/metadata"
-	"blockwatch.cc/tzindex/rpc"
-	"blockwatch.cc/tzindex/server"
 	"github.com/echa/config"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/etl/index"
+	"github.com/mavryk-network/mvindex/etl/metadata"
+	"github.com/mavryk-network/mvindex/rpc"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 func runServer() error {

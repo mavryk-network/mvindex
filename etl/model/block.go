@@ -13,8 +13,8 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzindex/rpc"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 const BlockTableKey = "block"
@@ -39,52 +39,52 @@ var (
 // contains raw data and translations for related types such as operations, chain totals
 // rights, etc. that is used by indexers and reporters
 type Block struct {
-	RowId                  uint64                 `pack:"I,pk"             json:"row_id"`
-	ParentId               uint64                 `pack:"P"                json:"parent_id"`
-	Hash                   tezos.BlockHash        `pack:"H,snappy,bloom=3" json:"hash"`
-	Height                 int64                  `pack:"h,i32"            json:"height"`
-	Cycle                  int64                  `pack:"c,i16"            json:"cycle"`
-	IsCycleSnapshot        bool                   `pack:"o,snappy"         json:"is_cycle_snapshot"`
-	Timestamp              time.Time              `pack:"T"                json:"time"`
-	Solvetime              int                    `pack:"d,i16"            json:"solvetime"`
-	Version                int                    `pack:"v,i8"             json:"version"`
-	Round                  int                    `pack:"p,i8"             json:"round"`
-	Nonce                  uint64                 `pack:"n,snappy"         json:"nonce"`
-	VotingPeriodKind       tezos.VotingPeriodKind `pack:"k,u8"             json:"voting_period_kind"`
-	BakerId                AccountID              `pack:"B,u32"            json:"baker_id"`
-	ProposerId             AccountID              `pack:"X,u32"            json:"proposer_id"`
-	NSlotsEndorsed         int                    `pack:"e,i16"            json:"n_endorsed_slots"`
-	NOpsApplied            int                    `pack:"1,i16"            json:"n_ops_applied"`
-	NOpsFailed             int                    `pack:"2,i16"            json:"n_ops_failed"`
-	NContractCalls         int                    `pack:"3,i16"            json:"n_calls"`
-	NRollupCalls           int                    `pack:"6,i16"            json:"n_rollup_calls"`
-	NEvents                int                    `pack:"4,i16"            json:"n_events"`
-	NTx                    int                    `pack:"5,i16"            json:"n_tx"`
-	NTickets               int                    `pack:"7,i16"            json:"n_tickets"`
-	Volume                 int64                  `pack:"V"                json:"volume"`
-	Fee                    int64                  `pack:"F"                json:"fee"`
-	Reward                 int64                  `pack:"R"                json:"reward"`
-	Deposit                int64                  `pack:"D"                json:"deposit"`
-	ActivatedSupply        int64                  `pack:"S"                json:"activated_supply"`
-	BurnedSupply           int64                  `pack:"b"                json:"burned_supply"`
-	MintedSupply           int64                  `pack:"m"                json:"minted_supply"`
-	SeenAccounts           int                    `pack:"a,i16"            json:"n_accounts"`
-	NewAccounts            int                    `pack:"A,i16"            json:"n_new_accounts"`
-	NewContracts           int                    `pack:"C,i16"            json:"n_new_contracts"`
-	ClearedAccounts        int                    `pack:"E,i16"            json:"n_cleared_accounts"`
-	FundedAccounts         int                    `pack:"J,i16"            json:"n_funded_accounts"`
-	GasLimit               int64                  `pack:"L,i32"            json:"gas_limit"`
-	GasUsed                int64                  `pack:"G,i32"            json:"gas_used"`
-	StoragePaid            int64                  `pack:"Y,i32"            json:"storage_paid"`
-	LbVote                 tezos.FeatureVote      `pack:"O,snappy"         json:"lb_vote"`
-	LbEma                  int64                  `pack:"M,i32"            json:"lb_ema"`
-	AiVote                 tezos.FeatureVote      `pack:"z,snappy"         json:"ai_vote"`
-	AiEma                  int64                  `pack:"i,i32"            json:"ai_ema"`
-	ProposerConsensusKeyId AccountID              `pack:"x"                json:"proposer_consensus_key_id"`
-	BakerConsensusKeyId    AccountID              `pack:"y"                json:"baker_consensus_key_id"`
+	RowId                  uint64                  `pack:"I,pk"             json:"row_id"`
+	ParentId               uint64                  `pack:"P"                json:"parent_id"`
+	Hash                   mavryk.BlockHash        `pack:"H,snappy,bloom=3" json:"hash"`
+	Height                 int64                   `pack:"h,i32"            json:"height"`
+	Cycle                  int64                   `pack:"c,i16"            json:"cycle"`
+	IsCycleSnapshot        bool                    `pack:"o,snappy"         json:"is_cycle_snapshot"`
+	Timestamp              time.Time               `pack:"T"                json:"time"`
+	Solvetime              int                     `pack:"d,i16"            json:"solvetime"`
+	Version                int                     `pack:"v,i8"             json:"version"`
+	Round                  int                     `pack:"p,i8"             json:"round"`
+	Nonce                  uint64                  `pack:"n,snappy"         json:"nonce"`
+	VotingPeriodKind       mavryk.VotingPeriodKind `pack:"k,u8"             json:"voting_period_kind"`
+	BakerId                AccountID               `pack:"B,u32"            json:"baker_id"`
+	ProposerId             AccountID               `pack:"X,u32"            json:"proposer_id"`
+	NSlotsEndorsed         int                     `pack:"e,i16"            json:"n_endorsed_slots"`
+	NOpsApplied            int                     `pack:"1,i16"            json:"n_ops_applied"`
+	NOpsFailed             int                     `pack:"2,i16"            json:"n_ops_failed"`
+	NContractCalls         int                     `pack:"3,i16"            json:"n_calls"`
+	NRollupCalls           int                     `pack:"6,i16"            json:"n_rollup_calls"`
+	NEvents                int                     `pack:"4,i16"            json:"n_events"`
+	NTx                    int                     `pack:"5,i16"            json:"n_tx"`
+	NTickets               int                     `pack:"7,i16"            json:"n_tickets"`
+	Volume                 int64                   `pack:"V"                json:"volume"`
+	Fee                    int64                   `pack:"F"                json:"fee"`
+	Reward                 int64                   `pack:"R"                json:"reward"`
+	Deposit                int64                   `pack:"D"                json:"deposit"`
+	ActivatedSupply        int64                   `pack:"S"                json:"activated_supply"`
+	BurnedSupply           int64                   `pack:"b"                json:"burned_supply"`
+	MintedSupply           int64                   `pack:"m"                json:"minted_supply"`
+	SeenAccounts           int                     `pack:"a,i16"            json:"n_accounts"`
+	NewAccounts            int                     `pack:"A,i16"            json:"n_new_accounts"`
+	NewContracts           int                     `pack:"C,i16"            json:"n_new_contracts"`
+	ClearedAccounts        int                     `pack:"E,i16"            json:"n_cleared_accounts"`
+	FundedAccounts         int                     `pack:"J,i16"            json:"n_funded_accounts"`
+	GasLimit               int64                   `pack:"L,i32"            json:"gas_limit"`
+	GasUsed                int64                   `pack:"G,i32"            json:"gas_used"`
+	StoragePaid            int64                   `pack:"Y,i32"            json:"storage_paid"`
+	LbVote                 mavryk.FeatureVote      `pack:"O,snappy"         json:"lb_vote"`
+	LbEma                  int64                   `pack:"M,i32"            json:"lb_ema"`
+	AiVote                 mavryk.FeatureVote      `pack:"z,snappy"         json:"ai_vote"`
+	AiEma                  int64                   `pack:"i,i32"            json:"ai_ema"`
+	ProposerConsensusKeyId AccountID               `pack:"x"                json:"proposer_consensus_key_id"`
+	BakerConsensusKeyId    AccountID               `pack:"y"                json:"baker_consensus_key_id"`
 
 	// other tz or extracted/translated data for processing
-	TZ               *rpc.Bundle `pack:"-" json:"-"`
+	MV               *rpc.Bundle `pack:"-" json:"-"`
 	Params           *rpc.Params `pack:"-" json:"-"`
 	Chain            *Chain      `pack:"-" json:"-"`
 	Supply           *Supply     `pack:"-" json:"-"`
@@ -161,7 +161,7 @@ func NewBlock(tz *rpc.Bundle, parent *Block) (*Block, error) {
 		return nil, fmt.Errorf("block init: missing rpc block")
 	}
 
-	b.TZ = tz
+	b.MV = tz
 	b.Params = tz.Params
 	b.Chain = &Chain{}
 	b.Supply = &Supply{}
@@ -200,7 +200,7 @@ func NewBlock(tz *rpc.Bundle, parent *Block) (*Block, error) {
 		if parent != nil {
 			b.VotingPeriodKind = parent.VotingPeriodKind
 		} else {
-			b.VotingPeriodKind = tezos.VotingPeriodProposal
+			b.VotingPeriodKind = mavryk.VotingPeriodProposal
 		}
 	}
 
@@ -222,7 +222,7 @@ func NewBlock(tz *rpc.Bundle, parent *Block) (*Block, error) {
 
 func (b Block) Clone() *Block {
 	clone := b
-	clone.TZ = nil
+	clone.MV = nil
 	clone.Params = nil
 	clone.Chain = nil
 	clone.Supply = nil
@@ -243,22 +243,22 @@ func (b *Block) FetchRPC(ctx context.Context, c *rpc.Client) error {
 	if !b.Hash.IsValid() {
 		return fmt.Errorf("invalid hash for block id %d", b.RowId)
 	}
-	if b.TZ != nil {
+	if b.MV != nil {
 		return nil
 	}
 	bundle, err := c.GetLightBundle(ctx, b.Hash, b.Params)
 	if err != nil {
 		return err
 	}
-	b.TZ = bundle
+	b.MV = bundle
 	return nil
 }
 
 func (b *Block) IsProtocolUpgrade() bool {
-	if b.Parent == nil || b.Parent.TZ == nil || b.TZ == nil {
+	if b.Parent == nil || b.Parent.MV == nil || b.MV == nil {
 		return false
 	}
-	return b.Parent.TZ.Protocol() != b.TZ.Protocol()
+	return b.Parent.MV.Protocol() != b.MV.Protocol()
 }
 
 func (b *Block) GetOpId(opn, opc, opi int) (OpID, bool) {
@@ -308,13 +308,13 @@ func (b *Block) Clean() {
 		}
 		b.Flows = b.Flows[:0]
 	}
-	if b.TZ != nil {
-		b.TZ.Baking = b.TZ.Baking[:0]
-		b.TZ.Endorsing = b.TZ.Endorsing[:0]
-		b.TZ.Block.Operations[0] = b.TZ.Block.Operations[0][:0]
-		b.TZ.Block.Operations[1] = b.TZ.Block.Operations[1][:0]
-		b.TZ.Block.Operations[2] = b.TZ.Block.Operations[2][:0]
-		b.TZ.Block.Operations[3] = b.TZ.Block.Operations[3][:0]
+	if b.MV != nil {
+		b.MV.Baking = b.MV.Baking[:0]
+		b.MV.Endorsing = b.MV.Endorsing[:0]
+		b.MV.Block.Operations[0] = b.MV.Block.Operations[0][:0]
+		b.MV.Block.Operations[1] = b.MV.Block.Operations[1][:0]
+		b.MV.Block.Operations[2] = b.MV.Block.Operations[2][:0]
+		b.MV.Block.Operations[3] = b.MV.Block.Operations[3][:0]
 	}
 	b.OfflineEndorsers = nil
 }

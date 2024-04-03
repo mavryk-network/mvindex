@@ -15,18 +15,18 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mavryk-network/mvgo/mavryk"
 	"github.com/qri-io/jsonschema"
 
 	"github.com/echa/config"
 	"github.com/echa/log"
-	"github.com/mavryk-network/tzgo/tezos"
-	"github.com/mavryk-network/tzindex/etl/metadata"
-	"github.com/mavryk-network/tzpro-go/tzpro"
-	"github.com/mavryk-network/tzpro-go/tzpro/index"
+	"github.com/mavryk-network/mvindex/etl/metadata"
+	"github.com/mavryk-network/mvpro-go/mvpro"
+	"github.com/mavryk-network/mvpro-go/mvpro/index"
 )
 
 var (
-	flags    = flag.NewFlagSet("tzalias", flag.ContinueOnError)
+	flags    = flag.NewFlagSet("mvalias", flag.ContinueOnError)
 	verbose  bool
 	sorted   bool
 	nobackup bool
@@ -35,7 +35,7 @@ var (
 	apiurl   string
 )
 
-const defaultFilePrefix = "tzalias-export"
+const defaultFilePrefix = "mvalias-export"
 
 func init() {
 	flags.Usage = func() {}
@@ -50,7 +50,7 @@ func init() {
 func main() {
 	if err := flags.Parse(os.Args[1:]); err != nil {
 		if err == flag.ErrHelp {
-			fmt.Println("Usage: tzalias <cmd> [address[_token_id]] [fields] [<file>]")
+			fmt.Println("Usage: mvalias <cmd> [address[_token_id]] [fields] [<file>]")
 			flags.PrintDefaults()
 			fmt.Println("\nCommands")
 			fmt.Printf("  export          download and save metadata to `file`\n")
@@ -99,7 +99,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	config.SetEnvPrefix("TZALIAS")
+	config.SetEnvPrefix("MVALIAS")
 	realconf := config.ConfigName()
 	if _, err := os.Stat(realconf); err == nil {
 		if err := config.ReadConfigFile(); err != nil {
@@ -116,7 +116,7 @@ func main() {
 	}
 
 	if err := run(); err != nil {
-		if e, ok := tzpro.IsErrApi(err); ok {
+		if e, ok := mvpro.IsErrApi(err); ok {
 			log.Errorf("%s: %s", e.Message, e.Detail)
 		} else {
 			log.Error(err)
@@ -134,7 +134,7 @@ func run() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	client := tzpro.NewClient(apiurl, nil).WithLogger(log.Log)
+	client := mvpro.NewClient(apiurl, nil).WithLogger(log.Log)
 
 	switch cmd {
 	case "export":
@@ -213,7 +213,7 @@ func readFile(fname string) (map[string]index.Metadata, error) {
 			return nil, fmt.Errorf("%s:L%d key: %v", fname, line, err)
 		}
 		key = tok.(string)
-		_, err = tezos.ParseAddress(key)
+		_, err = mavryk.ParseAddress(key)
 		if err != nil {
 			return nil, fmt.Errorf("%s:L%d: %q: %v", fname, line, key, err)
 		}
@@ -227,7 +227,7 @@ func readFile(fname string) (map[string]index.Metadata, error) {
 	return content, nil
 }
 
-func exportAliases(ctx context.Context, c *tzpro.Client) error {
+func exportAliases(ctx context.Context, c *mvpro.Client) error {
 	fname := makeFilename()
 	aliases, err := c.Metadata.List(ctx)
 	if err != nil {
@@ -260,15 +260,15 @@ func exportAliases(ctx context.Context, c *tzpro.Client) error {
 	return nil
 }
 
-func parseAddressAndTokend(n string) (addr tezos.Address, id *tezos.Z, err error) {
+func parseAddressAndTokend(n string) (addr mavryk.Address, id *mavryk.Z, err error) {
 	a, i, ok := strings.Cut(n, "_")
-	addr, err = tezos.ParseAddress(a)
+	addr, err = mavryk.ParseAddress(a)
 	if err != nil {
 		err = fmt.Errorf("%s: %v", n, err)
 		return
 	}
 	if ok {
-		z, e := tezos.ParseZ(i)
+		z, e := mavryk.ParseZ(i)
 		if e != nil {
 			err = fmt.Errorf("%s: %v", n, e)
 			return
@@ -278,7 +278,7 @@ func parseAddressAndTokend(n string) (addr tezos.Address, id *tezos.Z, err error
 	return
 }
 
-func importAliases(ctx context.Context, c *tzpro.Client) error {
+func importAliases(ctx context.Context, c *mvpro.Client) error {
 	if flags.NArg() < 2 {
 		return fmt.Errorf("missing filename")
 	}
@@ -321,7 +321,7 @@ func importAliases(ctx context.Context, c *tzpro.Client) error {
 	return nil
 }
 
-func purgeAliases(ctx context.Context, c *tzpro.Client) error {
+func purgeAliases(ctx context.Context, c *mvpro.Client) error {
 	if !nobackup {
 		log.Debugf("Creating backup")
 		if err := exportAliases(ctx, c); err != nil {
@@ -335,7 +335,7 @@ func purgeAliases(ctx context.Context, c *tzpro.Client) error {
 	return nil
 }
 
-func inspectAlias(ctx context.Context, c *tzpro.Client) error {
+func inspectAlias(ctx context.Context, c *mvpro.Client) error {
 	addr, id, err := parseAddressAndTokend(flags.Arg(1))
 	if err != nil {
 		return err
@@ -344,7 +344,7 @@ func inspectAlias(ctx context.Context, c *tzpro.Client) error {
 	if id == nil {
 		alias, err = c.Metadata.GetWallet(ctx, addr)
 	} else {
-		alias, err = c.Metadata.GetAsset(ctx, tezos.NewToken(addr, *id))
+		alias, err = c.Metadata.GetAsset(ctx, mavryk.NewToken(addr, *id))
 	}
 	if err != nil {
 		return fmt.Errorf("%s_%s: %v", addr, id, err)
@@ -353,7 +353,7 @@ func inspectAlias(ctx context.Context, c *tzpro.Client) error {
 	return nil
 }
 
-func addAlias(ctx context.Context, c *tzpro.Client) error {
+func addAlias(ctx context.Context, c *mvpro.Client) error {
 	if flags.NArg() < 2 {
 		return fmt.Errorf("missing arguments")
 	}
@@ -372,7 +372,7 @@ func addAlias(ctx context.Context, c *tzpro.Client) error {
 	if id == nil {
 		alias, _ = c.Metadata.GetWallet(ctx, addr)
 	} else {
-		alias, _ = c.Metadata.GetAsset(ctx, tezos.NewToken(addr, *id))
+		alias, _ = c.Metadata.GetAsset(ctx, mavryk.NewToken(addr, *id))
 	}
 
 	// always set identifier
@@ -391,7 +391,7 @@ func addAlias(ctx context.Context, c *tzpro.Client) error {
 	return nil
 }
 
-func updateAlias(ctx context.Context, c *tzpro.Client) error {
+func updateAlias(ctx context.Context, c *mvpro.Client) error {
 	if flags.NArg() < 2 {
 		return fmt.Errorf("missing arguments")
 	}
@@ -403,7 +403,7 @@ func updateAlias(ctx context.Context, c *tzpro.Client) error {
 	if id == nil {
 		alias, err = c.Metadata.GetWallet(ctx, addr)
 	} else {
-		alias, err = c.Metadata.GetAsset(ctx, tezos.NewToken(addr, *id))
+		alias, err = c.Metadata.GetAsset(ctx, mavryk.NewToken(addr, *id))
 	}
 	if err != nil {
 		return fmt.Errorf("%s_%s: %v", addr, id, err)
@@ -430,7 +430,7 @@ func updateAlias(ctx context.Context, c *tzpro.Client) error {
 	return nil
 }
 
-func removeAlias(ctx context.Context, c *tzpro.Client) error {
+func removeAlias(ctx context.Context, c *mvpro.Client) error {
 	if flags.NArg() < 2 {
 		return fmt.Errorf("missing arguments")
 	}
@@ -447,7 +447,7 @@ func removeAlias(ctx context.Context, c *tzpro.Client) error {
 	if id == nil {
 		err = c.Metadata.RemoveWallet(ctx, addr)
 	} else {
-		err = c.Metadata.RemoveAsset(ctx, tezos.NewToken(addr, *id))
+		err = c.Metadata.RemoveAsset(ctx, mavryk.NewToken(addr, *id))
 	}
 	if err != nil {
 		return err
@@ -491,7 +491,7 @@ func (s SortedAliases) MarshalJSON() ([]byte, error) {
 	return buf, nil
 }
 
-func validateAliases(ctx context.Context, c *tzpro.Client) error {
+func validateAliases(ctx context.Context, c *mvpro.Client) error {
 	if flags.NArg() < 2 {
 		return fmt.Errorf("missing filename")
 	}

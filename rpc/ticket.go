@@ -5,14 +5,14 @@ package rpc
 
 import (
 	"github.com/cespare/xxhash/v2"
-	m "github.com/mavryk-network/tzgo/micheline"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	m "github.com/mavryk-network/mvgo/micheline"
 )
 
 type Ticket struct {
-	Ticketer tezos.Address `json:"ticketer"`
-	Type     m.Prim        `json:"content_type"`
-	Content  m.Prim        `json:"content"`
+	Ticketer mavryk.Address `json:"ticketer"`
+	Type     m.Prim         `json:"content_type"`
+	Content  m.Prim         `json:"content"`
 }
 
 func (t Ticket) Hash64() uint64 {
@@ -25,8 +25,8 @@ func (t Ticket) Hash64() uint64 {
 }
 
 type TicketBalanceUpdate struct {
-	Account tezos.Address `json:"account"`
-	Amount  tezos.Z       `json:"amount"`
+	Account mavryk.Address `json:"account"`
+	Amount  mavryk.Z       `json:"amount"`
 }
 
 type TicketUpdate struct {

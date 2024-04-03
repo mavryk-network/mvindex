@@ -8,10 +8,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
-	"github.com/mavryk-network/tzgo/micheline"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 func (b *Builder) AppendSmartRollupOriginationOp(ctx context.Context, oh *rpc.Operation, id model.OpRef, rollback bool) error {
@@ -319,7 +319,7 @@ func (b *Builder) AppendSmartRollupTransactionOp(ctx context.Context, oh *rpc.Op
 	b.block.Ops = append(b.block.Ops, op)
 
 	op.Data = o.Kind().String()
-	op.Entrypoint = int(o.Kind()) - int(tezos.OpTypeSmartRollupOriginate)
+	op.Entrypoint = int(o.Kind()) - int(mavryk.OpTypeSmartRollupOriginate)
 	if loser != nil {
 		op.CreatorId = loser.RowId
 	}
@@ -425,7 +425,7 @@ func (b *Builder) AppendSmartRollupTransactionOp(ctx context.Context, oh *rpc.Op
 	// apply internal operation result (may generate new op and flows)
 	for i, v := range ires {
 		// skip events, they are processed in event index
-		if v.Kind == tezos.OpTypeEvent {
+		if v.Kind == mavryk.OpTypeEvent {
 			continue
 		}
 		id.I = i

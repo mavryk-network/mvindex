@@ -16,9 +16,9 @@ import (
 	"blockwatch.cc/packdb/encoding/csv"
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -172,7 +172,7 @@ func StreamBigmapValueTable(ctx *server.Context, args *TableRequest) (interface{
 	}
 
 	// prepare lookup caches
-	// accMap := make(map[model.AccountID]tezos.Address)
+	// accMap := make(map[model.AccountID]mavryk.Address)
 	bigmapIds := make([]int64, 0)
 
 	// pre-parse bigmap ids required for hash lookups
@@ -260,7 +260,7 @@ func StreamBigmapValueTable(ctx *server.Context, args *TableRequest) (interface{
 			switch mode {
 			case pack.FilterModeEqual, pack.FilterModeNotEqual:
 				// single-hash
-				h, err := tezos.ParseExprHash(val[0])
+				h, err := mavryk.ParseExprHash(val[0])
 				if err != nil {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid key hash '%s'", val[0]), err))
 				}
@@ -282,9 +282,9 @@ func StreamBigmapValueTable(ctx *server.Context, args *TableRequest) (interface{
 				}
 			case pack.FilterModeIn, pack.FilterModeNotIn:
 				// multi-hash lookup
-				hashes := make([]tezos.ExprHash, 0)
+				hashes := make([]mavryk.ExprHash, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					h, err := tezos.ParseExprHash(v)
+					h, err := mavryk.ParseExprHash(v)
 					if err != nil {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid key hash '%s'", v), err))
 					}

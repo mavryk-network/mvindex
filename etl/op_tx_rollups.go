@@ -8,9 +8,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 func (b *Builder) AppendTxRollupOriginationOp(ctx context.Context, oh *rpc.Operation, id model.OpRef, rollback bool) error {
@@ -180,7 +180,7 @@ func (b *Builder) AppendTxRollupTransactionOp(ctx context.Context, oh *rpc.Opera
 	}
 
 	// rejection can slash offender (who we only find inside the result's balance update)
-	if tx.Kind() == tezos.OpTypeTxRollupRejection && res.Status.IsSuccess() {
+	if tx.Kind() == mavryk.OpTypeTxRollupRejection && res.Status.IsSuccess() {
 		addr := res.Balances()[0].Address()
 		offender, ok = b.AccountByAddress(addr)
 		if !ok {
@@ -212,7 +212,7 @@ func (b *Builder) AppendTxRollupTransactionOp(ctx context.Context, oh *rpc.Opera
 	if dCon.Address.IsRollup() {
 		// receiver is rollup
 		op.Data = tx.Kind().String()
-		op.Entrypoint = int(tx.Kind()) - int(tezos.OpTypeTxRollupOrigination)
+		op.Entrypoint = int(tx.Kind()) - int(mavryk.OpTypeTxRollupOrigination)
 		if offender != nil {
 			op.CreatorId = offender.RowId
 		}

@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
 )
 
 const (
@@ -37,7 +37,7 @@ func (i TokenID) U64() uint64 {
 type Token struct {
 	Id           TokenID   `pack:"I,pk"      json:"row_id"`
 	Ledger       AccountID `pack:"l,bloom=3" json:"ledger"`
-	TokenId      tezos.Z   `pack:"i,snappy"  json:"token_id"`
+	TokenId      mavryk.Z  `pack:"i,snappy"  json:"token_id"`
 	TokenId64    int64     `pack:"6"         json:"token_id64"`
 	Creator      AccountID `pack:"C"         json:"creator"`
 	Type         TokenType `pack:"Y"         json:"type"`
@@ -45,9 +45,9 @@ type Token struct {
 	FirstTime    time.Time `pack:"T"         json:"first_time"`
 	LastBlock    int64     `pack:">"         json:"last_block"`
 	LastTime     time.Time `pack:"t"         json:"last_time"`
-	Supply       tezos.Z   `pack:"S,snappy"  json:"total_supply"`
-	TotalMint    tezos.Z   `pack:"m,snappy"  json:"total_mint"`
-	TotalBurn    tezos.Z   `pack:"b,snappy"  json:"total_burn"`
+	Supply       mavryk.Z  `pack:"S,snappy"  json:"total_supply"`
+	TotalMint    mavryk.Z  `pack:"m,snappy"  json:"total_mint"`
+	TotalBurn    mavryk.Z  `pack:"b,snappy"  json:"total_burn"`
 	NumTransfers int       `pack:"x,i32"     json:"num_transfers"`
 	NumHolders   int       `pack:"y,i32"     json:"num_holders"`
 }
@@ -93,7 +93,7 @@ func (m Token) IndexOpts(key string) pack.Options {
 	return pack.NoOptions
 }
 
-func GetToken(ctx context.Context, t *pack.Table, ledger *Contract, id tezos.Z) (*Token, error) {
+func GetToken(ctx context.Context, t *pack.Table, ledger *Contract, id mavryk.Z) (*Token, error) {
 	tk := NewToken()
 	err := pack.NewQuery("find_token").
 		WithTable(t).
@@ -112,7 +112,7 @@ func GetToken(ctx context.Context, t *pack.Table, ledger *Contract, id tezos.Z) 
 	return tk, nil
 }
 
-func GetOrCreateToken(ctx context.Context, t *pack.Table, ledger *Contract, signer *Account, id tezos.Z, height int64, tm time.Time) (*Token, error) {
+func GetOrCreateToken(ctx context.Context, t *pack.Table, ledger *Contract, signer *Account, id mavryk.Z, height int64, tm time.Time) (*Token, error) {
 	tk := NewToken()
 	err := pack.NewQuery("find_token").
 		WithTable(t).
@@ -247,10 +247,10 @@ func (t TokenType) DecodeTransfers(prim micheline.Prim) ([]TokenTransfer, error)
 }
 
 type TokenTransfer struct {
-	From    tezos.Address
-	To      tezos.Address
-	TokenId tezos.Z
-	Amount  tezos.Z
+	From    mavryk.Address
+	To      mavryk.Address
+	TokenId mavryk.Z
+	Amount  mavryk.Z
 }
 
 func (t TokenTransfer) IsValid() bool {
@@ -312,9 +312,9 @@ var (
 
 func (t *FA1Transfer) unmarshalRightPair(prim micheline.Prim) error {
 	var xfer struct {
-		From   tezos.Address `prim:"from,path=0"`
-		To     tezos.Address `prim:"to,path=1/0"`
-		Amount tezos.Z       `prim:"value,path=1/1"`
+		From   mavryk.Address `prim:"from,path=0"`
+		To     mavryk.Address `prim:"to,path=1/0"`
+		Amount mavryk.Z       `prim:"value,path=1/1"`
 	}
 	err := prim.Decode(&xfer)
 	if err == nil {
@@ -332,9 +332,9 @@ func (t *FA1Transfer) unmarshalRightPair(prim micheline.Prim) error {
 // very unusual, but seems to ge legit
 func (t *FA1Transfer) unmarshalLeftPair(prim micheline.Prim) error {
 	var xfer struct {
-		From   tezos.Address `prim:"from,path=0/0"`
-		To     tezos.Address `prim:"to,path=0/1"`
-		Amount tezos.Z       `prim:"value,path=1"`
+		From   mavryk.Address `prim:"from,path=0/0"`
+		To     mavryk.Address `prim:"to,path=0/1"`
+		Amount mavryk.Z       `prim:"value,path=1"`
 	}
 	err := prim.Decode(&xfer)
 	if err == nil {
@@ -351,9 +351,9 @@ func (t *FA1Transfer) unmarshalLeftPair(prim micheline.Prim) error {
 
 func (t *FA1Transfer) unmarshalList(prim micheline.Prim) error {
 	var xfer struct {
-		From   tezos.Address `prim:"from,path=0"`
-		To     tezos.Address `prim:"to,path=1"`
-		Amount tezos.Z       `prim:"value,path=2"`
+		From   mavryk.Address `prim:"from,path=0"`
+		To     mavryk.Address `prim:"to,path=1"`
+		Amount mavryk.Z       `prim:"value,path=2"`
 	}
 	err := prim.Decode(&xfer)
 	if err == nil {
@@ -391,11 +391,11 @@ func (t *FA2Transfer) UnmarshalPrim(prim micheline.Prim) error {
 func (t *FA2Transfer) unmarshalNestedPrim(prim micheline.Prim) error {
 	var xfer struct {
 		Transfers []struct {
-			From tezos.Address `prim:"from_,path=0"`
+			From mavryk.Address `prim:"from_,path=0"`
 			Txs  []struct {
-				To      tezos.Address `prim:"to_,path=0"`
-				TokenId tezos.Z       `prim:"token_id,path=1/0"`
-				Amount  tezos.Z       `prim:"amount,path=1/1"`
+				To      mavryk.Address `prim:"to_,path=0"`
+				TokenId mavryk.Z       `prim:"token_id,path=1/0"`
+				Amount  mavryk.Z       `prim:"amount,path=1/1"`
 			} `prim:"txs,path=1"`
 		} `prim:"transfer"`
 	}
@@ -420,11 +420,11 @@ func (t *FA2Transfer) unmarshalNestedPrim(prim micheline.Prim) error {
 func (t *FA2Transfer) unmarshalListPrim(prim micheline.Prim) error {
 	var xfer struct {
 		Transfers []struct {
-			From tezos.Address `prim:"from_,path=0"`
+			From mavryk.Address `prim:"from_,path=0"`
 			Txs  []struct {
-				To      tezos.Address `prim:"to_,path=0"`
-				TokenId tezos.Z       `prim:"token_id,path=1"`
-				Amount  tezos.Z       `prim:"amount,path=2"`
+				To      mavryk.Address `prim:"to_,path=0"`
+				TokenId mavryk.Z       `prim:"token_id,path=1"`
+				Amount  mavryk.Z       `prim:"amount,path=2"`
 			} `prim:"txs,path=1"`
 		} `prim:"transfer"`
 	}

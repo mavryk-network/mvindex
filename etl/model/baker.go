@@ -9,8 +9,8 @@ import (
 	"fmt"
 
 	"blockwatch.cc/packdb/pack"
-	"github.com/mavryk-network/tzgo/tezos"
-	"github.com/mavryk-network/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 const BakerTableKey = "baker"
@@ -27,47 +27,47 @@ func (id BakerID) U64() uint64 {
 // For history look at Op and Flow (balance updates), for generic info look
 // at Account.
 type Baker struct {
-	RowId               BakerID       `pack:"I,pk"      json:"row_id"`
-	AccountId           AccountID     `pack:"A,u32"     json:"account_id"`
-	Address             tezos.Address `pack:"H,bloom=3" json:"address"`
-	ConsensusKey        tezos.Key     `pack:"K"         json:"consensus_key"`
-	IsActive            bool          `pack:"v,snappy"  json:"is_active"`
-	BakerSince          int64         `pack:"*,i32"     json:"baker_since"`
-	BakerUntil          int64         `pack:"/,i32"     json:"baker_until"`
-	TotalRewardsEarned  int64         `pack:"W"         json:"total_rewards_earned"`
-	TotalFeesEarned     int64         `pack:"E"         json:"total_fees_earned"`
-	TotalLost           int64         `pack:"L"         json:"total_lost"`
-	FrozenDeposits      int64         `pack:"z"         json:"frozen_deposits"`
-	FrozenRewards       int64         `pack:"Z"         json:"frozen_rewards"`
-	FrozenFees          int64         `pack:"Y"         json:"frozen_fees"`
-	DelegatedBalance    int64         `pack:"~"         json:"delegated_balance"`
-	TotalStake          int64         `pack:"g"         json:"total_stake"`
-	TotalShares         int64         `pack:"h"         json:"total_shares"`
-	ActiveStakers       int64         `pack:"j"         json:"active_stakers"`
-	StakingEdge         int64         `pack:"k"         json:"staking_edge"`
-	StakingLimit        int64         `pack:"l"         json:"staking_limit"`
-	DepositsLimit       int64         `pack:"T"         json:"deposit_limit"`
-	ActiveDelegations   int64         `pack:"a,i32"     json:"active_delegations"`
-	BlocksBaked         int64         `pack:"b,i32"     json:"blocks_baked"`
-	BlocksProposed      int64         `pack:"P,i32"     json:"blocks_proposed"`
-	BlocksNotBaked      int64         `pack:"N,i32"     json:"blocks_not_baked"`
-	BlocksEndorsed      int64         `pack:"x,i32"     json:"blocks_endorsed"`
-	BlocksNotEndorsed   int64         `pack:"y,i32"     json:"blocks_not_endorsed"`
-	SlotsEndorsed       int64         `pack:"e"         json:"slots_endorsed"`
-	NBakerOps           int64         `pack:"1,i32"     json:"n_baker_ops"`
-	NProposal           int64         `pack:"2,i32"     json:"n_proposals"`
-	NBallot             int64         `pack:"3,i32"     json:"n_ballots"`
-	NEndorsement        int64         `pack:"4,i32"     json:"n_endorsements"`
-	NPreendorsement     int64         `pack:"5,i32"     json:"n_preendorsements"`
-	NSeedNonce          int64         `pack:"6,i32"     json:"n_nonce_revelations"`
-	N2Baking            int64         `pack:"7,i32"     json:"n_double_bakings"`
-	N2Endorsement       int64         `pack:"8,i32"     json:"n_double_endorsements"`
-	NSetDepositsLimit   int64         `pack:"9,i32"     json:"n_set_limits"`
-	NAccusations        int64         `pack:"0,i32"     json:"n_accusations"`
-	NUpdateConsensusKey int64         `pack:"!,i32"     json:"n_update_consensus_key"`
-	NDrainDelegate      int64         `pack:"=,i32"     json:"n_drain_delegate"`
-	GracePeriod         int64         `pack:"G,i32"     json:"grace_period"`
-	Version             uint32        `pack:"V,snappy"  json:"baker_version"`
+	RowId               BakerID        `pack:"I,pk"      json:"row_id"`
+	AccountId           AccountID      `pack:"A,u32"     json:"account_id"`
+	Address             mavryk.Address `pack:"H,bloom=3" json:"address"`
+	ConsensusKey        mavryk.Key     `pack:"K"         json:"consensus_key"`
+	IsActive            bool           `pack:"v,snappy"  json:"is_active"`
+	BakerSince          int64          `pack:"*,i32"     json:"baker_since"`
+	BakerUntil          int64          `pack:"/,i32"     json:"baker_until"`
+	TotalRewardsEarned  int64          `pack:"W"         json:"total_rewards_earned"`
+	TotalFeesEarned     int64          `pack:"E"         json:"total_fees_earned"`
+	TotalLost           int64          `pack:"L"         json:"total_lost"`
+	FrozenDeposits      int64          `pack:"z"         json:"frozen_deposits"`
+	FrozenRewards       int64          `pack:"Z"         json:"frozen_rewards"`
+	FrozenFees          int64          `pack:"Y"         json:"frozen_fees"`
+	DelegatedBalance    int64          `pack:"~"         json:"delegated_balance"`
+	TotalStake          int64          `pack:"g"         json:"total_stake"`
+	TotalShares         int64          `pack:"h"         json:"total_shares"`
+	ActiveStakers       int64          `pack:"j"         json:"active_stakers"`
+	StakingEdge         int64          `pack:"k"         json:"staking_edge"`
+	StakingLimit        int64          `pack:"l"         json:"staking_limit"`
+	DepositsLimit       int64          `pack:"T"         json:"deposit_limit"`
+	ActiveDelegations   int64          `pack:"a,i32"     json:"active_delegations"`
+	BlocksBaked         int64          `pack:"b,i32"     json:"blocks_baked"`
+	BlocksProposed      int64          `pack:"P,i32"     json:"blocks_proposed"`
+	BlocksNotBaked      int64          `pack:"N,i32"     json:"blocks_not_baked"`
+	BlocksEndorsed      int64          `pack:"x,i32"     json:"blocks_endorsed"`
+	BlocksNotEndorsed   int64          `pack:"y,i32"     json:"blocks_not_endorsed"`
+	SlotsEndorsed       int64          `pack:"e"         json:"slots_endorsed"`
+	NBakerOps           int64          `pack:"1,i32"     json:"n_baker_ops"`
+	NProposal           int64          `pack:"2,i32"     json:"n_proposals"`
+	NBallot             int64          `pack:"3,i32"     json:"n_ballots"`
+	NEndorsement        int64          `pack:"4,i32"     json:"n_endorsements"`
+	NPreendorsement     int64          `pack:"5,i32"     json:"n_preendorsements"`
+	NSeedNonce          int64          `pack:"6,i32"     json:"n_nonce_revelations"`
+	N2Baking            int64          `pack:"7,i32"     json:"n_double_bakings"`
+	N2Endorsement       int64          `pack:"8,i32"     json:"n_double_endorsements"`
+	NSetDepositsLimit   int64          `pack:"9,i32"     json:"n_set_limits"`
+	NAccusations        int64          `pack:"0,i32"     json:"n_accusations"`
+	NUpdateConsensusKey int64          `pack:"!,i32"     json:"n_update_consensus_key"`
+	NDrainDelegate      int64          `pack:"=,i32"     json:"n_drain_delegate"`
+	GracePeriod         int64          `pack:"G,i32"     json:"grace_period"`
+	Version             uint32         `pack:"V,snappy"  json:"baker_version"`
 
 	Account     *Account `pack:"-" json:"-"` // related account
 	Reliability int64    `pack:"-" json:"-"` // current cycle reliability from rights
@@ -136,17 +136,17 @@ func (b Baker) TotalBalance() int64 {
 
 // own balance plus frozen deposits+fees (NOT REWARDS!) plus
 // all delegated balances (this is self-delegation safe)
-// post oxford this is equal to TotalStake + SpendableBalance + DelegatedBalance
+// post atlas this is equal to TotalStake + SpendableBalance + DelegatedBalance
 func (b Baker) StakingBalance() int64 {
 	return b.Account.Balance() + // spendable + frozen rollup bond + unstaked balance
-		b.FrozenDeposits + b.FrozenFees + // pre-Oxford
-		b.DelegatedBalance + // pre/post Oxford
-		b.TotalStake // post-Oxford
+		b.FrozenDeposits + b.FrozenFees + // pre-Atlas
+		b.DelegatedBalance + // pre/post Atlas
+		b.TotalStake // post-Atlas
 }
 
 // BakingPower calculates how much of the baker's stake (deposits and delegated)
 // is used to derive consensus rights. There are subtle differences between
-// versions. Post Oxford this is influenced by global and local limits.
+// versions. Post Atlas this is influenced by global and local limits.
 func (b Baker) BakingPower(p *rpc.Params, adjust int64) int64 {
 	switch {
 	case p.Version < 12:
@@ -154,7 +154,7 @@ func (b Baker) BakingPower(p *rpc.Params, adjust int64) int64 {
 	case p.Version < 18:
 		return b.BakingPowerTenderbake(p, adjust)
 	default:
-		return b.BakingPowerOxford(p, adjust)
+		return b.BakingPowerAtlas(p, adjust)
 	}
 }
 
@@ -177,10 +177,10 @@ func (b Baker) BakingPowerTenderbake(p *rpc.Params, adjust int64) int64 {
 // Ofxord active stake depends on global 5x limit and baker's local limit
 // anything above these limits is counted as delegation and
 // delegations are further capped to 9x stake
-func (b Baker) BakingPowerOxford(p *rpc.Params, adjust int64) int64 {
+func (b Baker) BakingPowerAtlas(p *rpc.Params, adjust int64) int64 {
 	ownStake := b.StakeAmount(b.Account.StakeShares)
 	staked, delegated := b.TotalStake-ownStake, b.DelegatedBalance+b.Account.Balance()
-	stakeCap, delegationCap := b.StakingCap(p), b.DelegationCapOxford(p, adjust)
+	stakeCap, delegationCap := b.StakingCap(p), b.DelegationCapAtlas(p, adjust)
 	if staked > stakeCap {
 		delegated += staked - stakeCap
 		staked = stakeCap
@@ -208,7 +208,7 @@ func (b Baker) IsOverDelegated(p *rpc.Params) bool {
 	default:
 		ownStake := b.StakeAmount(b.Account.StakeShares)
 		staked, delegated := b.TotalStake-ownStake, b.DelegatedBalance+b.Account.Balance()
-		stakeCap, delegationCap := b.StakingCapacity(p), b.DelegationCapacityOxford(p, 0)
+		stakeCap, delegationCap := b.StakingCapacity(p), b.DelegationCapacityAtlas(p, 0)
 		if staked > stakeCap {
 			delegated += staked - stakeCap
 		}
@@ -217,7 +217,7 @@ func (b Baker) IsOverDelegated(p *rpc.Params) bool {
 }
 
 func (b Baker) StakeAdjust(block *Block) int64 {
-	if !block.TZ.IsCycleEnd() {
+	if !block.MV.IsCycleEnd() {
 		return 0
 	}
 	if block.Params.Version < 12 {
@@ -268,7 +268,7 @@ func (b Baker) StakeAdjustTenderbake(block *Block) (adjust int64) {
 	return
 }
 
-// Oxford staking
+// Atlas staking
 // baker setting limit_of_staking_over_baking = 5(.000.000) means 5x own stake
 // global_limit_of_staking_over_baking = 5 means baker total stake capcacity == 5x own stake
 func (b Baker) StakingCapacity(p *rpc.Params) int64 {
@@ -285,7 +285,7 @@ func (b Baker) StakingCapacity(p *rpc.Params) int64 {
 	}
 
 	// calculate exact and scale back
-	return tezos.NewZ(ownStake).Mul64(limit).Scale(-6).Int64()
+	return mavryk.NewZ(ownStake).Mul64(limit).Scale(-6).Int64()
 }
 
 // max counted stake for baking power calc
@@ -303,7 +303,7 @@ func (b Baker) StakingCap(p *rpc.Params) int64 {
 	}
 
 	// calculate exact and scale back
-	return tezos.NewZ(ownStake).Mul64(limit).Scale(-6).Int64()
+	return mavryk.NewZ(ownStake).Mul64(limit).Scale(-6).Int64()
 }
 
 func (b Baker) DelegationCapacity(p *rpc.Params, netRolls, adjust int64) int64 {
@@ -313,7 +313,7 @@ func (b Baker) DelegationCapacity(p *rpc.Params, netRolls, adjust int64) int64 {
 	case p.Version < 18:
 		return b.DelegationCapacityTenderbake(p, adjust)
 	default:
-		return b.DelegationCapacityOxford(p, adjust)
+		return b.DelegationCapacityAtlas(p, adjust)
 	}
 }
 
@@ -322,9 +322,9 @@ func (b Baker) DelegationCapacity(p *rpc.Params, netRolls, adjust int64) int64 {
 // - adjust for end of cycle snapshot difference
 func (b Baker) DelegationCapacityEmmy(p *rpc.Params, netRolls, adjust int64) int64 {
 	blockDeposits := p.BlockSecurityDeposit + p.EndorsementSecurityDeposit*int64(p.EndorsersPerBlock)
-	netBond := tezos.NewZ(blockDeposits * p.BlocksPerCycle * (p.PreservedCycles + 1))
-	netStake := tezos.NewZ(netRolls * p.MinimalStake)
-	bakerStake := tezos.NewZ(b.Account.Balance() + b.FrozenDeposits + b.FrozenFees - adjust)
+	netBond := mavryk.NewZ(blockDeposits * p.BlocksPerCycle * (p.PreservedCycles + 1))
+	netStake := mavryk.NewZ(netRolls * p.MinimalStake)
+	bakerStake := mavryk.NewZ(b.Account.Balance() + b.FrozenDeposits + b.FrozenFees - adjust)
 	return bakerStake.Mul(netStake).Div(netBond).Int64()
 }
 
@@ -341,11 +341,11 @@ func (b Baker) DelegationCapacityTenderbake(p *rpc.Params, adjust int64) int64 {
 	return ceiling
 }
 
-// Oxford staking
+// Atlas staking
 // same as in Tenderbake, but config option semantic has changed to
 // - FrozenDepositsPercentage = 10 // means deposit must be >= 10% of eligible delegation
 // - LimitOfDelegationOverBaking = 9 // means max delegation = 9x stake
-func (b Baker) DelegationCapacityOxford(p *rpc.Params, adjust int64) int64 {
+func (b Baker) DelegationCapacityAtlas(p *rpc.Params, adjust int64) int64 {
 	ownStake := b.StakeAmount(b.Account.StakeShares) + b.Account.SpendableBalance + b.Account.UnstakedBalance - adjust
 	if b.DepositsLimit > 0 {
 		ownStake = min(b.DepositsLimit, ownStake)
@@ -354,7 +354,7 @@ func (b Baker) DelegationCapacityOxford(p *rpc.Params, adjust int64) int64 {
 }
 
 // Max counted delegation for baking power
-func (b Baker) DelegationCapOxford(p *rpc.Params, adjust int64) int64 {
+func (b Baker) DelegationCapAtlas(p *rpc.Params, adjust int64) int64 {
 	ownStake := b.StakeAmount(b.Account.StakeShares) - adjust
 	return ownStake * p.LimitOfDelegationOverBaking
 }
@@ -369,11 +369,11 @@ func (b *Baker) GetVersionBytes() []byte {
 	return buf[:]
 }
 
-// Oxford stake pool ownership tracking
+// Atlas stake pool ownership tracking
 func (b *Baker) MintStake(stake int64) int64 {
 	shares := stake
 	if b.TotalStake > 0 {
-		shares = tezos.NewZ(stake).Mul64(b.TotalShares).Div64(b.TotalStake).Int64()
+		shares = mavryk.NewZ(stake).Mul64(b.TotalShares).Div64(b.TotalStake).Int64()
 	}
 	b.TotalShares += shares
 	b.TotalStake += stake
@@ -383,7 +383,7 @@ func (b *Baker) MintStake(stake int64) int64 {
 func (b *Baker) BurnStake(stake int64) int64 {
 	shares := stake
 	if b.TotalStake > 0 {
-		shares = tezos.NewZ(stake).Mul64(b.TotalShares).Div64(b.TotalStake).Int64()
+		shares = mavryk.NewZ(stake).Mul64(b.TotalShares).Div64(b.TotalStake).Int64()
 	}
 	if shares > b.TotalShares {
 		shares = b.TotalShares
@@ -397,7 +397,7 @@ func (b Baker) StakeAmount(shares int64) int64 {
 	if b.TotalShares <= 0 {
 		return 0
 	}
-	return tezos.NewZ(b.TotalStake).Mul64(shares).Div64(b.TotalShares).Int64()
+	return mavryk.NewZ(b.TotalStake).Mul64(shares).Div64(b.TotalShares).Int64()
 }
 
 func (b *Baker) UpdateBalanceN(flows []*Flow) error {
@@ -419,7 +419,7 @@ func (b *Baker) UpdateBalance(f *Flow) error {
 
 	switch f.Kind {
 	case FlowKindRewards:
-		// pre-oxford only
+		// pre-atlas only
 		if b.FrozenRewards < f.AmountOut-f.AmountIn {
 			return fmt.Errorf("baker.update id %d %s frozen rewards %d is smaller than "+
 				"outgoing amount %d", b.RowId, b, b.FrozenRewards, f.AmountOut-f.AmountIn)

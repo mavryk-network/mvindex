@@ -13,14 +13,14 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
 	"github.com/echa/config"
 	lru "github.com/hashicorp/golang-lru/v2"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
 	"github.com/tidwall/gjson"
 
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
 )
 
 // we use 6 distinct data sets for data locality
@@ -175,7 +175,7 @@ func (idx *TokenIndex) ConnectBlock(ctx context.Context, block *model.Block, b m
 					continue
 				}
 				// find token
-				tokn, err := model.GetToken(ctx, idx.tables[model.TokenTableKey], op.Contract, tezos.NewBigZ(v.Key.Int))
+				tokn, err := model.GetToken(ctx, idx.tables[model.TokenTableKey], op.Contract, mavryk.NewBigZ(v.Key.Int))
 				if err != nil {
 					continue
 				}
@@ -189,7 +189,7 @@ func (idx *TokenIndex) ConnectBlock(ctx context.Context, block *model.Block, b m
 					Url: strings.Replace(
 						idx.metaBaseUrl,
 						"{addr}",
-						tezos.NewToken(op.Contract.Address, tokn.TokenId).String(),
+						mavryk.NewToken(op.Contract.Address, tokn.TokenId).String(),
 						1,
 					),
 				}
@@ -280,7 +280,7 @@ func (idx *TokenIndex) ConnectBlock(ctx context.Context, block *model.Block, b m
 				Url: strings.Replace(
 					idx.metaBaseUrl,
 					"{addr}",
-					tezos.NewToken(op.Contract.Address, bal.TokenRef.TokenId).String(),
+					mavryk.NewToken(op.Contract.Address, bal.TokenRef.TokenId).String(),
 					1,
 				),
 			}
@@ -610,7 +610,7 @@ func (idx *TokenIndex) reconcileEvents(
 					Signer:   sgnr.RowId,
 					Sender:   ybal.OwnerRef.Account,
 					Receiver: xbal.OwnerRef.Account,
-					Amount:   tezos.NewBigZ(amount),
+					Amount:   mavryk.NewBigZ(amount),
 					Height:   height,
 					Time:     tm,
 					TokenRef: xbal.TokenRef,
@@ -626,7 +626,7 @@ func (idx *TokenIndex) reconcileEvents(
 					Signer:   sgnr.RowId,
 					Sender:   xbal.OwnerRef.Account,
 					Receiver: ybal.OwnerRef.Account,
-					Amount:   tezos.NewBigZ(amount),
+					Amount:   mavryk.NewBigZ(amount),
 					Height:   height,
 					Time:     tm,
 					TokenRef: xbal.TokenRef,
@@ -655,7 +655,7 @@ func (idx *TokenIndex) reconcileEvents(
 				Signer:   sgnr.RowId,
 				Sender:   0,
 				Receiver: bal.OwnerRef.Account,
-				Amount:   tezos.NewBigZ(new(big.Int).Abs(curr)),
+				Amount:   mavryk.NewBigZ(new(big.Int).Abs(curr)),
 				Height:   height,
 				Time:     tm,
 				TokenRef: bal.TokenRef,
@@ -670,7 +670,7 @@ func (idx *TokenIndex) reconcileEvents(
 				Signer:   sgnr.RowId,
 				Sender:   bal.OwnerRef.Account,
 				Receiver: 0,
-				Amount:   tezos.NewBigZ(curr),
+				Amount:   mavryk.NewBigZ(curr),
 				Height:   height,
 				Time:     tm,
 				TokenRef: bal.TokenRef,
@@ -716,7 +716,7 @@ func (idx *TokenIndex) reconcileEvents(
 				Signer:   sgnr.RowId,
 				Sender:   0,
 				Receiver: ownr.Account,
-				Amount:   tezos.NewBigZ(new(big.Int).Abs(bal)),
+				Amount:   mavryk.NewBigZ(new(big.Int).Abs(bal)),
 				Height:   height,
 				Time:     tm,
 				TokenRef: tokn,
@@ -731,7 +731,7 @@ func (idx *TokenIndex) reconcileEvents(
 				Signer:   sgnr.RowId,
 				Sender:   ownr.Account,
 				Receiver: 0,
-				Amount:   tezos.NewBigZ(bal),
+				Amount:   mavryk.NewBigZ(bal),
 				Height:   height,
 				Time:     tm,
 				TokenRef: tokn,
@@ -837,14 +837,14 @@ func (idx *TokenIndex) updateOwnership(ctx context.Context, ev *model.TokenEvent
 	return nil
 }
 
-func tokenCacheKey(a tezos.Address, id tezos.Z) uint64 {
+func tokenCacheKey(a mavryk.Address, id mavryk.Z) uint64 {
 	h := fnv.New64a()
 	h.Write(a[:])
 	h.Write(id.Bytes())
 	return h.Sum64()
 }
 
-func (idx *TokenIndex) getOrCreateToken(ctx context.Context, ledger *model.Contract, signer *model.Account, tokenId tezos.Z, height int64, tm time.Time) (*model.Token, error) {
+func (idx *TokenIndex) getOrCreateToken(ctx context.Context, ledger *model.Contract, signer *model.Account, tokenId mavryk.Z, height int64, tm time.Time) (*model.Token, error) {
 	key := tokenCacheKey(ledger.Address, tokenId)
 	itok, ok := idx.tokenCache.Get(key)
 	if ok && itok.Ledger == ledger.AccountId {

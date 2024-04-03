@@ -155,13 +155,13 @@ func init() {
 	config.SetDefault("rpc.idle_conns", 16)
 	config.SetDefault("rpc.retries", 3)
 	config.SetDefault("rpc.retry_delay", time.Second)
-	config.SetDefault("rpc.api_key", os.Getenv("TZPRO_API_KEY"))
+	config.SetDefault("rpc.api_key", os.Getenv("MVPRO_API_KEY"))
 
 	// Metadata settings
 	// config.SetDefault("meta.kepler.url", "https://kepler.tzprofiles.com")
-	config.SetDefault("meta.kepler.url", "https://api.tzpro.io/v1/profiles/claim")
-	config.SetDefault("meta.token.url", "https://api.tzpro.io/v1/tokens/{addr}/meta")
-	config.SetDefault("meta.http.api_key", os.Getenv("TZPRO_API_KEY"))
+	config.SetDefault("meta.kepler.url", "https://api.mvpro.io/v1/profiles/claim")
+	config.SetDefault("meta.token.url", "https://api.mvpro.io/v1/tokens/{addr}/meta")
+	config.SetDefault("meta.http.api_key", os.Getenv("MVPRO_API_KEY"))
 	config.SetDefault("meta.max_tasks", 128)
 	config.SetDefault("meta.http.rate_limit", 50)
 	config.SetDefault("meta.http.max_retries", 10)

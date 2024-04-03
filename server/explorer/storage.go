@@ -6,8 +6,8 @@ package explorer
 import (
 	"time"
 
-	"blockwatch.cc/tzindex/server"
-	"github.com/mavryk-network/tzgo/micheline"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 type Storage struct {

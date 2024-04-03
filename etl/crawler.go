@@ -15,9 +15,9 @@ import (
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/store"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 const (
@@ -94,7 +94,7 @@ type Crawler struct {
 	finalized chan *rpc.Bundle
 	filter    *ReorgDelayFilter
 	plog      *BlockProgressLogger
-	chainId   tezos.ChainIdHash
+	chainId   mavryk.ChainIdHash
 	delay     int64
 	wasInSync bool
 	head      int64
@@ -237,7 +237,7 @@ func (c *Crawler) ParamsByCycle(cycle int64) *rpc.Params {
 	return c.indexer.ParamsByCycle(cycle)
 }
 
-func (c *Crawler) ParamsByProtocol(proto tezos.ProtocolHash) *rpc.Params {
+func (c *Crawler) ParamsByProtocol(proto mavryk.ProtocolHash) *rpc.Params {
 	p, _ := c.indexer.ParamsByProtocol(proto)
 	return p
 }
@@ -353,7 +353,7 @@ func (c *Crawler) Init(ctx context.Context, mode Mode) error {
 		} else if have > want {
 			return fmt.Errorf("Newer database schema %s detected. This software only supports schema %s. Please upgrade.", have, want)
 		}
-		if have, want := mft.Label, tezos.Symbol; have != want {
+		if have, want := mft.Label, mavryk.Symbol; have != want {
 			return fmt.Errorf("Invalid database label %s, expected %s.", have, want)
 		}
 		return nil
@@ -366,15 +366,15 @@ func (c *Crawler) Init(ctx context.Context, mode Mode) error {
 		log.Info("Creating blockchain storage.")
 		tip := &model.ChainTip{
 			BestHeight: -1,
-			Name:       tezos.Name,
-			Symbol:     tezos.Symbol,
+			Name:       mavryk.Name,
+			Symbol:     mavryk.Symbol,
 		}
 		c.updateTip(tip)
 		err = c.db.Update(func(dbTx store.Tx) error {
 			// indexer manifest
 			err := dbTx.SetManifest(store.Manifest{
 				Name:    stateDBKey,
-				Label:   tezos.Symbol,
+				Label:   mavryk.Symbol,
 				Version: stateDBSchemaVersion,
 				Schema:  stateDBSchemaName,
 			})
@@ -554,7 +554,7 @@ func (c *Crawler) Stop(ctx context.Context) {
 	log.Info("Stopped blockchain crawler.")
 }
 
-func (c *Crawler) runMonitor(next chan<- tezos.BlockHash) {
+func (c *Crawler) runMonitor(next chan<- mavryk.BlockHash) {
 	log.Infof("Starting blockchain monitor.")
 	c.wg.Add(1)
 	defer c.wg.Done()
@@ -646,7 +646,7 @@ func (c *Crawler) runMonitor(next chan<- tezos.BlockHash) {
 	}
 }
 
-func (c *Crawler) runIngest(next chan tezos.BlockHash) {
+func (c *Crawler) runIngest(next chan mavryk.BlockHash) {
 	// on shutdown wait for this goroutine to stop
 	log.Infof("Starting blockchain ingest.")
 	c.wg.Add(1)
@@ -655,7 +655,7 @@ func (c *Crawler) runIngest(next chan tezos.BlockHash) {
 	defer close(c.finalized)
 
 	// init current state
-	var nextHash tezos.BlockHash
+	var nextHash mavryk.BlockHash
 	lastblock := c.Tip().BestHeight
 
 	// setup periodic updates
@@ -685,7 +685,7 @@ func (c *Crawler) runIngest(next chan tezos.BlockHash) {
 					atomic.StoreInt64(&c.head, 0)
 				}
 				select {
-				case next <- tezos.BlockHash{}:
+				case next <- mavryk.BlockHash{}:
 				default:
 				}
 			}
@@ -792,7 +792,7 @@ func (c *Crawler) runIngest(next chan tezos.BlockHash) {
 				// so we always fetch by height
 				if !useMon {
 					select {
-					case next <- tezos.BlockHash{}:
+					case next <- mavryk.BlockHash{}:
 					default:
 					}
 				}
@@ -805,7 +805,7 @@ func (c *Crawler) runIngest(next chan tezos.BlockHash) {
 
 				// reset last block
 				lastblock = c.Height()
-				nextHash = tezos.ZeroBlockHash
+				nextHash = mavryk.ZeroBlockHash
 
 				// handle RPC errors (wait and retry)
 				switch e := err.(type) {
@@ -836,7 +836,7 @@ func (c *Crawler) ingest(_ context.Context) {
 	// internal next block signal to prefetch blocks; may hold an empty
 	// hash (initially, after errors, and on ticks) or a block hash
 	// when received via monitoring (monitor may break, so we don't rely on it)
-	next := make(chan tezos.BlockHash, cap(c.finalized))
+	next := make(chan mavryk.BlockHash, cap(c.finalized))
 
 	if c.enableMonitor {
 		// run monitor loop in go-routine
@@ -847,7 +847,7 @@ func (c *Crawler) ingest(_ context.Context) {
 	go c.runIngest(next)
 
 	// kick off ingest loop
-	next <- tezos.BlockHash{}
+	next <- mavryk.BlockHash{}
 }
 
 func drain(c chan *rpc.Bundle) {

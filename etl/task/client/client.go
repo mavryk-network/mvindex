@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	userAgent     = "tzindex/v18.0"
+	userAgent     = "mvindex/v18.0"
 	jsonMediaType = "application/json"
 )
 

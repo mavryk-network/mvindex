@@ -15,9 +15,9 @@ import (
 	"blockwatch.cc/packdb/encoding/csv"
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
-	"github.com/mavryk-network/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -212,7 +212,7 @@ func StreamEventTable(ctx *server.Context, args *TableRequest) (interface{}, int
 		case "contract":
 			addrs := make([]model.AccountID, 0)
 			for _, v := range strings.Split(val[0], ",") {
-				addr, err := tezos.ParseAddress(v)
+				addr, err := mavryk.ParseAddress(v)
 				if err != nil || !addr.IsValid() {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", v), err))
 				}

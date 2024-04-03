@@ -4,8 +4,8 @@
 package etl
 
 import (
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 func (b *Builder) NewRevealFlows(src *model.Account, bkr *model.Baker, fees rpc.BalanceUpdates, id model.OpRef) []*model.Flow {

@@ -8,8 +8,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 // Notes
@@ -94,7 +94,7 @@ func (b *Builder) AppendDelegationOp(ctx context.Context, oh *rpc.Operation, id 
 	// - fee payment by source
 	// - fee reception by baker
 	// - (re)delegate source balance on success
-	// - oxford: re-delegation will unstake
+	// - atlas: re-delegation will unstake
 	if op.IsSuccess {
 		flows := b.NewDelegationFlows(
 			src,
@@ -183,7 +183,7 @@ func (b *Builder) AppendDelegationOp(ctx context.Context, oh *rpc.Operation, id 
 				}
 
 			} else {
-				// Oxford staking: under staking a re-delegation auto-unstakes from
+				// Atlas staking: under staking a re-delegation auto-unstakes from
 				// current baker, we process the unstake flow later during account
 				// update, however, here we already overwrite BakerId to
 				// the new baker
@@ -359,7 +359,7 @@ func (b *Builder) AppendInternalDelegationOp(
 		// - no fees (paid by outer op)
 		// - (re)delegate source balance on success
 		// - no fees paid, no flow on failure
-		// - oxford: re-delegation will unstake all
+		// - atlas: re-delegation will unstake all
 		flows := b.NewDelegationFlows(src, nbkr, obkr, nil, res.Balances(), id)
 
 		// detect unstake and output as event
