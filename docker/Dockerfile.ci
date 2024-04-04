@@ -29,7 +29,7 @@ WORKDIR       /home/$USER
 EXPOSE        8000
 USER          $USER
 ENTRYPOINT    ["docker-entrypoint.sh"]
-CMD           [${BUILD_TARGET}, "run"]
+CMD           ${BUILD_TARGET}
 
 HEALTHCHECK \
   --interval=30s \

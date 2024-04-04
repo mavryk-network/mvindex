@@ -3,6 +3,7 @@ set -e
 
 # first arg is empty or an argument `-c` or `--some-option`
 if [ -z "$1" -o "${1#-}" != "$1" ]; then
+	echo $BUILD_TARGET
 	set -- ${BUILD_TARGET} "$@"
 fi
 

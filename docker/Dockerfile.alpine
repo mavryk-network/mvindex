@@ -5,14 +5,14 @@ ARG           REPO=mavrykdynamics/mvindex
 ARG           BUILD_TARGET=mvindex
 ARG           BUILD_VERSION=dev
 ARG           BUILD_COMMIT=none
-ARG           BUILD_TAG=master
+ARG           BUILD_TAG=mavryk-protocol-refactoring
 LABEL         autodelete="true"
 WORKDIR       /go/src/
 RUN           apk --no-cache add git binutils
 RUN           git clone --depth 1 -b ${BUILD_TAG} https://github.com/mavryk-network/${BUILD_TARGET} ${BUILD_TARGET}
 WORKDIR       /go/src/${BUILD_TARGET}
 RUN           go install -mod=mod -v -ldflags "-X main.version=${BUILD_VERSION} -X main.commit=${BUILD_COMMIT}" ./cmd/...
-RUN           strip /go/bin/tz*
+RUN           strip /go/bin/mv*
 
 # final stage
 FROM          alpine:3.19
@@ -30,7 +30,7 @@ WORKDIR       /home/$USER
 EXPOSE        8000
 USER          $USER
 ENTRYPOINT    ["docker-entrypoint.sh"]
-CMD           [${BUILD_TARGET}, "run"]
+CMD           ${BUILD_TARGET}
 
 HEALTHCHECK \
   --interval=30s \
