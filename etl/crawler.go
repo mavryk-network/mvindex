@@ -445,7 +445,7 @@ func (c *Crawler) Init(ctx context.Context, mode Mode) error {
 			c.setState(STATE_FAILED, MONITOR_DISABLE)
 			return err
 		}
-		log.Infof("Crawling Tezos %s.", genesis.Params.Network)
+		log.Infof("Crawling Mavryk %s.", genesis.Params.Network)
 
 		// Note: block index lives in separate DB
 		if c.indexer != nil {
@@ -478,7 +478,7 @@ func (c *Crawler) Init(ctx context.Context, mode Mode) error {
 
 	} else {
 		// p := c.ParamsByHeight(0).WithChainId(c.chainId)
-		log.Infof("Crawling Tezos %s.", c.ParamsByHeight(0).Network)
+		log.Infof("Crawling Mavryk %s.", c.ParamsByHeight(0).Network)
 
 		// init block builder state
 		if err = c.builder.Init(ctx, tip, c.rpc); err != nil {

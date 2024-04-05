@@ -68,6 +68,11 @@ func (b *Block) CollectAddresses(addUnique func(mavryk.Address)) error {
 					addUnique(tx.Source)
 
 				case *Transaction:
+					addr, err := mavryk.ParseAddress("mv2burnburnburnburnburnburnbur7hzNeg")
+					if err != nil {
+						return fmt.Errorf("decoding burn address %s: %w", addr, err)
+					}
+					addUnique(addr)
 					addUnique(tx.Source)
 					addUnique(tx.Destination)
 					for _, res := range tx.Metadata.InternalResults {

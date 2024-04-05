@@ -9,17 +9,54 @@ import (
 
 	"github.com/mavryk-network/mvgo/mavryk"
 	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/index"
+	"github.com/mavryk-network/mvindex/etl/model"
 	"github.com/mavryk-network/mvindex/rpc"
 )
 
 func (b *Builder) MigrateAtlas(ctx context.Context, oldparams, params *rpc.Params) error {
-	// nothing to do when chain starts with this proto
+	// register the burn address as an account
+	account, err := b.idx.Table(index.AccountIndexKey)
+	if err != nil {
+		return err
+	}
+
+	var count int
+	for n, amount := range map[string]int64{
+		"mv2burnburnburnburnburnburnbur7hzNeg": 0,
+	} {
+		addr, err := mavryk.ParseAddress(n)
+		if err != nil {
+			return fmt.Errorf("decoding burn address %s: %w", n, err)
+		}
+		acc := model.NewAccount(addr)
+		acc.FirstSeen = b.block.Height
+		acc.LastIn = b.block.Height
+		acc.LastSeen = b.block.Height
+		acc.IsDirty = true
+
+		// insert into db
+		if err := account.Insert(ctx, acc); err != nil {
+			return err
+		}
+
+		// insert into cache
+		b.accMap[acc.RowId] = acc
+		b.accHashMap[b.accCache.AccountHashKey(acc)] = acc
+
+		// add invoice op
+		if err := b.AppendInvoiceOp(ctx, acc, amount, count); err != nil {
+			return err
+		}
+		count++
+	}
+
+	// nothing else to do when chain starts with this proto
 	if b.block.Height <= 2 {
 		return nil
 	}
 
 	// migrate all bakers from frozen deposits to stake variables
-	var count int
 	for _, v := range b.bakerMap {
 		if v.FrozenDeposits == 0 {
 			continue
