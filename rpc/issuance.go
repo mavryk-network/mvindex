@@ -18,7 +18,7 @@ type Issuance struct {
 	VdfTip          int64 `json:"vdf_revelation_tip,string"`
 }
 
-// GetIssuance returns expected xtz issuance for known future cycles
+// GetIssuance returns expected mvrk issuance for known future cycles
 func (c *Client) GetIssuance(ctx context.Context, id BlockID) ([]Issuance, error) {
 	u := fmt.Sprintf("chains/main/blocks/%s/context/issuance/expected_issuance", id)
 	p := make([]Issuance, 0, 5)

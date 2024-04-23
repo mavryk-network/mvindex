@@ -27,12 +27,12 @@
 	"crawler": {
 		"queue": 100,
 		"delay": 1,
-		"snapshot_path": "./db/xtz/snapshots",
+		"snapshot_path": "./db/mvrk/snapshots",
 		"snapshot_blocks": [],
 		"snapshot_interval": 0
 	},
 	"db": {
-		"path": "./db/xtz",
+		"path": "./db/mvrk",
 		"engine": "bolt",
 		"gc_interval": 50000000,
 		"gc_ratio": 1.0,

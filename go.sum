@@ -72,6 +72,8 @@ github.com/mattn/go-runewidth v0.0.15 h1:UNAjwbU9l54TA3KzvqLGxwWjHmMgBUVhBiTjelZ
 github.com/mattn/go-runewidth v0.0.15/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/mavryk-network/mvgo v1.18.4 h1:wCZKaRb+vd1fb7Jzy0j+wpZqP0BiEUDvBdzz3cLEWI0=
 github.com/mavryk-network/mvgo v1.18.4/go.mod h1:Bq36wrJK7pZP8rLKmMXphl7QSxy7F0vP+CqBLGgR5zk=
+github.com/mavryk-network/mvgo v1.18.5-0.20240423145021-bff4edda5b46 h1:4qm0RyDNM1ASw4U/i+UDb5mjmaU2qMH9GqTInTnh5YM=
+github.com/mavryk-network/mvgo v1.18.5-0.20240423145021-bff4edda5b46/go.mod h1:Bq36wrJK7pZP8rLKmMXphl7QSxy7F0vP+CqBLGgR5zk=
 github.com/mavryk-network/mvpro-go v0.18.1 h1:mz98BLc5wxXjk8tp7jiW8RrVq3EBR+64NzgjAdCBgjw=
 github.com/mavryk-network/mvpro-go v0.18.1/go.mod h1:YzdsMEz+B7qmofoXWOSmDCvU4DqrkQg9nHq6dle7Tck=
 github.com/mavryk-network/mvpro-go v0.18.2-0.20240403091405-9269f9218b78 h1:H62+iXBX3jQDVKtMb/Ls2tMnFMj2+0IK/BcO8l4a6/8=
