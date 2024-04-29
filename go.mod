@@ -17,8 +17,8 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/schema v1.2.1
 	github.com/hashicorp/golang-lru/v2 v2.0.7
-	github.com/mavryk-network/mvgo v1.18.5-0.20240423145021-bff4edda5b46
-	github.com/mavryk-network/mvpro-go v0.18.2-0.20240403091405-9269f9218b78
+	github.com/mavryk-network/mvgo v1.18.5-0.20240429092636-4a33b0467056
+	github.com/mavryk-network/mvpro-go v0.18.2-0.20240429092749-c5ab276ec7bf
 	github.com/qri-io/jsonschema v0.2.1
 	github.com/tidwall/gjson v1.17.0
 	go.etcd.io/bbolt v1.3.8
