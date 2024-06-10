@@ -10,10 +10,10 @@ import (
 	"strconv"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 const IncomeIndexKey = "income"
@@ -119,7 +119,7 @@ func (idx *IncomeIndex) ConnectBlock(ctx context.Context, block *model.Block, bu
 	}
 
 	// update expected income/deposits and luck on cycle start when params are known
-	if block.TZ.IsCycleStart() {
+	if block.MV.IsCycleStart() {
 		// this only happens during mainnet bootstrap
 		if err := idx.updateCycleIncome(ctx, block, builder); err != nil {
 			log.Error(err)
@@ -132,7 +132,7 @@ func (idx *IncomeIndex) ConnectBlock(ctx context.Context, block *model.Block, bu
 	}
 
 	// skip when no new rights are defined
-	if len(block.TZ.Baking) > 0 || len(block.TZ.Endorsing) > 0 {
+	if len(block.MV.Baking) > 0 || len(block.MV.Endorsing) > 0 {
 		if err := idx.createCycleIncome(ctx, block, builder); err != nil {
 			log.Error(err)
 		}
@@ -164,7 +164,7 @@ func (idx *IncomeIndex) DisconnectBlock(ctx context.Context, block *model.Block,
 
 	// new rights are fetched in cycles
 	// if block.Params.IsCycleStart(block.Height) {
-	if block.TZ.IsCycleStart() {
+	if block.MV.IsCycleStart() {
 		if err := idx.DeleteCycle(ctx, block.Cycle+block.Params.PreservedCycles); err != nil {
 			log.Error(err)
 		}
@@ -201,10 +201,10 @@ func (idx *IncomeIndex) bootstrapIncome(ctx context.Context, block *model.Block,
 
 	var cycleEndBlock = p.BlocksPerCycle - 1
 
-	for c := range block.TZ.Baking {
+	for c := range block.MV.Baking {
 		log.Debugf("income: bootstrap for cycle %d with %d bakers", c, len(bkrs))
-		bake := block.TZ.Baking[c]
-		endorse := block.TZ.Endorsing[c]
+		bake := block.MV.Baking[c]
+		endorse := block.MV.Endorsing[c]
 		var totalStake int64
 
 		// new income data for each cycle
@@ -299,13 +299,13 @@ func (idx *IncomeIndex) bootstrapIncome(ctx context.Context, block *model.Block,
 			// Instead, the reward is proportional to a baker's stake.
 			//
 			// Rewards formula:
-			//   `20 XTZ * nb_blocks_per_cycle * baker own stake / total chain stake`
+			//   `20 MVRK * nb_blocks_per_cycle * baker own stake / total chain stake`
 			//
 			// However, rewards are only distributed if the baker has had a sufficient
 			// activity in a cycle meaning: at least 2/3 of a baker's endorsements were
 			// included in blocks in the last cycle.
-			info := block.TZ.SnapInfo
-			eRewards := tezos.NewZ(p.EndorsingRewardPerSlot * int64(p.ConsensusCommitteeSize) * p.BlocksPerCycle)
+			info := block.MV.SnapInfo
+			eRewards := mavryk.NewZ(p.EndorsingRewardPerSlot * int64(p.ConsensusCommitteeSize) * p.BlocksPerCycle)
 			stake := info.BakerStake
 			if totalStake != info.TotalStake.Value() {
 				log.Warnf("income: index total stake=%d != node total stake=%d",
@@ -325,7 +325,7 @@ func (idx *IncomeIndex) bootstrapIncome(ctx context.Context, block *model.Block,
 					if stake[i].Baker.Equal(bkr.Address) {
 						income.StakingBalance = stake[i].ActiveStake.Value()
 						// protect against int64 overflow
-						income.ExpectedIncome += tezos.NewZ(income.StakingBalance).
+						income.ExpectedIncome += mavryk.NewZ(income.StakingBalance).
 							Mul(eRewards).
 							Div64(info.TotalStake.Value()).
 							Int64()
@@ -415,7 +415,7 @@ func (idx *IncomeIndex) updateCycleIncome(ctx context.Context, block *model.Bloc
 
 func (idx *IncomeIndex) createCycleIncome(ctx context.Context, block *model.Block, builder model.BlockBuilder) error {
 	p := block.Params
-	sn := block.TZ.Snapshot
+	sn := block.MV.Snapshot
 	incomeMap := make(map[model.AccountID]*model.Income)
 	var totalStake int64
 
@@ -503,7 +503,7 @@ func (idx *IncomeIndex) createCycleIncome(ctx context.Context, block *model.Bloc
 	}
 
 	// assign from rights
-	for _, v := range block.TZ.Baking[0] {
+	for _, v := range block.MV.Baking[0] {
 		if v.Round > 0 {
 			continue
 		}
@@ -545,7 +545,7 @@ func (idx *IncomeIndex) createCycleIncome(ctx context.Context, block *model.Bloc
 	// (due to deactivations) but a spillover endorsement right would still require
 	// us to insert an income record for this baker.
 	endorseEndBlock := p.CycleEndHeight(sn.Cycle)
-	for _, v := range block.TZ.Endorsing[0] {
+	for _, v := range block.MV.Endorsing[0] {
 		if v.Level >= endorseEndBlock {
 			// log.Infof("Skipping end of cycle height %d > %d", v.Level, endorseEndBlock)
 			continue
@@ -584,9 +584,9 @@ func (idx *IncomeIndex) createCycleIncome(ctx context.Context, block *model.Bloc
 
 	// Assign spill-over income from previous cycle's last block endorsing rights,
 	// baker may be missing when deactivated or closing
-	for _, v := range block.TZ.PrevEndorsing {
+	for _, v := range block.MV.PrevEndorsing {
 		if !v.Address().IsValid() {
-			log.Warnf("income: empty endorser in last block rights %#v", block.TZ.PrevEndorsing)
+			log.Warnf("income: empty endorser in last block rights %#v", block.MV.PrevEndorsing)
 			continue
 		}
 		b, ok := builder.BakerByAddress(v.Address())
@@ -626,14 +626,14 @@ func (idx *IncomeIndex) createCycleIncome(ctx context.Context, block *model.Bloc
 		// Instead, the reward is proportional to a baker's stake.
 		//
 		// Rewards formula:
-		//   `20 XTZ * nb_blocks_per_cycle * baker own stake / total chain stake`
+		//   `20 MVRK * nb_blocks_per_cycle * baker own stake / total chain stake`
 		//
 		// However, rewards are only distributed if the baker has had a sufficient
 		// activity in a cycle meaning: at least 2/3 of a baker's endorsements were
 		// included in blocks in the last cycle.
-		info := block.TZ.SnapInfo
-		eRewards := tezos.NewZ(p.EndorsingRewardPerSlot * int64(p.ConsensusCommitteeSize) * p.BlocksPerCycle)
-		totalStake := tezos.NewZ(info.TotalStake.Value())
+		info := block.MV.SnapInfo
+		eRewards := mavryk.NewZ(p.EndorsingRewardPerSlot * int64(p.ConsensusCommitteeSize) * p.BlocksPerCycle)
+		totalStake := mavryk.NewZ(info.TotalStake.Value())
 		stake := info.BakerStake
 		for _, bkr := range builder.Bakers() {
 			income, ok := incomeMap[bkr.AccountId]
@@ -645,7 +645,7 @@ func (idx *IncomeIndex) createCycleIncome(ctx context.Context, block *model.Bloc
 				if stake[i].Baker.Equal(bkr.Address) {
 					income.StakingBalance = stake[i].ActiveStake.Value()
 					// protect against int64 overflow
-					income.ExpectedIncome += tezos.NewZ(income.StakingBalance).
+					income.ExpectedIncome += mavryk.NewZ(income.StakingBalance).
 						Mul(eRewards).
 						Div(totalStake).
 						Int64()
@@ -734,7 +734,7 @@ func (idx *IncomeIndex) updateBlockIncome(ctx context.Context, block *model.Bloc
 		case model.OpTypeDeposit:
 			// the very first mainnet cycle 468 on Ithaca created a deposit
 			// operation at the first cycle block (!)
-			if p.Version < 12 || !block.TZ.IsCycleStart() {
+			if p.Version < 12 || !block.MV.IsCycleStart() {
 				continue
 			}
 			in, ok := incomeMap[op.SenderId]
@@ -768,7 +768,7 @@ func (idx *IncomeIndex) updateBlockIncome(ctx context.Context, block *model.Bloc
 			in.TotalIncome += (op.Fee + op.Reward) * mul
 			in.FeesIncome += op.Fee * mul
 			in.BakingIncome += op.Reward * mul
-			// old protocols made a deposit every block, Oxford+ auto-deposits a share
+			// old protocols made a deposit every block, Atlas+ auto-deposits a share
 			in.OwnStake += op.Deposit * mul
 			in.NBlocksBaked += mul
 			in.NBlocksProposed += mul
@@ -787,7 +787,7 @@ func (idx *IncomeIndex) updateBlockIncome(ctx context.Context, block *model.Bloc
 			in.TotalIncome += op.Reward * mul
 			in.BakingIncome += op.Reward * mul
 			in.NBlocksProposed += mul
-			// Oxford+ auto-deposits a share
+			// Atlas+ auto-deposits a share
 			in.OwnStake += op.Deposit * mul
 
 		case model.OpTypeReward:

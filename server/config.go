@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 type Config struct {

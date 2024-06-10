@@ -6,7 +6,7 @@ package metadata
 import (
 	"time"
 
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 func init() {
@@ -17,7 +17,7 @@ const (
 	updatedNs     = "updated"
 	updatedSchema = `{
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://api.tzpro.io/metadata/schemas/updated.json",
+	"$id": "https://api.mvpro.io/metadata/schemas/updated.json",
 	"title": "Record Update Information",
     "description": "Info about when this metadata entry was last updated.",
 	"type": "object",
@@ -39,9 +39,9 @@ const (
 )
 
 type Updated struct {
-	Hash   tezos.BlockHash `json:"hash"`
-	Height int64           `json:"height"`
-	Time   time.Time       `json:"time"`
+	Hash   mavryk.BlockHash `json:"hash"`
+	Height int64            `json:"height"`
+	Time   time.Time        `json:"time"`
 }
 
 func (d Updated) Namespace() string {

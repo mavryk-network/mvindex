@@ -259,7 +259,7 @@ func (c *Chain) Update(b *Block, accounts map[AccountID]*Account, bakers map[Acc
 		} else {
 			// if we're at the last block of a cycle we need to adjust down the
 			// balance by unfrozen rewards since Tezos snapshots stake before unfreeze
-			if b.TZ.IsCycleEnd() {
+			if b.MV.IsCycleEnd() {
 				// if b.Params.IsCycleEnd(b.Height) {
 				// find the reward unfreeze flow for this baker
 				for _, flow := range b.Flows {

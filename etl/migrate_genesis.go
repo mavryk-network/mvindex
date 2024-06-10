@@ -8,13 +8,13 @@ import (
 	"fmt"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 func (b *Builder) BuildGenesisBlock(ctx context.Context) (*model.Block, error) {
-	gen := b.block.TZ.Block.Header.Content.Parameters
+	gen := b.block.MV.Block.Header.Content.Parameters
 	if gen == nil {
 		return nil, fmt.Errorf("missing genesis protocol_parameters")
 	}
@@ -30,9 +30,9 @@ func (b *Builder) BuildGenesisBlock(ctx context.Context) (*model.Block, error) {
 	contracts := make([]pack.Item, 0)
 
 	// register zero address and burn address as first accounts in database
-	for i, v := range []tezos.Address{
-		tezos.ZeroAddress,
-		tezos.BurnAddress,
+	for i, v := range []mavryk.Address{
+		mavryk.ZeroAddress,
+		mavryk.BurnAddress,
 	} {
 		acc := model.NewAccount(v)
 		acc.RowId = model.AccountID(i + 1)

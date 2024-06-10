@@ -6,7 +6,7 @@ package model
 import (
 	"fmt"
 
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 // implicit operation list ids
@@ -162,66 +162,66 @@ func (t OpType) IsEvent() bool {
 	}
 }
 
-func MapOpType(typ tezos.OpType) OpType {
+func MapOpType(typ mavryk.OpType) OpType {
 	switch typ {
-	case tezos.OpTypeActivateAccount:
+	case mavryk.OpTypeActivateAccount:
 		return OpTypeActivation
-	case tezos.OpTypeDoubleBakingEvidence:
+	case mavryk.OpTypeDoubleBakingEvidence:
 		return OpTypeDoubleBaking
-	case tezos.OpTypeDoubleEndorsementEvidence:
+	case mavryk.OpTypeDoubleEndorsementEvidence:
 		return OpTypeDoubleEndorsement
-	case tezos.OpTypeDoublePreendorsementEvidence:
+	case mavryk.OpTypeDoublePreendorsementEvidence:
 		return OpTypeDoublePreendorsement
-	case tezos.OpTypeProposals:
+	case mavryk.OpTypeProposals:
 		return OpTypeProposal
-	case tezos.OpTypeBallot:
+	case mavryk.OpTypeBallot:
 		return OpTypeBallot
-	case tezos.OpTypeTransaction:
+	case mavryk.OpTypeTransaction:
 		return OpTypeTransaction
-	case tezos.OpTypeOrigination:
+	case mavryk.OpTypeOrigination:
 		return OpTypeOrigination
-	case tezos.OpTypeDelegation:
+	case mavryk.OpTypeDelegation:
 		return OpTypeDelegation
-	case tezos.OpTypeReveal:
+	case mavryk.OpTypeReveal:
 		return OpTypeReveal
-	case tezos.OpTypeEndorsement, tezos.OpTypeEndorsementWithSlot:
+	case mavryk.OpTypeEndorsement, mavryk.OpTypeEndorsementWithSlot:
 		return OpTypeEndorsement
-	case tezos.OpTypePreendorsement:
+	case mavryk.OpTypePreendorsement:
 		return OpTypePreendorsement
-	case tezos.OpTypeSeedNonceRevelation:
+	case mavryk.OpTypeSeedNonceRevelation:
 		return OpTypeNonceRevelation
-	case tezos.OpTypeRegisterConstant:
+	case mavryk.OpTypeRegisterConstant:
 		return OpTypeRegisterConstant
-	case tezos.OpTypeSetDepositsLimit:
+	case mavryk.OpTypeSetDepositsLimit:
 		return OpTypeDepositsLimit
-	case tezos.OpTypeVdfRevelation:
+	case mavryk.OpTypeVdfRevelation:
 		return OpTypeVdfRevelation
-	case tezos.OpTypeIncreasePaidStorage:
+	case mavryk.OpTypeIncreasePaidStorage:
 		return OpTypeIncreasePaidStorage
-	case tezos.OpTypeDrainDelegate:
+	case mavryk.OpTypeDrainDelegate:
 		return OpTypeDrainDelegate
-	case tezos.OpTypeUpdateConsensusKey:
+	case mavryk.OpTypeUpdateConsensusKey:
 		return OpTypeUpdateConsensusKey
-	case tezos.OpTypeTransferTicket:
+	case mavryk.OpTypeTransferTicket:
 		return OpTypeTransferTicket
-	case tezos.OpTypeTxRollupOrigination, tezos.OpTypeSmartRollupOriginate:
+	case mavryk.OpTypeTxRollupOrigination, mavryk.OpTypeSmartRollupOriginate:
 		return OpTypeRollupOrigination
 	case
-		tezos.OpTypeTxRollupSubmitBatch,
-		tezos.OpTypeTxRollupCommit,
-		tezos.OpTypeTxRollupReturnBond,
-		tezos.OpTypeTxRollupFinalizeCommitment,
-		tezos.OpTypeTxRollupRemoveCommitment,
-		tezos.OpTypeTxRollupRejection,
-		tezos.OpTypeTxRollupDispatchTickets,
+		mavryk.OpTypeTxRollupSubmitBatch,
+		mavryk.OpTypeTxRollupCommit,
+		mavryk.OpTypeTxRollupReturnBond,
+		mavryk.OpTypeTxRollupFinalizeCommitment,
+		mavryk.OpTypeTxRollupRemoveCommitment,
+		mavryk.OpTypeTxRollupRejection,
+		mavryk.OpTypeTxRollupDispatchTickets,
 
-		tezos.OpTypeSmartRollupAddMessages,
-		tezos.OpTypeSmartRollupCement,
-		tezos.OpTypeSmartRollupPublish,
-		tezos.OpTypeSmartRollupRefute,
-		tezos.OpTypeSmartRollupTimeout,
-		tezos.OpTypeSmartRollupExecuteOutboxMessage,
-		tezos.OpTypeSmartRollupRecoverBond:
+		mavryk.OpTypeSmartRollupAddMessages,
+		mavryk.OpTypeSmartRollupCement,
+		mavryk.OpTypeSmartRollupPublish,
+		mavryk.OpTypeSmartRollupRefute,
+		mavryk.OpTypeSmartRollupTimeout,
+		mavryk.OpTypeSmartRollupExecuteOutboxMessage,
+		mavryk.OpTypeSmartRollupRecoverBond:
 		return OpTypeRollupTransaction
 	// case OpTypeDalAttestation: // TODO
 	// case OpTypeDalPublishSlotHeader: // TODO

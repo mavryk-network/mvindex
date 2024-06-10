@@ -8,9 +8,9 @@ import (
 	"context"
 	"fmt"
 
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 // this is a generic op only, details are in governance table
@@ -35,7 +35,7 @@ func (b *Builder) AppendBallotOp(ctx context.Context, oh *rpc.Operation, id mode
 
 	// build op, ballots have no fees, volume, gas, etc
 	op := model.NewOp(b.block, id)
-	op.Status = tezos.OpStatusApplied
+	op.Status = mavryk.OpStatusApplied
 	op.IsSuccess = true
 	op.SenderId = bkr.AccountId
 
@@ -90,7 +90,7 @@ func (b *Builder) AppendProposalOp(ctx context.Context, oh *rpc.Operation, id mo
 
 	// build op, proposals have no fees, volume, gas, etc
 	op := model.NewOp(b.block, id)
-	op.Status = tezos.OpStatusApplied
+	op.Status = mavryk.OpStatusApplied
 	op.IsSuccess = true
 	op.SenderId = acc.RowId
 

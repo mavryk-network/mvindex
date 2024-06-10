@@ -19,10 +19,10 @@ import (
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
 	"blockwatch.cc/packdb/vec"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -136,7 +136,7 @@ func (o *Op) MarshalJSONVerbose() ([]byte, error) {
 		Data         string          `json:"data,omitempty"`
 		Parameters   string          `json:"parameters,omitempty"`
 		StorageHash  string          `json:"storage_hash,omitempty"`
-		BigmapEvents tezos.HexBytes  `json:"big_map_diff,omitempty"`
+		BigmapEvents mavryk.HexBytes `json:"big_map_diff,omitempty"`
 		Errors       json.RawMessage `json:"errors,omitempty"`
 		Entrypoint   string          `json:"entrypoint"`
 		CodeHash     string          `json:"code_hash"`
@@ -189,7 +189,7 @@ func (o *Op) MarshalJSONVerbose() ([]byte, error) {
 	}
 	if len(o.BigmapEvents) > 0 {
 		buf, _ := o.BigmapEvents.MarshalBinary()
-		op.BigmapEvents = tezos.HexBytes(buf)
+		op.BigmapEvents = mavryk.HexBytes(buf)
 	}
 	// fill endorsement time from block
 	if o.Timestamp.IsZero() {
@@ -588,7 +588,7 @@ func StreamOpTable(ctx *server.Context, args *TableRequest) (interface{}, int) {
 			// special hash type to []byte conversion
 			hashes := make([][]byte, len(val))
 			for i, v := range val {
-				h, err := tezos.ParseOpHash(v)
+				h, err := mavryk.ParseOpHash(v)
 				if err != nil {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid operation hash '%s'", v), err))
 				}
@@ -645,7 +645,7 @@ func StreamOpTable(ctx *server.Context, args *TableRequest) (interface{}, int) {
 			// parse only the first value
 			switch mode {
 			case pack.FilterModeEqual, pack.FilterModeNotEqual:
-				stat := tezos.ParseOpStatus(val[0])
+				stat := mavryk.ParseOpStatus(val[0])
 				if !stat.IsValid() {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid operation status '%s'", val[0]), nil))
 				}
@@ -653,7 +653,7 @@ func StreamOpTable(ctx *server.Context, args *TableRequest) (interface{}, int) {
 			case pack.FilterModeIn, pack.FilterModeNotIn:
 				stats := make([]uint8, 0)
 				for _, t := range strings.Split(val[0], ",") {
-					stat := tezos.ParseOpStatus(t)
+					stat := mavryk.ParseOpStatus(t)
 					if !stat.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid operation status '%s'", t), nil))
 					}
@@ -668,7 +668,7 @@ func StreamOpTable(ctx *server.Context, args *TableRequest) (interface{}, int) {
 			// parse address and lookup id
 			addrs := make([]model.AccountID, 0)
 			for _, v := range strings.Split(val[0], ",") {
-				addr, err := tezos.ParseAddress(v)
+				addr, err := mavryk.ParseAddress(v)
 				if err != nil || !addr.IsValid() {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", v), err))
 				}
@@ -742,7 +742,7 @@ func StreamOpTable(ctx *server.Context, args *TableRequest) (interface{}, int) {
 					q = q.AndEqual(field, 0)
 				} else {
 					// single-address lookup and compile condition
-					addr, err := tezos.ParseAddress(val[0])
+					addr, err := mavryk.ParseAddress(val[0])
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", val[0]), err))
 					}
@@ -762,7 +762,7 @@ func StreamOpTable(ctx *server.Context, args *TableRequest) (interface{}, int) {
 				// multi-address lookup and compile condition
 				ids := make([]uint64, 0)
 				for _, a := range strings.Split(val[0], ",") {
-					addr, err := tezos.ParseAddress(a)
+					addr, err := mavryk.ParseAddress(a)
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", val[0]), err))
 					}
@@ -957,7 +957,7 @@ func StreamOpTable(ctx *server.Context, args *TableRequest) (interface{}, int) {
 				// special hash type to []byte conversion
 				hashes := make([][]byte, len(val))
 				for i, v := range val {
-					h, err := tezos.ParseOpHash(v)
+					h, err := mavryk.ParseOpHash(v)
 					if err != nil {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid operation hash '%s'", v), err))
 					}
@@ -1009,7 +1009,7 @@ func StreamOpTable(ctx *server.Context, args *TableRequest) (interface{}, int) {
 				// parse address and lookup id
 				addrs := make([]model.AccountID, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					addr, err := tezos.ParseAddress(v)
+					addr, err := mavryk.ParseAddress(v)
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", v), err))
 					}

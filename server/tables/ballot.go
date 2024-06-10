@@ -17,10 +17,10 @@ import (
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
 	"blockwatch.cc/packdb/vec"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -51,10 +51,10 @@ func init() {
 // configurable marshalling helper
 type Ballot struct {
 	model.Ballot
-	verbose bool                        // cond. marshal
-	columns util.StringList             // cond. cols & order when brief
-	ctx     *server.Context             // blockchain amount conversion
-	ops     map[model.OpID]tezos.OpHash // op map
+	verbose bool                         // cond. marshal
+	columns util.StringList              // cond. cols & order when brief
+	ctx     *server.Context              // blockchain amount conversion
+	ops     map[model.OpID]mavryk.OpHash // op map
 }
 
 func (b *Ballot) MarshalJSON() ([]byte, error) {
@@ -229,8 +229,8 @@ func StreamBallotTable(ctx *server.Context, args *TableRequest) (interface{}, in
 		WithFields(srcNames...).
 		WithLimit(int(args.Limit)).
 		WithOrder(args.Order)
-	accMap := make(map[model.AccountID]tezos.Address)
-	opMap := make(map[model.OpID]tezos.OpHash)
+	accMap := make(map[model.AccountID]mavryk.Address)
+	opMap := make(map[model.OpID]mavryk.OpHash)
 
 	// build dynamic filter conditions from query (will panic on error)
 	for key, val := range ctx.Request.URL.Query() {
@@ -261,7 +261,7 @@ func StreamBallotTable(ctx *server.Context, args *TableRequest) (interface{}, in
 		case "ballot":
 			switch mode {
 			case pack.FilterModeEqual, pack.FilterModeNotEqual:
-				ballot := tezos.ParseBallotVote(val[0])
+				ballot := mavryk.ParseBallotVote(val[0])
 				if !ballot.IsValid() {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid ballot vote '%s'", val[0]), nil))
 				}
@@ -270,7 +270,7 @@ func StreamBallotTable(ctx *server.Context, args *TableRequest) (interface{}, in
 			case pack.FilterModeIn, pack.FilterModeNotIn:
 				ballots := make([]int64, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					ballot := tezos.ParseBallotVote(v)
+					ballot := mavryk.ParseBallotVote(v)
 					if !ballot.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid ballot vote '%s'", v), nil))
 					}
@@ -291,7 +291,7 @@ func StreamBallotTable(ctx *server.Context, args *TableRequest) (interface{}, in
 					q = q.And(field, mode, 0)
 				} else {
 					// single-address lookup and compile condition
-					addr, err := tezos.ParseAddress(val[0])
+					addr, err := mavryk.ParseAddress(val[0])
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", val[0]), err))
 					}
@@ -312,7 +312,7 @@ func StreamBallotTable(ctx *server.Context, args *TableRequest) (interface{}, in
 				// multi-address lookup and compile condition
 				ids := make([]uint64, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					addr, err := tezos.ParseAddress(v)
+					addr, err := mavryk.ParseAddress(v)
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", v), err))
 					}
@@ -426,7 +426,7 @@ func StreamBallotTable(ctx *server.Context, args *TableRequest) (interface{}, in
 				case "voting_period_kind":
 					fvals := make([]string, 0)
 					for _, vv := range strings.Split(v, ",") {
-						fval := tezos.ParseVotingPeriod(vv)
+						fval := mavryk.ParseVotingPeriod(vv)
 						if !fval.IsValid() {
 							panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid %s filter value '%s'", key, vv), nil))
 						}
@@ -482,8 +482,8 @@ func StreamBallotTable(ctx *server.Context, args *TableRequest) (interface{}, in
 			// lookup ops from id
 			// ctx.Log.Tracef("Looking up %d ops", len(find))
 			type XOp struct {
-				Id   model.OpID   `pack:"I,pk"`
-				Hash tezos.OpHash `pack:"H"`
+				Id   model.OpID    `pack:"I,pk"`
+				Hash mavryk.OpHash `pack:"H"`
 			}
 			op := &XOp{}
 			err = pack.NewQuery(ctx.RequestID+".ballot_op_lookup").

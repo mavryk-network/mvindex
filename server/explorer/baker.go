@@ -18,10 +18,10 @@ import (
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
 	"blockwatch.cc/packdb/vec"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 func init() {
@@ -70,9 +70,9 @@ type BakerEvents struct {
 
 type Baker struct {
 	Id                 model.AccountID `json:"-"`
-	Address            tezos.Address   `json:"address"`
-	ConsensusKey       tezos.Key       `json:"consensus_key"`
-	ConsensusAddress   tezos.Address   `json:"consensus_address"`
+	Address            mavryk.Address  `json:"address"`
+	ConsensusKey       mavryk.Key      `json:"consensus_key"`
+	ConsensusAddress   mavryk.Address  `json:"consensus_address"`
 	BakerSince         time.Time       `json:"baker_since"`
 	BakerUntil         *time.Time      `json:"baker_until,omitempty"`
 	GracePeriod        int64           `json:"grace_period"`
@@ -256,11 +256,11 @@ func (b BakerList) RegisterRoutes(r *mux.Router) error {
 
 type BakerListRequest struct {
 	ListRequest
-	Active        bool           `schema:"active"`
-	Status        *string        `schema:"status"`
-	Country       *iso.Country   `schema:"country"`
-	Suggest       *tezos.Address `schema:"suggest"`
-	WithSponsored bool           `schema:"ads"`
+	Active        bool            `schema:"active"`
+	Status        *string         `schema:"status"`
+	Country       *iso.Country    `schema:"country"`
+	Suggest       *mavryk.Address `schema:"suggest"`
+	WithSponsored bool            `schema:"ads"`
 }
 
 type BakerList struct {
@@ -393,7 +393,7 @@ func ListBakers(ctx *server.Context) (interface{}, int) {
 		capDelegation := v.DelegationCapacity(ctx.Params, 0, 0)
 		capStake := v.StakingCapacity(ctx.Params)
 		bakingPower := v.BakingPower(ctx.Params, 0)
-		// oxford only has stake based on shares
+		// atlas only has stake based on shares
 		ownStake := v.StakeAmount(v.Account.StakeShares)
 		baker := Baker{
 			Id:                 v.AccountId,
@@ -533,7 +533,7 @@ func loadBaker(ctx *server.Context) *model.Baker {
 	if accIdent, ok := mux.Vars(ctx.Request)["ident"]; !ok || accIdent == "" {
 		panic(server.EBadRequest(server.EC_RESOURCE_ID_MISSING, "missing baker address", nil))
 	} else {
-		addr, err := tezos.ParseAddress(accIdent)
+		addr, err := mavryk.ParseAddress(accIdent)
 		if err != nil {
 			panic(server.EBadRequest(server.EC_RESOURCE_ID_MALFORMED, "invalid address", err))
 		}
@@ -599,7 +599,7 @@ func ListBakerVotes(ctx *server.Context) (interface{}, int) {
 	}
 
 	// prepare for lookup
-	opMap := make(map[model.OpID]tezos.OpHash)
+	opMap := make(map[model.OpID]mavryk.OpHash)
 	for _, v := range ops {
 		opMap[v.RowId] = v.Hash
 	}
@@ -695,15 +695,15 @@ func ListBakerDelegations(ctx *server.Context) (interface{}, int) {
 }
 
 type ExplorerRights struct {
-	Address  tezos.Address `json:"address"`
-	Cycle    int64         `json:"cycle"`
-	Height   int64         `json:"start_height"`
-	Bake     string        `json:"baking_rights"`
-	Endorse  string        `json:"endorsing_rights"`
-	Baked    string        `json:"blocks_baked"`
-	Endorsed string        `json:"blocks_endorsed"`
-	Seed     string        `json:"seeds_required"`
-	Seeded   string        `json:"seeds_revealed"`
+	Address  mavryk.Address `json:"address"`
+	Cycle    int64          `json:"cycle"`
+	Height   int64          `json:"start_height"`
+	Bake     string         `json:"baking_rights"`
+	Endorse  string         `json:"endorsing_rights"`
+	Baked    string         `json:"blocks_baked"`
+	Endorsed string         `json:"blocks_endorsed"`
+	Seed     string         `json:"seeds_required"`
+	Seeded   string         `json:"seeds_revealed"`
 }
 
 func GetBakerRights(ctx *server.Context) (interface{}, int) {
@@ -844,9 +844,9 @@ func GetBakerIncome(ctx *server.Context) (interface{}, int) {
 }
 
 type ExplorerDelegator struct {
-	Address  tezos.Address `json:"address"`
-	Balance  int64         `json:"balance"`
-	IsFunded bool          `json:"is_funded"`
+	Address  mavryk.Address `json:"address"`
+	Balance  int64          `json:"balance"`
+	IsFunded bool           `json:"is_funded"`
 }
 
 type ExplorerSnapshot struct {

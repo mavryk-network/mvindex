@@ -7,9 +7,9 @@ import (
 	"errors"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 const ConstantTableKey = "constant"
@@ -27,7 +27,7 @@ func (id ConstantID) U64() uint64 {
 // Constant holds code and info about registered global constants
 type Constant struct {
 	RowId       ConstantID         `pack:"I,pk"      json:"row_id"`
-	Address     tezos.ExprHash     `pack:"H,bloom=3" json:"address"`
+	Address     mavryk.ExprHash    `pack:"H,bloom=3" json:"address"`
 	CreatorId   AccountID          `pack:"C,u32"     json:"creator_id"`
 	Value       []byte             `pack:"v,snappy"  json:"value"`
 	Height      int64              `pack:"h,i32"     json:"height"`

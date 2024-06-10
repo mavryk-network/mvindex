@@ -8,9 +8,9 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 func (b *Builder) AppendActivationOp(ctx context.Context, oh *rpc.Operation, id model.OpRef, rollback bool) error {
@@ -28,7 +28,7 @@ func (b *Builder) AppendActivationOp(ctx context.Context, oh *rpc.Operation, id 
 	}
 
 	// need to lookup using blinded key
-	bkey, err := tezos.BlindAddress(aop.Pkh, aop.Secret)
+	bkey, err := mavryk.BlindAddress(aop.Pkh, aop.Secret)
 	if err != nil {
 		return Errorf("blinded address creation failed: %v", err)
 	}
@@ -51,7 +51,7 @@ func (b *Builder) AppendActivationOp(ctx context.Context, oh *rpc.Operation, id 
 	// build op
 	op := model.NewOp(b.block, id)
 	op.IsSuccess = true
-	op.Status = tezos.OpStatusApplied
+	op.Status = mavryk.OpStatusApplied
 	op.Volume = activated
 	op.SenderId = acc.RowId
 	op.ReceiverId = acc.RowId

@@ -11,45 +11,45 @@ import (
 
 	"github.com/echa/bson"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
 )
 
 // lacking the algorithm to compute KT1 addresses from content,
 // we hard-code all mainnet vesting KT1 addresses here
-var vestingContractAddrs = []tezos.Address{
-	tezos.MustParseAddress("KT1QuofAgnsWffHzLA7D78rxytJruGHDe7XG"),
-	tezos.MustParseAddress("KT1CSKPf2jeLpMmrgKquN2bCjBTkAcAdRVDy"),
-	tezos.MustParseAddress("KT1SLWhfqPtQq7f4zLomh8BNgDeprF9B6d2M"),
-	tezos.MustParseAddress("KT1WPEis2WhAc2FciM2tZVn8qe6pCBe9HkDp"),
-	tezos.MustParseAddress("KT1Um7ieBEytZtumecLqGeL56iY6BuWoBgio"),
-	tezos.MustParseAddress("KT1Cz7TyVFvHxXpxLS57RFePrhTGisUpPhvD"),
-	tezos.MustParseAddress("KT1Q1kfbvzteafLvnGz92DGvkdypXfTGfEA3"),
-	tezos.MustParseAddress("KT1PDAELuX7CypUHinUgFgGFskKs7ytwh5Vw"),
-	tezos.MustParseAddress("KT1A56dh8ivKNvLiLVkjYPyudmnY2Ti5Sba3"),
-	tezos.MustParseAddress("KT1RUT25eGgo9KKWXfLhj1xYjghAY1iZ2don"),
-	tezos.MustParseAddress("KT1FuFDZGdw86p6krdBUKoZfEMkcUmezqX5o"),
-	tezos.MustParseAddress("KT1THsDNgHtN56ew9VVCAUWnqPC81pqAxCEp"),
-	tezos.MustParseAddress("KT1EWLAQGPMF2uhtVRPaCH2vtFVN36Njdr6z"),
-	tezos.MustParseAddress("KT1FN5fcNNcgieGjzxbVEPWUpJGwZEpzNGA8"),
-	tezos.MustParseAddress("KT1TcAHw5gpejyemwRtdNyFKGBLc4qwA5gtw"),
-	tezos.MustParseAddress("KT1VsSxSXUkgw6zkBGgUuDXXuJs9ToPqkrCg"),
-	tezos.MustParseAddress("KT1Msatnmdy24sQt6knzpALs4tvHfSPPduA2"),
-	tezos.MustParseAddress("KT1LZFMGrdnPjRLsCZ1aEDUAF5myA5Eo4rQe"),
-	tezos.MustParseAddress("KT1LQ99RfGcmFe98PiBcGXuyjBkWzAcoXXhW"),
-	tezos.MustParseAddress("KT1Kfbk3B6NYPCPohPBDU3Hxf5Xeyy9PdkNp"),
-	tezos.MustParseAddress("KT1DnfT4hfikoMY3uiPE9mQV4y3Xweramb2k"),
-	tezos.MustParseAddress("KT19xDbLsvQKnp9xqfDNPWJbKJJmV93dHDUa"),
-	tezos.MustParseAddress("KT1HvwFnXteMbphi7mfPDhCWkZSDvXEz8iyv"),
-	tezos.MustParseAddress("KT1KRyTaxCAM3YRquifEe29BDbUKNhJ6hdtx"),
-	tezos.MustParseAddress("KT1Gow8VzXZx3Akn5kvjACqnjnyYBxQpzSKr"),
-	tezos.MustParseAddress("KT1W148mcjmfvr9J2RvWcGHxsAFApq9mcfgT"),
-	tezos.MustParseAddress("KT1D5NmtDtgCwPxYNb2ZK2But6dhNLs1T1bV"),
-	tezos.MustParseAddress("KT1TzamC1SCj68ia2E4q2GWZeT24yRHvUZay"),
-	tezos.MustParseAddress("KT1CM1g1o9RKDdtDKgcBWE59X2KgTc2TcYtC"),
-	tezos.MustParseAddress("KT1FL3C6t9Lyfskyb6rQrCRQTnf7M9t587VM"),
-	tezos.MustParseAddress("KT1JW6PwhfaEJu6U3ENsxUeja48AdtqSoekd"),
-	tezos.MustParseAddress("KT1VvXEpeBpreAVpfp4V8ZujqWu2gVykwXBJ"),
+var vestingContractAddrs = []mavryk.Address{
+	mavryk.MustParseAddress("KT1QuofAgnsWffHzLA7D78rxytJruGHDe7XG"),
+	mavryk.MustParseAddress("KT1CSKPf2jeLpMmrgKquN2bCjBTkAcAdRVDy"),
+	mavryk.MustParseAddress("KT1SLWhfqPtQq7f4zLomh8BNgDeprF9B6d2M"),
+	mavryk.MustParseAddress("KT1WPEis2WhAc2FciM2tZVn8qe6pCBe9HkDp"),
+	mavryk.MustParseAddress("KT1Um7ieBEytZtumecLqGeL56iY6BuWoBgio"),
+	mavryk.MustParseAddress("KT1Cz7TyVFvHxXpxLS57RFePrhTGisUpPhvD"),
+	mavryk.MustParseAddress("KT1Q1kfbvzteafLvnGz92DGvkdypXfTGfEA3"),
+	mavryk.MustParseAddress("KT1PDAELuX7CypUHinUgFgGFskKs7ytwh5Vw"),
+	mavryk.MustParseAddress("KT1A56dh8ivKNvLiLVkjYPyudmnY2Ti5Sba3"),
+	mavryk.MustParseAddress("KT1RUT25eGgo9KKWXfLhj1xYjghAY1iZ2don"),
+	mavryk.MustParseAddress("KT1FuFDZGdw86p6krdBUKoZfEMkcUmezqX5o"),
+	mavryk.MustParseAddress("KT1THsDNgHtN56ew9VVCAUWnqPC81pqAxCEp"),
+	mavryk.MustParseAddress("KT1EWLAQGPMF2uhtVRPaCH2vtFVN36Njdr6z"),
+	mavryk.MustParseAddress("KT1FN5fcNNcgieGjzxbVEPWUpJGwZEpzNGA8"),
+	mavryk.MustParseAddress("KT1TcAHw5gpejyemwRtdNyFKGBLc4qwA5gtw"),
+	mavryk.MustParseAddress("KT1VsSxSXUkgw6zkBGgUuDXXuJs9ToPqkrCg"),
+	mavryk.MustParseAddress("KT1Msatnmdy24sQt6knzpALs4tvHfSPPduA2"),
+	mavryk.MustParseAddress("KT1LZFMGrdnPjRLsCZ1aEDUAF5myA5Eo4rQe"),
+	mavryk.MustParseAddress("KT1LQ99RfGcmFe98PiBcGXuyjBkWzAcoXXhW"),
+	mavryk.MustParseAddress("KT1Kfbk3B6NYPCPohPBDU3Hxf5Xeyy9PdkNp"),
+	mavryk.MustParseAddress("KT1DnfT4hfikoMY3uiPE9mQV4y3Xweramb2k"),
+	mavryk.MustParseAddress("KT19xDbLsvQKnp9xqfDNPWJbKJJmV93dHDUa"),
+	mavryk.MustParseAddress("KT1HvwFnXteMbphi7mfPDhCWkZSDvXEz8iyv"),
+	mavryk.MustParseAddress("KT1KRyTaxCAM3YRquifEe29BDbUKNhJ6hdtx"),
+	mavryk.MustParseAddress("KT1Gow8VzXZx3Akn5kvjACqnjnyYBxQpzSKr"),
+	mavryk.MustParseAddress("KT1W148mcjmfvr9J2RvWcGHxsAFApq9mcfgT"),
+	mavryk.MustParseAddress("KT1D5NmtDtgCwPxYNb2ZK2But6dhNLs1T1bV"),
+	mavryk.MustParseAddress("KT1TzamC1SCj68ia2E4q2GWZeT24yRHvUZay"),
+	mavryk.MustParseAddress("KT1CM1g1o9RKDdtDKgcBWE59X2KgTc2TcYtC"),
+	mavryk.MustParseAddress("KT1FL3C6t9Lyfskyb6rQrCRQTnf7M9t587VM"),
+	mavryk.MustParseAddress("KT1JW6PwhfaEJu6U3ENsxUeja48AdtqSoekd"),
+	mavryk.MustParseAddress("KT1VvXEpeBpreAVpfp4V8ZujqWu2gVykwXBJ"),
 }
 
 type GenesisData struct {
@@ -60,22 +60,22 @@ type GenesisData struct {
 
 // bootstrap account with or without known public key
 type X0 struct {
-	Addr  tezos.Address
-	Key   tezos.Key
+	Addr  mavryk.Address
+	Key   mavryk.Key
 	Value int64
 }
 
 // bootstrap contract
 type X1 struct {
-	Addr     tezos.Address
-	Delegate tezos.Address
+	Addr     mavryk.Address
+	Delegate mavryk.Address
 	Value    int64
 	Script   micheline.Script
 }
 
 // commitment
 type X2 struct {
-	Addr  tezos.Address
+	Addr  mavryk.Address
 	Value int64
 }
 
@@ -130,10 +130,10 @@ type bootstrap struct {
 }
 
 type contract struct {
-	Delegate string        `bson:"delegate"`
-	Value    string        `bson:"amount"`
-	Script   bson.M        `bson:"script"`
-	Hash     tezos.Address `bson:"hash"`
+	Delegate string         `bson:"delegate"`
+	Value    string         `bson:"amount"`
+	Script   bson.M         `bson:"script"`
+	Hash     mavryk.Address `bson:"hash"`
 }
 
 func (b *bootstrap) DecodeContracts() ([]*X1, error) {
@@ -146,7 +146,7 @@ func (b *bootstrap) DecodeContracts() ([]*X1, error) {
 		if !c[i].Addr.IsValid() && i < len(vestingContractAddrs) {
 			c[i].Addr = vestingContractAddrs[i]
 		}
-		c[i].Delegate, _ = tezos.ParseAddress(v.Delegate)
+		c[i].Delegate, _ = mavryk.ParseAddress(v.Delegate)
 		c[i].Value, _ = strconv.ParseInt(v.Value, 10, 64)
 
 		// script unmarshalling BSON -> JSON -> Micheline
@@ -168,7 +168,7 @@ func (b *bootstrap) DecodeContracts() ([]*X1, error) {
 			// keygroups >> signatories
 			for _, v := range c[i].Script.Storage.Args[0].Args[1].Args[0].Args {
 				for _, vv := range v.Args[0].Args {
-					edpk, err := tezos.ParseKey(vv.String)
+					edpk, err := mavryk.ParseKey(vv.String)
 					if err != nil {
 						return nil, fmt.Errorf("decoding signatory key %s: %w", vv.String, err)
 					}
@@ -182,7 +182,7 @@ func (b *bootstrap) DecodeContracts() ([]*X1, error) {
 			if i < 8 {
 				// pour_dest
 				pair := c[i].Script.Storage.Args[1].Args[1].Args[0].Args
-				dest, err := tezos.ParseAddress(pair[0].String)
+				dest, err := mavryk.ParseAddress(pair[0].String)
 				if err != nil {
 					return nil, fmt.Errorf("decoding pour_dest %s: %w", pair[0].String, err)
 				}
@@ -191,7 +191,7 @@ func (b *bootstrap) DecodeContracts() ([]*X1, error) {
 				pair[0].String = ""
 
 				// pour_authorizer
-				edpk, err := tezos.ParseKey(pair[1].String)
+				edpk, err := mavryk.ParseKey(pair[1].String)
 				if err != nil {
 					return nil, fmt.Errorf("decoding pour_authorizer key %s: %w", pair[1].String, err)
 				}
@@ -211,15 +211,15 @@ func (b *bootstrap) DecodeAccounts() ([]*X0, error) {
 		acc[i] = &X0{}
 		pk := v[0]
 		switch {
-		case tezos.HasKeyPrefix(pk):
-			key, err := tezos.ParseKey(pk)
+		case mavryk.HasKeyPrefix(pk):
+			key, err := mavryk.ParseKey(pk)
 			if err != nil {
 				return nil, err
 			}
 			acc[i].Key = key
 			acc[i].Addr = key.Address()
-		case tezos.HasAddressPrefix(pk):
-			addr, err := tezos.ParseAddress(pk)
+		case mavryk.HasAddressPrefix(pk):
+			addr, err := mavryk.ParseAddress(pk)
 			if err != nil {
 				return nil, err
 			}
@@ -238,8 +238,8 @@ func (b *bootstrap) DecodeCommitments() ([]*X2, error) {
 	c := make([]*X2, len(b.Commitments))
 	for i, v := range b.Commitments {
 		c[i] = &X2{}
-		// [ $Blinded public key hash, $mutez ]
-		addr, err := tezos.ParseAddress(v[0])
+		// [ $Blinded public key hash, $mumav ]
+		addr, err := mavryk.ParseAddress(v[0])
 		if err != nil {
 			return nil, err
 		}

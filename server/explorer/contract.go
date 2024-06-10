@@ -15,11 +15,11 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 func init() {
@@ -149,24 +149,24 @@ func (b Contract) RegisterRoutes(r *mux.Router) error {
 type ContractRequest struct {
 	ListRequest // offset, limit, cursor, order
 
-	Block   string        `schema:"block"`   // height or hash for time-lock
-	Since   string        `schema:"since"`   // block hash or height for updates
-	Unpack  bool          `schema:"unpack"`  // unpack packed key/values
-	Prim    bool          `schema:"prim"`    // for prim/value rendering
-	Meta    bool          `schema:"meta"`    // include account metadata
-	Merge   bool          `schema:"merge"`   // collapse internal calls
-	Storage bool          `schema:"storage"` // embed storage updates
-	Sender  tezos.Address `schema:"sender"`  // sender address
+	Block   string         `schema:"block"`   // height or hash for time-lock
+	Since   string         `schema:"since"`   // block hash or height for updates
+	Unpack  bool           `schema:"unpack"`  // unpack packed key/values
+	Prim    bool           `schema:"prim"`    // for prim/value rendering
+	Meta    bool           `schema:"meta"`    // include account metadata
+	Merge   bool           `schema:"merge"`   // collapse internal calls
+	Storage bool           `schema:"storage"` // embed storage updates
+	Sender  mavryk.Address `schema:"sender"`  // sender address
 
 	// decoded entrypoint condition (list of name, num or branch)
 	EntrypointMode pack.FilterMode `schema:"-"`
 	EntrypointCond string          `schema:"-"`
 
 	// decoded values
-	BlockHeight int64           `schema:"-"`
-	BlockHash   tezos.BlockHash `schema:"-"`
-	SinceHeight int64           `schema:"-"`
-	SinceHash   tezos.BlockHash `schema:"-"`
+	BlockHeight int64            `schema:"-"`
+	BlockHash   mavryk.BlockHash `schema:"-"`
+	SinceHeight int64            `schema:"-"`
+	SinceHash   mavryk.BlockHash `schema:"-"`
 }
 
 func (r *ContractRequest) WithPrim() bool   { return r != nil && r.Prim }
@@ -229,7 +229,7 @@ func loadContract(ctx *server.Context) *model.Contract {
 	if ccIdent, ok := mux.Vars(ctx.Request)["ident"]; !ok || ccIdent == "" {
 		panic(server.EBadRequest(server.EC_RESOURCE_ID_MISSING, "missing contract address", nil))
 	} else {
-		addr, err := tezos.ParseAddress(ccIdent)
+		addr, err := mavryk.ParseAddress(ccIdent)
 		if err != nil {
 			panic(server.EBadRequest(server.EC_RESOURCE_ID_MALFORMED, "invalid address", err))
 		}

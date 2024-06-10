@@ -8,15 +8,15 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 // NOTE: does not extend grace period although it's a manager operation
 // - burns a fee (optional, not used early on)
 // - can delegate funds
 // - only originated accounts (KT1) can delegate
-// - only implicit accounts (tz1) can be delegates
+// - only implicit accounts (mv1) can be delegates
 // - by default originated accounts are not delegatable (but initial delegate can be set)
 func (b *Builder) AppendOriginationOp(ctx context.Context, oh *rpc.Operation, id model.OpRef, rollback bool) error {
 	o := id.Get(oh)

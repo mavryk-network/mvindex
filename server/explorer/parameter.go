@@ -6,11 +6,11 @@ package explorer
 import (
 	"encoding/json"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 type Parameters struct {
@@ -18,19 +18,19 @@ type Parameters struct {
 	Value      interface{}     `json:"value,omitempty"`           // contract
 	Prim       *micheline.Prim `json:"prim,omitempty"`            // contract
 	Kind       string          `json:"kind,omitempty"`            // rollup kind
-	L2Address  *tezos.Address  `json:"l2_address,omitempty"`      // tx rollup
+	L2Address  *mavryk.Address `json:"l2_address,omitempty"`      // tx rollup
 	Method     string          `json:"method,omitempty"`          // tx+smart rollup
 	Arguments  json.RawMessage `json:"args,omitempty"`            // tx+smart rollup
 	Level      *int64          `json:"level,omitempty"`           // tx rollup
 	Result     json.RawMessage `json:"result,omitempty"`          // smart rollup
 	Type       *micheline.Prim `json:"ticket_ty,omitempty"`       // ticket transfer
 	Contents   *micheline.Prim `json:"ticket_contents,omitempty"` // ticket transfer
-	Ticketer   *tezos.Address  `json:"ticket_ticketer,omitempty"` // ticket transfer
-	Amount     *tezos.Z        `json:"ticket_amount,omitempty"`   // ticket transfer
+	Ticketer   *mavryk.Address `json:"ticket_ticketer,omitempty"` // ticket transfer
+	Amount     *mavryk.Z       `json:"ticket_amount,omitempty"`   // ticket transfer
 
 }
 
-func NewContractParameters(ctx *server.Context, data []byte, typ micheline.Type, op tezos.OpHash, args server.Options) *Parameters {
+func NewContractParameters(ctx *server.Context, data []byte, typ micheline.Type, op mavryk.OpHash, args server.Options) *Parameters {
 	resp := &Parameters{}
 
 	p := &micheline.Parameters{}
@@ -106,12 +106,12 @@ func NewTicketTransferParameters(ctx *server.Context, op *model.Op, args server.
 	}
 	p.Type = &prim.Args[1].Args[0]
 	p.Contents = &prim.Args[1].Args[1].Args[0]
-	var addr tezos.Address
+	var addr mavryk.Address
 	if err := addr.Decode(prim.Args[0].Bytes); err != nil {
 		log.Errorf("%s ticketer address: %v", op, err)
 	}
 	p.Ticketer = &addr
-	z := tezos.NewBigZ(prim.Args[1].Args[1].Args[1].Int)
+	z := mavryk.NewBigZ(prim.Args[1].Args[1].Args[1].Int)
 	p.Amount = &z
 	return p
 }
@@ -134,8 +134,8 @@ func NewTxRollupParameters(ctx *server.Context, op *model.Op, args server.Option
 				micheline.TicketType(call.Value.Args[1]),
 				call.Value.Args[0].Args[0],
 			)
-			addr := tezos.NewAddress(
-				tezos.AddressTypeBls12_381,
+			addr := mavryk.NewAddress(
+				mavryk.AddressTypeBls12_381,
 				call.Value.Args[0].Args[1].Bytes,
 			)
 			p.L2Address = &addr

@@ -10,26 +10,26 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 type Ticket struct {
 	Id           uint64         `json:"id"`
-	Ticketer     tezos.Address  `json:"ticketer"`
+	Ticketer     mavryk.Address `json:"ticketer"`
 	Type         micheline.Prim `json:"type"`
 	Content      micheline.Prim `json:"content"`
 	Hash         string         `json:"hash"`
-	Creator      tezos.Address  `json:"creator"`
+	Creator      mavryk.Address `json:"creator"`
 	FirstBlock   int64          `json:"first_block"`
 	FirstTime    time.Time      `json:"first_time"`
 	LastBlock    int64          `json:"last_block"`
 	LastTime     time.Time      `json:"last_time"`
-	Supply       tezos.Z        `json:"total_supply"`
-	TotalMint    tezos.Z        `json:"total_mint"`
-	TotalBurn    tezos.Z        `json:"total_burn"`
+	Supply       mavryk.Z       `json:"total_supply"`
+	TotalMint    mavryk.Z       `json:"total_mint"`
+	TotalBurn    mavryk.Z       `json:"total_burn"`
 	NumTransfers int            `json:"num_transfers"`
 	NumHolders   int            `json:"num_holders"`
 }
@@ -64,12 +64,12 @@ func (_ Ticket) Expires() time.Time {
 
 type TicketOwner struct {
 	Id           uint64         `json:"id"`
-	Ticketer     tezos.Address  `json:"ticketer"`
+	Ticketer     mavryk.Address `json:"ticketer"`
 	Type         micheline.Prim `json:"type"`
 	Content      micheline.Prim `json:"content"`
 	Hash         string         `json:"hash"`
-	Account      tezos.Address  `json:"account"`
-	Balance      tezos.Z        `json:"balance"`
+	Account      mavryk.Address `json:"account"`
+	Balance      mavryk.Z       `json:"balance"`
 	FirstBlock   int64          `json:"first_block"`
 	FirstTime    time.Time      `json:"first_time"`
 	LastBlock    int64          `json:"last_block"`
@@ -77,10 +77,10 @@ type TicketOwner struct {
 	NumTransfers int            `json:"num_transfers"`
 	NumMints     int            `json:"num_mints"`
 	NumBurns     int            `json:"num_burns"`
-	VolSent      tezos.Z        `json:"vol_sent"`
-	VolRecv      tezos.Z        `json:"vol_recv"`
-	VolMint      tezos.Z        `json:"vol_mint"`
-	VolBurn      tezos.Z        `json:"vol_burn"`
+	VolSent      mavryk.Z       `json:"vol_sent"`
+	VolRecv      mavryk.Z       `json:"vol_recv"`
+	VolMint      mavryk.Z       `json:"vol_mint"`
+	VolBurn      mavryk.Z       `json:"vol_burn"`
 }
 
 func NewTicketOwner(ctx *server.Context, ownr *model.TicketOwner, tick *model.Ticket) *TicketOwner {
@@ -116,14 +116,14 @@ func (t TicketOwner) Expires() time.Time {
 
 type TicketEvent struct {
 	Id        uint64                `json:"id"`
-	Ticketer  tezos.Address         `json:"ticketer"`
+	Ticketer  mavryk.Address        `json:"ticketer"`
 	Type      micheline.Prim        `json:"type"`
 	Content   micheline.Prim        `json:"content"`
 	Hash      string                `json:"hash"`
 	EventType model.TicketEventType `json:"event_type"`
-	Sender    tezos.Address         `json:"sender"`
-	Receiver  tezos.Address         `json:"receiver"`
-	Amount    tezos.Z               `json:"amount"`
+	Sender    mavryk.Address        `json:"sender"`
+	Receiver  mavryk.Address        `json:"receiver"`
+	Amount    mavryk.Z              `json:"amount"`
 	Height    int64                 `json:"height"`
 	Time      time.Time             `json:"time"`
 	OpId      uint64                `json:"op_id"`
@@ -155,11 +155,11 @@ func (t TicketEvent) Expires() time.Time {
 }
 
 type TicketUpdate struct {
-	Ticketer tezos.Address  `json:"ticketer"`
+	Ticketer mavryk.Address `json:"ticketer"`
 	Type     micheline.Prim `json:"type"`
 	Content  micheline.Prim `json:"content"`
-	Account  tezos.Address  `json:"account"`
-	Amount   tezos.Z        `json:"amount"`
+	Account  mavryk.Address `json:"account"`
+	Amount   mavryk.Z       `json:"amount"`
 }
 
 func NewTicketUpdate(ctx *server.Context, u *model.TicketUpdate, _ server.Options) *TicketUpdate {
@@ -178,13 +178,13 @@ func NewTicketUpdate(ctx *server.Context, u *model.TicketUpdate, _ server.Option
 
 type TicketListRequest struct {
 	ListRequest
-	Account tezos.Address  `schema:"account"`
-	Type    tezos.HexBytes `schema:"type"`
-	Content tezos.HexBytes `schema:"content"`
-	Hash    util.U64String `schema:"hash"`
+	Account mavryk.Address  `schema:"account"`
+	Type    mavryk.HexBytes `schema:"type"`
+	Content mavryk.HexBytes `schema:"content"`
+	Hash    util.U64String  `schema:"hash"`
 }
 
-func (r TicketListRequest) Load(ctx *server.Context, issuer tezos.Address) (*model.Ticket, error) {
+func (r TicketListRequest) Load(ctx *server.Context, issuer mavryk.Address) (*model.Ticket, error) {
 	if len(r.Type) > 0 && len(r.Content) > 0 && r.Hash == 0 {
 		var typ, content micheline.Prim
 		if err := typ.UnmarshalBinary(r.Type.Bytes()); err != nil {
@@ -308,8 +308,8 @@ func ListTicketBalances(ctx *server.Context) (any, int) {
 type TicketEventListRequest struct {
 	TicketListRequest
 	EventType model.TicketEventType `schema:"event_type"`
-	Sender    tezos.Address         `schema:"sender"`
-	Receiver  tezos.Address         `schema:"receiver"`
+	Sender    mavryk.Address        `schema:"sender"`
+	Receiver  mavryk.Address        `schema:"receiver"`
 	Height    int64                 `schema:"height"`
 }
 
@@ -393,13 +393,13 @@ func ListTicketEvents(ctx *server.Context) (any, int) {
 
 type AccountTicketListRequest struct {
 	ListRequest
-	Ticketer  tezos.Address         `schema:"ticketer"`
-	Type      tezos.HexBytes        `schema:"type"`
-	Content   tezos.HexBytes        `schema:"content"`
+	Ticketer  mavryk.Address        `schema:"ticketer"`
+	Type      mavryk.HexBytes       `schema:"type"`
+	Content   mavryk.HexBytes       `schema:"content"`
 	Hash      util.U64String        `schema:"hash"`
 	EventType model.TicketEventType `schema:"event_type"`
-	Sender    tezos.Address         `schema:"sender"`
-	Receiver  tezos.Address         `schema:"receiver"`
+	Sender    mavryk.Address        `schema:"sender"`
+	Receiver  mavryk.Address        `schema:"receiver"`
 	Height    int64                 `schema:"height"`
 }
 

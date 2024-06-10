@@ -17,10 +17,10 @@ import (
 	"blockwatch.cc/packdb/encoding/csv"
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -300,11 +300,11 @@ func StreamContractTable(ctx *server.Context, args *TableRequest) (interface{}, 
 			switch mode {
 			case pack.FilterModeEqual, pack.FilterModeNotEqual:
 				// single-address lookup and compile condition
-				addr, err := tezos.ParseAddress(val[0])
+				addr, err := mavryk.ParseAddress(val[0])
 				if err != nil || !addr.IsValid() {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", val[0]), err))
 				}
-				if addr.Type() != tezos.AddressTypeContract {
+				if addr.Type() != mavryk.AddressTypeContract {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid contract address '%s'", val[0]), err))
 				}
 				q = q.And(field, mode, addr[:])
@@ -313,11 +313,11 @@ func StreamContractTable(ctx *server.Context, args *TableRequest) (interface{}, 
 				// return duplicates)
 				hashes := make([][]byte, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					addr, err := tezos.ParseAddress(v)
+					addr, err := mavryk.ParseAddress(v)
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", v), err))
 					}
-					if addr.Type() != tezos.AddressTypeContract {
+					if addr.Type() != mavryk.AddressTypeContract {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid contract address '%s'", v), err))
 					}
 					hashes = append(hashes, addr[:])
@@ -381,7 +381,7 @@ func StreamContractTable(ctx *server.Context, args *TableRequest) (interface{}, 
 			switch mode {
 			case pack.FilterModeEqual, pack.FilterModeNotEqual:
 				// single-account lookup and compile condition
-				addr, err := tezos.ParseAddress(val[0])
+				addr, err := mavryk.ParseAddress(val[0])
 				if err != nil || !addr.IsValid() {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", val[0]), err))
 				}
@@ -400,7 +400,7 @@ func StreamContractTable(ctx *server.Context, args *TableRequest) (interface{}, 
 				// multi-address lookup and compile condition
 				ids := make([]uint64, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					addr, err := tezos.ParseAddress(v)
+					addr, err := mavryk.ParseAddress(v)
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", v), err))
 					}

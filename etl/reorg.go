@@ -9,7 +9,7 @@ import (
 	"fmt"
 
 	"blockwatch.cc/packdb/store"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 func (c *Crawler) Rollback(ctx context.Context, height int64, ignoreErrors bool) error {
@@ -61,8 +61,8 @@ func (c *Crawler) reorganize(ctx context.Context, formerBest, newBest *model.Blo
 	if attach.Len() != 0 && detach.Len() != 0 {
 		firstAttachBlock := attach.Front().Value.(*model.Block)
 		lastDetachBlock := detach.Back().Value.(*model.Block)
-		firstParentHash := firstAttachBlock.TZ.ParentHash()
-		lastParentHash := lastDetachBlock.TZ.ParentHash()
+		firstParentHash := firstAttachBlock.MV.ParentHash()
+		lastParentHash := lastDetachBlock.MV.ParentHash()
 		if firstParentHash != lastParentHash {
 			return fmt.Errorf("REORGANIZE blocks do not have the "+
 				"same fork point -- first attach parent %s, last detach "+
@@ -102,7 +102,7 @@ func (c *Crawler) reorganize(ctx context.Context, formerBest, newBest *model.Blo
 
 			// we need resolved accounts to rebuild the previous balance set state
 			// so we keep identity data and rpc bundle and rebuild the current block
-			tz, bid, pid := block.TZ, block.RowId, block.ParentId
+			tz, bid, pid := block.MV, block.RowId, block.ParentId
 
 			// BuildReorg() uses previous parent or fork block as parent data!
 			block, err = c.builder.BuildReorg(ctx, tz, parent)
@@ -185,7 +185,7 @@ func (c *Crawler) reorganize(ctx context.Context, formerBest, newBest *model.Blo
 		log.Infof("REORGANIZE: attaching block %d %s", block.Height, block.Hash)
 
 		// reuse ids when a block existed before (as orphan side chain from previous reorg)
-		tz, bid, pid := block.TZ, block.RowId, block.ParentId
+		tz, bid, pid := block.MV, block.RowId, block.ParentId
 
 		// perform regular build, will generate a clean block
 		block, err := c.builder.Build(ctx, tz)
@@ -377,7 +377,7 @@ findfork:
 	}
 	for block := best; forkDepthMain > 0; forkDepthMain-- {
 		// try loading parent block from db, but don't fail if it does not exist
-		h := block.TZ.ParentHash()
+		h := block.MV.ParentHash()
 		// log.Debugf("REORGANIZE: looking for parent block %d %s", ancestor.Height-1, h)
 		if parent, err := c.indexer.BlockByHash(ctx, h, 0, 0); err != nil {
 			// when block is missing from DB, resolve as new block via RPC

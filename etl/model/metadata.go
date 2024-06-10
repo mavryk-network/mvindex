@@ -7,7 +7,7 @@ import (
 	"errors"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 const MetadataTableKey = "metadata"
@@ -21,10 +21,10 @@ func (i MetaID) U64() uint64 {
 }
 
 type Metadata struct {
-	RowId     MetaID        `pack:"I,pk"      json:"row_id"`
-	AccountId AccountID     `pack:"A,u32"     json:"account_id"`
-	Address   tezos.Address `pack:"H,bloom=3" json:"address"`
-	Content   []byte        `pack:"C,snappy"  json:"content"` // JSON or binary encoded content
+	RowId     MetaID         `pack:"I,pk"      json:"row_id"`
+	AccountId AccountID      `pack:"A,u32"     json:"account_id"`
+	Address   mavryk.Address `pack:"H,bloom=3" json:"address"`
+	Content   []byte         `pack:"C,snappy"  json:"content"` // JSON or binary encoded content
 }
 
 // Ensure Metadata implements the pack.Item interface.

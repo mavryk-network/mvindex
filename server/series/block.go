@@ -13,10 +13,10 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -508,7 +508,7 @@ func (s *BlockSeries) BuildQuery(ctx *server.Context, args *SeriesRequest) pack.
 					q = q.And(field, mode, 0)
 				} else {
 					// single-address lookup and compile condition
-					addr, err := tezos.ParseAddress(val[0])
+					addr, err := mavryk.ParseAddress(val[0])
 					if err != nil {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", val[0]), err))
 					}
@@ -528,7 +528,7 @@ func (s *BlockSeries) BuildQuery(ctx *server.Context, args *SeriesRequest) pack.
 				// multi-address lookup and compile condition
 				ids := make([]uint64, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					addr, err := tezos.ParseAddress(v)
+					addr, err := mavryk.ParseAddress(v)
 					if err != nil {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", v), err))
 					}
@@ -552,7 +552,7 @@ func (s *BlockSeries) BuildQuery(ctx *server.Context, args *SeriesRequest) pack.
 
 		case "voting_period_kind":
 			// parse only the first value
-			period := tezos.ParseVotingPeriod(val[0])
+			period := mavryk.ParseVotingPeriod(val[0])
 			if !period.IsValid() {
 				panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid voting period '%s'", val[0]), nil))
 			}

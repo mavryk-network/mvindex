@@ -10,9 +10,9 @@ import (
 	"blockwatch.cc/packdb/pack"
 	lru "github.com/hashicorp/golang-lru/v2"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 var (
@@ -85,7 +85,7 @@ func (h BigmapHistory) Len() int {
 	return len(h.KeyOffsets)
 }
 
-func (h BigmapHistory) Get(key tezos.ExprHash) *model.BigmapValue {
+func (h BigmapHistory) Get(key mavryk.ExprHash) *model.BigmapValue {
 	var found int = -1
 	for i, v := range h.KeyOffsets {
 		kStart, kEnd := v, h.ValueOffsets[i]

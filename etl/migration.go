@@ -7,12 +7,12 @@ import (
 	"context"
 	"fmt"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
 
-	"blockwatch.cc/tzindex/etl/index"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvindex/etl/index"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 func (b *Builder) MigrateProtocol(ctx context.Context, prevparams, nextparams *rpc.Params) error {
@@ -21,52 +21,10 @@ func (b *Builder) MigrateProtocol(ctx context.Context, prevparams, nextparams *r
 	}
 
 	switch nextparams.Protocol {
-	case tezos.ProtoV002:
-		// origination bugfix
-		return b.FixOriginationBug(ctx, nextparams)
-
-	case tezos.PtAthens:
-		// adds invoice
-		return b.MigrateAthens(ctx, prevparams, nextparams)
-
-	case tezos.PsBabyM1:
-		// adds invoice
-		// runs manager airdrop
-		// migrates delegator contracts
-		return b.MigrateBabylon(ctx, prevparams, nextparams)
-
-	case tezos.PsCARTHA:
-		// new rewards
-		return b.MigrateCarthage(ctx, prevparams, nextparams)
-
-	case tezos.PtGRANAD:
-		// Granada changes cycle length and rights
-		// - remove and reload future rights
-		// - remove and build future income data
-		return b.MigrateGranada(ctx, prevparams, nextparams)
-
-	case tezos.Psithaca:
-		// Ithaca changes all rights
-		// - remove and reload future rights
-		// - remove and rebuild future income data
-		return b.MigrateIthaca(ctx, prevparams, nextparams)
-
-	case tezos.PtLimaPt:
-		// Lima changes all rights
-		// - remove and reload future rights
-		// - remove and rebuild future income data
-		return b.MigrateLima(ctx, prevparams, nextparams)
-
-	case tezos.PtMumbai:
-		// Mumbai changes cycle length and rights
-		// - remove and reload future rights
-		// - remove and rebuild future income data
-		return b.MigrateMumbai(ctx, prevparams, nextparams)
-
-	case tezos.Proxford:
-		// Oxford changes the entire staking system
+	case mavryk.PtAtLas:
+		// Atlas changes the entire staking system
 		// - update baker deposits to stake
-		return b.MigrateOxford(ctx, prevparams, nextparams)
+		return b.MigrateAtlas(ctx, prevparams, nextparams)
 	}
 
 	return nil
@@ -79,7 +37,7 @@ func (b *Builder) MigrateProtocol(ctx context.Context, prevparams, nextparams *r
 // new contract using a bigmap.
 // Contracts before v005 can only own a single bigmap which makes life a bit easier.
 // Note: on zeronet big_map is a regular map due to protocol bug
-func (b *Builder) PatchBigmapEvents(ctx context.Context, diff micheline.BigmapEvents, addr tezos.Address, script *micheline.Script) (micheline.BigmapEvents, error) {
+func (b *Builder) PatchBigmapEvents(ctx context.Context, diff micheline.BigmapEvents, addr mavryk.Address, script *micheline.Script) (micheline.BigmapEvents, error) {
 	// do nothing on post-Athens bigmaps
 	if b.block.Params.Version > 4 {
 		return diff, nil
@@ -224,7 +182,7 @@ func (b *Builder) RebuildFutureRightsAndIncome(ctx context.Context, params *rpc.
 
 		// 2.1 fetch new rights
 		bundle := &rpc.Bundle{
-			Block:  b.block.TZ.Block,
+			Block:  b.block.MV.Block,
 			Params: params,
 		}
 		err := b.rpc.FetchRightsByCycle(ctx, b.block.Height, cycle, bundle)
@@ -235,7 +193,7 @@ func (b *Builder) RebuildFutureRightsAndIncome(ctx context.Context, params *rpc.
 			params.Version, len(bundle.Baking[0]), len(bundle.Endorsing[0]), cycle)
 
 		// strip pre-cycle rights if current block is not start of cycle
-		if !b.block.TZ.IsCycleStart() {
+		if !b.block.MV.IsCycleStart() {
 			bundle.PrevEndorsing = nil
 		}
 
@@ -253,7 +211,7 @@ func (b *Builder) RebuildFutureRightsAndIncome(ctx context.Context, params *rpc.
 			}
 		}
 
-		// 2.3 fetch issuance params (post Oxford)
+		// 2.3 fetch issuance params (post Atlas)
 		if err := b.rpc.FetchIssuanceByCycle(ctx, b.block.Height, cycle, bundle); err != nil {
 			return fmt.Errorf("fetch: issuance for cycle %d: %v", cycle, err)
 		}
@@ -262,7 +220,7 @@ func (b *Builder) RebuildFutureRightsAndIncome(ctx context.Context, params *rpc.
 		block := &model.Block{
 			Height: b.block.Height,
 			Params: params,
-			TZ:     bundle,
+			MV:     bundle,
 		}
 
 		if err := rights.ConnectBlock(ctx, block, b); err != nil {

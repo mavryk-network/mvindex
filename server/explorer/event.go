@@ -10,14 +10,14 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 type Event struct {
-	Contract tezos.Address  `json:"contract"`
+	Contract mavryk.Address `json:"contract"`
 	Type     micheline.Prim `json:"type"`
 	Payload  micheline.Prim `json:"payload"`
 	Tag      string         `json:"tag"`

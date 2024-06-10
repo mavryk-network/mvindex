@@ -10,8 +10,8 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 func (m *Indexer) ElectionByHeight(ctx context.Context, height int64) (*model.Election, error) {
@@ -180,7 +180,7 @@ func (m *Indexer) ProposalsByElection(ctx context.Context, id model.ElectionID) 
 	return proposals, nil
 }
 
-func (m *Indexer) LookupProposal(ctx context.Context, proto tezos.ProtocolHash) (*model.Proposal, error) {
+func (m *Indexer) LookupProposal(ctx context.Context, proto mavryk.ProtocolHash) (*model.Proposal, error) {
 	if !proto.IsValid() {
 		return nil, model.ErrInvalidProtocolHash
 	}

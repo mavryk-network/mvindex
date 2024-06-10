@@ -7,7 +7,7 @@ import (
 	"context"
 	"errors"
 
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 var (

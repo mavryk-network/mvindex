@@ -11,7 +11,7 @@ const (
 	NsProfile     = "tzprofile"
 	profileSchema = `{
     "$schema": "http://json-schema.org/draft/2019-09/schema#",
-    "$id": "https://api.tzpro.io/metadata/schemas/tzprofile.json",
+    "$id": "https://api.mvpro.io/metadata/schemas/tzprofile.json",
     "title": "Tezos Profile",
     "description": "Tezos profile record.",
     "type": "object",

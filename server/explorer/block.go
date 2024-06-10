@@ -11,10 +11,10 @@ import (
 	"github.com/gorilla/mux"
 
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 func init() {
@@ -25,14 +25,14 @@ var _ server.RESTful = (*Block)(nil)
 var _ server.Resource = (*Block)(nil)
 
 type Block struct {
-	Hash                 tezos.BlockHash           `json:"hash"`
+	Hash                 mavryk.BlockHash          `json:"hash"`
 	ParentHash           string                    `json:"predecessor,omitempty"`
 	FollowerHash         string                    `json:"successor,omitempty"`
-	Protocol             tezos.ProtocolHash        `json:"protocol"`
-	Baker                tezos.Address             `json:"baker"`
-	Proposer             tezos.Address             `json:"proposer"`
-	BakerConsensusKey    tezos.Address             `json:"baker_consensus_key"`
-	ProposerConsensusKey tezos.Address             `json:"proposer_consensus_key"`
+	Protocol             mavryk.ProtocolHash       `json:"protocol"`
+	Baker                mavryk.Address            `json:"baker"`
+	Proposer             mavryk.Address            `json:"proposer"`
+	BakerConsensusKey    mavryk.Address            `json:"baker_consensus_key"`
+	ProposerConsensusKey mavryk.Address            `json:"proposer_consensus_key"`
 	Height               int64                     `json:"height"`
 	Cycle                int64                     `json:"cycle"`
 	IsCycleSnapshot      bool                      `json:"is_cycle_snapshot"`
@@ -41,7 +41,7 @@ type Block struct {
 	Version              int                       `json:"version"`
 	Round                int                       `json:"round"`
 	Nonce                string                    `json:"nonce"`
-	VotingPeriodKind     tezos.VotingPeriodKind    `json:"voting_period_kind"`
+	VotingPeriodKind     mavryk.VotingPeriodKind   `json:"voting_period_kind"`
 	NSlotsEndorsed       int                       `json:"n_endorsed_slots"`
 	NOps                 int                       `json:"n_ops_applied"`
 	NOpsFailed           int                       `json:"n_ops_failed"`
@@ -66,9 +66,9 @@ type Block struct {
 	GasUsed              int64                     `json:"gas_used"`
 	StoragePaid          int64                     `json:"storage_paid"`
 	PctAccountsReused    float64                   `json:"pct_account_reuse"`
-	LbVote               tezos.FeatureVote         `json:"lb_vote"`
+	LbVote               mavryk.FeatureVote        `json:"lb_vote"`
 	LbEma                int64                     `json:"lb_ema"`
-	AiVote               tezos.FeatureVote         `json:"ai_vote"`
+	AiVote               mavryk.FeatureVote        `json:"ai_vote"`
 	AiEma                int64                     `json:"ai_ema"`
 	Metadata             map[string]*ShortMetadata `json:"metadata,omitempty"`
 	Rights               []Right                   `json:"rights,omitempty"`
@@ -82,16 +82,16 @@ type Block struct {
 }
 
 type Right struct {
-	Type           tezos.RightType `json:"type"`
-	AccountId      model.AccountID `json:"-"`
-	Address        tezos.Address   `json:"address"`
-	Round          *int            `json:"round,omitempty"`
-	IsUsed         *bool           `json:"is_used,omitempty"`
-	IsLost         *bool           `json:"is_lost,omitempty"`
-	IsStolen       *bool           `json:"is_stolen,omitempty"`
-	IsMissed       *bool           `json:"is_missed,omitempty"`
-	IsSeedRequired *bool           `json:"is_seed_required,omitempty"`
-	IsSeedRevealed *bool           `json:"is_seed_revealed,omitempty"`
+	Type           mavryk.RightType `json:"type"`
+	AccountId      model.AccountID  `json:"-"`
+	Address        mavryk.Address   `json:"address"`
+	Round          *int             `json:"round,omitempty"`
+	IsUsed         *bool            `json:"is_used,omitempty"`
+	IsLost         *bool            `json:"is_lost,omitempty"`
+	IsStolen       *bool            `json:"is_stolen,omitempty"`
+	IsMissed       *bool            `json:"is_missed,omitempty"`
+	IsSeedRequired *bool            `json:"is_seed_required,omitempty"`
+	IsSeedRevealed *bool            `json:"is_seed_revealed,omitempty"`
 }
 
 func NewRight(ctx *server.Context, r model.BaseRight, addFlags bool) Right {
@@ -100,7 +100,7 @@ func NewRight(ctx *server.Context, r model.BaseRight, addFlags bool) Right {
 		AccountId: r.AccountId,
 		Address:   ctx.Indexer.LookupAddress(ctx, r.AccountId),
 	}
-	if r.Type == tezos.RightTypeBaking {
+	if r.Type == mavryk.RightTypeBaking {
 		var round int
 		er.Round = IntPtr(round)
 	}
@@ -202,9 +202,9 @@ func NewBlock(ctx *server.Context, block *model.Block, args server.Options) *Blo
 			b.Rights = make([]Right, 0)
 			for _, v := range rights {
 				switch v.Type {
-				case tezos.RightTypeEndorsing:
+				case mavryk.RightTypeEndorsing:
 					b.Rights = append(b.Rights, NewRight(ctx, v, block.Height < ctx.Tip.BestHeight))
-				case tezos.RightTypeBaking:
+				case mavryk.RightTypeBaking:
 					b.Rights = append(b.Rights, NewRight(ctx, v, block.Height < ctx.Tip.BestHeight))
 				}
 			}

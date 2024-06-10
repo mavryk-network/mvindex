@@ -8,11 +8,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/metadata"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/metadata"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
 )
 
 // Tezos Domains reverse records operations
@@ -129,8 +129,8 @@ func (d *Decoder) init(op *model.Op) error {
 }
 
 type DomainReverseRecord struct {
-	Name  string        `json:"name"`
-	Owner tezos.Address `json:"owner"`
+	Name  string         `json:"name"`
+	Owner mavryk.Address `json:"owner"`
 	// InternalData map[string]string `json:"internal_data"`
 }
 

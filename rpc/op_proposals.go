@@ -3,9 +3,7 @@
 
 package rpc
 
-import (
-	"blockwatch.cc/tzgo/tezos"
-)
+import "github.com/mavryk-network/mvgo/mavryk"
 
 // Ensure Proposals implements the TypedOperation interface.
 var _ TypedOperation = (*Proposals)(nil)
@@ -13,7 +11,7 @@ var _ TypedOperation = (*Proposals)(nil)
 // Proposals represents a proposal operation
 type Proposals struct {
 	Generic
-	Source    tezos.Address        `json:"source"`
-	Period    int                  `json:"period"`
-	Proposals []tezos.ProtocolHash `json:"proposals"`
+	Source    mavryk.Address        `json:"source"`
+	Period    int                   `json:"period"`
+	Proposals []mavryk.ProtocolHash `json:"proposals"`
 }

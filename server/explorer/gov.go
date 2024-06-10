@@ -12,10 +12,10 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 
 	"blockwatch.cc/packdb/util"
 	"blockwatch.cc/packdb/vec"
@@ -26,33 +26,33 @@ func init() {
 }
 
 type Vote struct {
-	VotingPeriod     int64                  `json:"voting_period"`
-	VotingPeriodKind tezos.VotingPeriodKind `json:"voting_period_kind"`
-	StartTime        time.Time              `json:"period_start_time"`
-	EndTime          time.Time              `json:"period_end_time"`
-	StartHeight      int64                  `json:"period_start_block"`
-	EndHeight        int64                  `json:"period_end_block"`
-	EligibleStake    float64                `json:"eligible_stake"`
-	EligibleVoters   int64                  `json:"eligible_voters"`
-	QuorumPct        int64                  `json:"quorum_pct"`
-	QuorumStake      float64                `json:"quorum_stake"`
-	TurnoutStake     float64                `json:"turnout_stake"`
-	TurnoutVoters    int64                  `json:"turnout_voters"`
-	TurnoutPct       int64                  `json:"turnout_pct"`
-	TurnoutEma       int64                  `json:"turnout_ema"`
-	YayStake         float64                `json:"yay_stake"`
-	YayVoters        int64                  `json:"yay_voters"`
-	NayStake         float64                `json:"nay_stake"`
-	NayVoters        int64                  `json:"nay_voters"`
-	PassStake        float64                `json:"pass_stake"`
-	PassVoters       int64                  `json:"pass_voters"`
-	IsOpen           bool                   `json:"is_open"`
-	IsFailed         bool                   `json:"is_failed"`
-	IsDraw           bool                   `json:"is_draw"`
-	NoProposal       bool                   `json:"no_proposal"`
-	NoQuorum         bool                   `json:"no_quorum"`
-	NoMajority       bool                   `json:"no_majority"`
-	Proposals        []*Proposal            `json:"proposals"`
+	VotingPeriod     int64                   `json:"voting_period"`
+	VotingPeriodKind mavryk.VotingPeriodKind `json:"voting_period_kind"`
+	StartTime        time.Time               `json:"period_start_time"`
+	EndTime          time.Time               `json:"period_end_time"`
+	StartHeight      int64                   `json:"period_start_block"`
+	EndHeight        int64                   `json:"period_end_block"`
+	EligibleStake    float64                 `json:"eligible_stake"`
+	EligibleVoters   int64                   `json:"eligible_voters"`
+	QuorumPct        int64                   `json:"quorum_pct"`
+	QuorumStake      float64                 `json:"quorum_stake"`
+	TurnoutStake     float64                 `json:"turnout_stake"`
+	TurnoutVoters    int64                   `json:"turnout_voters"`
+	TurnoutPct       int64                   `json:"turnout_pct"`
+	TurnoutEma       int64                   `json:"turnout_ema"`
+	YayStake         float64                 `json:"yay_stake"`
+	YayVoters        int64                   `json:"yay_voters"`
+	NayStake         float64                 `json:"nay_stake"`
+	NayVoters        int64                   `json:"nay_voters"`
+	PassStake        float64                 `json:"pass_stake"`
+	PassVoters       int64                   `json:"pass_voters"`
+	IsOpen           bool                    `json:"is_open"`
+	IsFailed         bool                    `json:"is_failed"`
+	IsDraw           bool                    `json:"is_draw"`
+	NoProposal       bool                    `json:"no_proposal"`
+	NoQuorum         bool                    `json:"no_quorum"`
+	NoMajority       bool                    `json:"no_majority"`
+	Proposals        []*Proposal             `json:"proposals"`
 }
 
 func NewVote(ctx *server.Context, v *model.Vote) *Vote {
@@ -94,14 +94,14 @@ func NewVote(ctx *server.Context, v *model.Vote) *Vote {
 }
 
 type Proposal struct {
-	Hash          tezos.ProtocolHash `json:"hash"`
-	SourceAddress tezos.Address      `json:"source"`
-	BlockHash     tezos.BlockHash    `json:"block_hash"`
-	OpHash        tezos.OpHash       `json:"op_hash"`
-	Height        int64              `json:"height"`
-	Time          time.Time          `json:"time"`
-	Stake         float64            `json:"stake"`
-	Voters        int64              `json:"voters"`
+	Hash          mavryk.ProtocolHash `json:"hash"`
+	SourceAddress mavryk.Address      `json:"source"`
+	BlockHash     mavryk.BlockHash    `json:"block_hash"`
+	OpHash        mavryk.OpHash       `json:"op_hash"`
+	Height        int64               `json:"height"`
+	Time          time.Time           `json:"time"`
+	Stake         float64             `json:"stake"`
+	Voters        int64               `json:"voters"`
 }
 
 func NewProposal(ctx *server.Context, p *model.Proposal) *Proposal {
@@ -118,17 +118,17 @@ func NewProposal(ctx *server.Context, p *model.Proposal) *Proposal {
 }
 
 type Ballot struct {
-	RowId            uint64                 `json:"row_id"`
-	Height           int64                  `json:"height"`
-	Timestamp        time.Time              `json:"time"`
-	ElectionId       int                    `json:"election_id"`
-	VotingPeriod     int64                  `json:"voting_period"`
-	VotingPeriodKind tezos.VotingPeriodKind `json:"voting_period_kind"`
-	Proposal         tezos.ProtocolHash     `json:"proposal"`
-	OpHash           tezos.OpHash           `json:"op"`
-	Ballot           tezos.BallotVote       `json:"ballot"`
-	Stake            float64                `json:"stake"`
-	Sender           string                 `json:"sender"`
+	RowId            uint64                  `json:"row_id"`
+	Height           int64                   `json:"height"`
+	Timestamp        time.Time               `json:"time"`
+	ElectionId       int                     `json:"election_id"`
+	VotingPeriod     int64                   `json:"voting_period"`
+	VotingPeriodKind mavryk.VotingPeriodKind `json:"voting_period_kind"`
+	Proposal         mavryk.ProtocolHash     `json:"proposal"`
+	OpHash           mavryk.OpHash           `json:"op"`
+	Ballot           mavryk.BallotVote       `json:"ballot"`
+	Stake            float64                 `json:"stake"`
+	Sender           string                  `json:"sender"`
 }
 
 type BallotList struct {
@@ -143,7 +143,7 @@ func (l BallotList) Expires() time.Time           { return l.expires }
 
 var _ server.Resource = (*BallotList)(nil)
 
-func NewBallot(ctx *server.Context, b *model.Ballot, p tezos.ProtocolHash, o tezos.OpHash) *Ballot {
+func NewBallot(ctx *server.Context, b *model.Ballot, p mavryk.ProtocolHash, o mavryk.OpHash) *Ballot {
 	return &Ballot{
 		RowId:            b.RowId,
 		Height:           b.Height,
@@ -160,26 +160,26 @@ func NewBallot(ctx *server.Context, b *model.Ballot, p tezos.ProtocolHash, o tez
 }
 
 type Election struct {
-	Id                int                    `json:"election_id"`
-	MaxPeriods        int                    `json:"max_periods"`
-	NumPeriods        int                    `json:"num_periods"`
-	NumProposals      int                    `json:"num_proposals"`
-	StartTime         time.Time              `json:"start_time"`
-	EndTime           time.Time              `json:"end_time"`
-	StartHeight       int64                  `json:"start_height"`
-	EndHeight         int64                  `json:"end_height"`
-	IsEmpty           bool                   `json:"is_empty"`
-	IsOpen            bool                   `json:"is_open"`
-	IsFailed          bool                   `json:"is_failed"`
-	NoQuorum          bool                   `json:"no_quorum"`
-	NoMajority        bool                   `json:"no_majority"`
-	NoProposal        bool                   `json:"no_proposal"`
-	VotingPeriodKind  tezos.VotingPeriodKind `json:"voting_period"`
-	ProposalPeriod    *Vote                  `json:"proposal"`
-	ExplorationPeriod *Vote                  `json:"exploration"`
-	CooldownPeriod    *Vote                  `json:"cooldown"`
-	PromotionPeriod   *Vote                  `json:"promotion"`
-	AdoptionPeriod    *Vote                  `json:"adoption"`
+	Id                int                     `json:"election_id"`
+	MaxPeriods        int                     `json:"max_periods"`
+	NumPeriods        int                     `json:"num_periods"`
+	NumProposals      int                     `json:"num_proposals"`
+	StartTime         time.Time               `json:"start_time"`
+	EndTime           time.Time               `json:"end_time"`
+	StartHeight       int64                   `json:"start_height"`
+	EndHeight         int64                   `json:"end_height"`
+	IsEmpty           bool                    `json:"is_empty"`
+	IsOpen            bool                    `json:"is_open"`
+	IsFailed          bool                    `json:"is_failed"`
+	NoQuorum          bool                    `json:"no_quorum"`
+	NoMajority        bool                    `json:"no_majority"`
+	NoProposal        bool                    `json:"no_proposal"`
+	VotingPeriodKind  mavryk.VotingPeriodKind `json:"voting_period"`
+	ProposalPeriod    *Vote                   `json:"proposal"`
+	ExplorationPeriod *Vote                   `json:"exploration"`
+	CooldownPeriod    *Vote                   `json:"cooldown"`
+	PromotionPeriod   *Vote                   `json:"promotion"`
+	AdoptionPeriod    *Vote                   `json:"adoption"`
 	expires           time.Time
 }
 
@@ -203,7 +203,7 @@ func NewElection(ctx *server.Context, e *model.Election) *Election {
 		NoQuorum:         e.NoQuorum,
 		NoMajority:       e.NoMajority,
 		NoProposal:       e.NumProposals == 0,
-		VotingPeriodKind: tezos.ToVotingPeriod(e.NumPeriods),
+		VotingPeriodKind: mavryk.ToVotingPeriod(e.NumPeriods),
 	}
 	// estimate end time for open elections
 	tm := ctx.Tip.BestTime
@@ -268,9 +268,9 @@ func loadElection(ctx *server.Context) *model.Election {
 		switch {
 		case id == "head":
 			election, err = ctx.Indexer.ElectionByHeight(ctx.Context, ctx.Tip.BestHeight)
-		case strings.HasPrefix(id, tezos.HashTypeProtocol.B58Prefix):
-			var p tezos.ProtocolHash
-			p, err = tezos.ParseProtocolHash(id)
+		case strings.HasPrefix(id, mavryk.HashTypeProtocol.B58Prefix):
+			var p mavryk.ProtocolHash
+			p, err = mavryk.ParseProtocolHash(id)
 			if err != nil {
 				panic(server.EBadRequest(server.EC_RESOURCE_ID_MALFORMED, "invalid proposal", err))
 			}
@@ -310,7 +310,7 @@ func loadElection(ctx *server.Context) *model.Election {
 }
 
 func loadStage(ctx *server.Context, election *model.Election, maxPeriods int) int {
-	var stage int // 1 .. 4 (5 in Edo) (same as tezos.VotingPeriodKind)
+	var stage int // 1 .. 4 (5 in Edo) (same as mavryk.VotingPeriodKind)
 	if s, ok := mux.Vars(ctx.Request)["stage"]; !ok || s == "" {
 		panic(server.EBadRequest(server.EC_RESOURCE_ID_MISSING, "missing voting period identifier", nil))
 	} else {
@@ -355,7 +355,7 @@ func ReadElection(ctx *server.Context) (interface{}, int) {
 	var winner *Proposal
 	for _, v := range votes {
 		switch v.VotingPeriodKind {
-		case tezos.VotingPeriodProposal:
+		case mavryk.VotingPeriodProposal:
 			ee.ProposalPeriod = NewVote(ctx, v)
 			ee.ProposalPeriod.Proposals = make([]*Proposal, 0)
 			for _, vv := range proposals {
@@ -381,16 +381,16 @@ func ReadElection(ctx *server.Context) (interface{}, int) {
 			if len(ee.ProposalPeriod.Proposals) > 0 {
 				ee.IsEmpty = false
 			}
-		case tezos.VotingPeriodExploration:
+		case mavryk.VotingPeriodExploration:
 			ee.ExplorationPeriod = NewVote(ctx, v)
 			ee.ExplorationPeriod.Proposals = []*Proposal{winner}
-		case tezos.VotingPeriodCooldown:
+		case mavryk.VotingPeriodCooldown:
 			ee.CooldownPeriod = NewVote(ctx, v)
 			ee.CooldownPeriod.Proposals = []*Proposal{winner}
-		case tezos.VotingPeriodPromotion:
+		case mavryk.VotingPeriodPromotion:
 			ee.PromotionPeriod = NewVote(ctx, v)
 			ee.PromotionPeriod.Proposals = []*Proposal{winner}
-		case tezos.VotingPeriodAdoption:
+		case mavryk.VotingPeriodAdoption:
 			ee.AdoptionPeriod = NewVote(ctx, v)
 			ee.AdoptionPeriod.Proposals = []*Proposal{winner}
 		}
@@ -399,12 +399,12 @@ func ReadElection(ctx *server.Context) (interface{}, int) {
 }
 
 type Voter struct {
-	RowId     model.AccountID      `json:"row_id"`
-	Address   tezos.Address        `json:"address"`
-	Stake     float64              `json:"stake"`
-	HasVoted  bool                 `json:"has_voted"`
-	Ballot    tezos.BallotVote     `json:"ballot,omitempty"`
-	Proposals []tezos.ProtocolHash `json:"proposals,omitempty"`
+	RowId     model.AccountID       `json:"row_id"`
+	Address   mavryk.Address        `json:"address"`
+	Stake     float64               `json:"stake"`
+	HasVoted  bool                  `json:"has_voted"`
+	Ballot    mavryk.BallotVote     `json:"ballot,omitempty"`
+	Proposals []mavryk.ProtocolHash `json:"proposals,omitempty"`
 }
 
 type VoterList struct {
@@ -428,7 +428,7 @@ func NewVoter(ctx *server.Context, v *model.Voter) *Voter {
 		HasVoted: v.HasVoted,
 	}
 	if v.HasVoted {
-		voter.Proposals = make([]tezos.ProtocolHash, 0)
+		voter.Proposals = make([]mavryk.ProtocolHash, 0)
 		for _, p := range v.Proposals {
 			voter.Proposals = append(voter.Proposals, ctx.Indexer.LookupProposalHash(ctx, p))
 		}
@@ -509,7 +509,7 @@ func ListBallots(ctx *server.Context) (interface{}, int) {
 	}
 
 	// prepare for lookup
-	opMap := make(map[model.OpID]tezos.OpHash)
+	opMap := make(map[model.OpID]mavryk.OpHash)
 	for _, v := range ops {
 		opMap[v.RowId] = v.Hash
 	}

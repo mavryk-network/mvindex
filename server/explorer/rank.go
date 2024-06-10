@@ -10,7 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 func init() {

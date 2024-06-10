@@ -11,7 +11,7 @@ const (
 	socialNs     = "social"
 	socialSchema = `{
 	"$schema": "http://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://api.tzpro.io/metadata/schemas/social.json",
+	"$id": "https://api.mvpro.io/metadata/schemas/social.json",
 	"title": "Social Media",
     "description": "A list of social media handles.",
 	"type": "object",

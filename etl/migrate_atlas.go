@@ -7,19 +7,56 @@ import (
 	"context"
 	"fmt"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/index"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
-func (b *Builder) MigrateOxford(ctx context.Context, oldparams, params *rpc.Params) error {
-	// nothing to do when chain starts with this proto
+func (b *Builder) MigrateAtlas(ctx context.Context, oldparams, params *rpc.Params) error {
+	// register the burn address as an account
+	account, err := b.idx.Table(index.AccountIndexKey)
+	if err != nil {
+		return err
+	}
+
+	var count int
+	for n, amount := range map[string]int64{
+		"mv2burnburnburnburnburnburnbur7hzNeg": 0,
+	} {
+		addr, err := mavryk.ParseAddress(n)
+		if err != nil {
+			return fmt.Errorf("decoding burn address %s: %w", n, err)
+		}
+		acc := model.NewAccount(addr)
+		acc.FirstSeen = b.block.Height
+		acc.LastIn = b.block.Height
+		acc.LastSeen = b.block.Height
+		acc.IsDirty = true
+
+		// insert into db
+		if err := account.Insert(ctx, acc); err != nil {
+			return err
+		}
+
+		// insert into cache
+		b.accMap[acc.RowId] = acc
+		b.accHashMap[b.accCache.AccountHashKey(acc)] = acc
+
+		// add invoice op
+		if err := b.AppendInvoiceOp(ctx, acc, amount, count); err != nil {
+			return err
+		}
+		count++
+	}
+
+	// nothing else to do when chain starts with this proto
 	if b.block.Height <= 2 {
 		return nil
 	}
 
 	// migrate all bakers from frozen deposits to stake variables
-	var count int
 	for _, v := range b.bakerMap {
 		if v.FrozenDeposits == 0 {
 			continue
@@ -53,9 +90,9 @@ func (b *Builder) MigrateOxford(ctx context.Context, oldparams, params *rpc.Para
 	// on mainnet remove invalid bigmap entries (ticket stuff apparently)
 	// we do this by injecting a migration op with bigmap remove events
 	if params.IsMainnet() {
-		acc, err := b.idx.LookupAccount(ctx, oxfordBigmapAddr)
+		acc, err := b.idx.LookupAccount(ctx, atlasBigmapAddr)
 		if err != nil {
-			return fmt.Errorf("loading bigmap contract %s: %w", oxfordBigmapAddr, err)
+			return fmt.Errorf("loading bigmap contract %s: %w", atlasBigmapAddr, err)
 		}
 		// insert into cache
 		b.accMap[acc.RowId] = acc
@@ -64,17 +101,17 @@ func (b *Builder) MigrateOxford(ctx context.Context, oldparams, params *rpc.Para
 		// load contract
 		cc, err := b.LoadContractByAccountId(ctx, acc.RowId)
 		if err != nil {
-			return fmt.Errorf("loading contract %s: %w", oxfordBigmapAddr, err)
+			return fmt.Errorf("loading contract %s: %w", atlasBigmapAddr, err)
 		}
 		b.conMap[acc.RowId] = cc
 		b.conCache.Add(cc)
 
 		// create removal events
-		events := make(micheline.BigmapEvents, len(oxfordBigmapKeys))
-		for i, k := range oxfordBigmapKeys {
+		events := make(micheline.BigmapEvents, len(atlasBigmapKeys))
+		for i, k := range atlasBigmapKeys {
 			events[i] = micheline.BigmapEvent{
 				Action:  micheline.DiffActionRemove,
-				Id:      oxfordBigmapId,
+				Id:      atlasBigmapId,
 				KeyHash: k,
 				Key:     micheline.Unit, // we don't know
 			}
@@ -91,9 +128,9 @@ func (b *Builder) MigrateOxford(ctx context.Context, oldparams, params *rpc.Para
 }
 
 var (
-	oxfordBigmapId   int64 = 5696
-	oxfordBigmapAddr       = tezos.MustParseAddress("KT1CnygLoKfJA66499U9ZQkL6ykUfzgruGfM")
-	oxfordBigmapKeys       = parseBigmapKeys([]string{
+	atlasBigmapId   int64 = 5696
+	atlasBigmapAddr       = mavryk.MustParseAddress("KT1CnygLoKfJA66499U9ZQkL6ykUfzgruGfM")
+	atlasBigmapKeys       = parseBigmapKeys([]string{
 		"exprtXBtxJxCDEDETueKAFLL7r7vZtNEo1MHajpHba1djtGKqJzWd3",
 		"exprtbuRhaGDS942BgZ1qFdD7HAKeBjPEqzRxgLQyWQ6HWxcaiLC2c",
 		"exprtePxSLgrhJmTPZEePyFBmESLhaBUN1WodvLYy9xYhEYE6dKPLe",
@@ -117,10 +154,10 @@ var (
 	})
 )
 
-func parseBigmapKeys(s []string) []tezos.ExprHash {
-	keys := make([]tezos.ExprHash, len(s))
+func parseBigmapKeys(s []string) []mavryk.ExprHash {
+	keys := make([]mavryk.ExprHash, len(s))
 	for i, v := range s {
-		keys[i] = tezos.MustParseExprHash(v)
+		keys[i] = mavryk.MustParseExprHash(v)
 	}
 	return keys
 }
@@ -141,7 +178,7 @@ func (b *Builder) MigrateAdaptiveIssuance(ctx context.Context, params *rpc.Param
 }
 
 // temp fix for light-mode migration issue
-func (b *Builder) FixOxfordMigration(ctx context.Context) error {
+func (b *Builder) FixAtlasMigration(ctx context.Context) error {
 	if !b.idx.lightMode {
 		return nil
 	}
@@ -174,11 +211,11 @@ func (b *Builder) FixOxfordMigration(ctx context.Context) error {
 		// update current supply
 		b.block.Supply.FrozenDeposits -= v.TotalStake
 
-		log.Infof("Fix Oxford stake: %s frozen stake %d", v.Account, v.TotalStake)
+		log.Infof("Fix Atlas stake: %s frozen stake %d", v.Account, v.TotalStake)
 
 		count++
 	}
-	log.Infof("Fix Oxford stake: updated %d active bakers to staking", count)
+	log.Infof("Fix Atlas stake: updated %d active bakers to staking", count)
 
 	return nil
 }

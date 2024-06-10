@@ -3,9 +3,7 @@
 
 package rpc
 
-import (
-	"blockwatch.cc/tzgo/tezos"
-)
+import "github.com/mavryk-network/mvgo/mavryk"
 
 // Ensure UpdateConsensusKey implements the TypedOperation interface.
 var _ TypedOperation = (*UpdateConsensusKey)(nil)
@@ -13,12 +11,12 @@ var _ TypedOperation = (*UpdateConsensusKey)(nil)
 // UpdateConsensusKey represents a transaction operation
 type UpdateConsensusKey struct {
 	Manager
-	Pk tezos.Key `json:"pk"`
+	Pk mavryk.Key `json:"pk"`
 }
 
 // Costs returns operation cost to implement TypedOperation interface.
-func (t UpdateConsensusKey) Costs() tezos.Costs {
-	return tezos.Costs{
+func (t UpdateConsensusKey) Costs() mavryk.Costs {
+	return mavryk.Costs{
 		Fee:     t.Manager.Fee,
 		GasUsed: t.Metadata.Result.Gas(),
 	}

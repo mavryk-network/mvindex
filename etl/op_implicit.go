@@ -7,10 +7,10 @@ import (
 	"context"
 	"fmt"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 // generate synthetic ops from flows for
@@ -99,7 +99,7 @@ func (b *Builder) AppendImplicitEvents(ctx context.Context) error {
 					// ops[f.OpN].Volume += f.AmountIn
 				}
 			case model.FlowKindStake:
-				// oxford: some staker pool reward from bake is auto-staked again
+				// atlas: some staker pool reward from bake is auto-staked again
 				ops[f.OpN].Reward += f.AmountIn
 				ops[f.OpN].Deposit += f.AmountIn
 			}
@@ -152,7 +152,7 @@ func (b *Builder) AppendImplicitEvents(ctx context.Context) error {
 				ops[f.OpN].SenderId = f.AccountId
 			}
 			if f.Kind == model.FlowKindStake {
-				// oxford: some reward from bake bonus is auto-staked again
+				// atlas: some reward from bake bonus is auto-staked again
 				ops[f.OpN].Reward += f.AmountIn
 				ops[f.OpN].Deposit += f.AmountIn
 			} else {
@@ -179,17 +179,17 @@ func (b *Builder) AppendImplicitEvents(ctx context.Context) error {
 					ops[f.OpN].SenderId = f.AccountId
 				}
 				if f.Kind == model.FlowKindStake {
-					// oxford: some reward from endorsing is auto-staked again
+					// atlas: some reward from endorsing is auto-staked again
 					ops[f.OpN].Reward += f.AmountIn
 					ops[f.OpN].Deposit += f.AmountIn
 				} else {
-					// pre/post-oxford non-frozen reward goes to spendable balances
+					// pre/post-atlas non-frozen reward goes to spendable balances
 					ops[f.OpN].Reward += f.AmountIn
 					// ops[f.OpN].Volume += f.AmountIn
 				}
 			}
 		case model.FlowTypeDeposit:
-			// Ithaca+ until Oxford, then replaced by stake
+			// Ithaca+ until Atlas, then replaced by stake
 			// explicit deposit payment (positive)
 			// refund is translated into an unfreeze event
 			if f.Kind == model.FlowKindDeposits {
@@ -202,7 +202,7 @@ func (b *Builder) AppendImplicitEvents(ctx context.Context) error {
 				// ops[f.OpN].Volume += f.AmountIn
 			}
 		case model.FlowTypeStake:
-			// Oxford+ deposit is staked
+			// Atlas+ deposit is staked
 			// only handle stake kind (skip balance flows)
 			if f.Kind == model.FlowKindStake {
 				if ops[f.OpN] == nil {
@@ -214,7 +214,7 @@ func (b *Builder) AppendImplicitEvents(ctx context.Context) error {
 				// ops[f.OpN].Volume += f.AmountIn
 			}
 		case model.FlowTypeUnstake:
-			// Oxford+ frozen deposit is unstaked
+			// Atlas+ frozen deposit is unstaked
 			// only handle stake kind (no other flow should exist, but make sure)
 			if f.Kind == model.FlowKindStake {
 				if ops[f.OpN] == nil {
@@ -225,7 +225,7 @@ func (b *Builder) AppendImplicitEvents(ctx context.Context) error {
 				ops[f.OpN].Deposit += f.AmountOut
 			}
 		case model.FlowTypeFinalizeUnstake:
-			// Oxford+ frozen unstaked deposit is returned to spendable balance
+			// Atlas+ frozen unstaked deposit is returned to spendable balance
 			// only handle stake kind (no other flow should exist, but make sure)
 			if f.Kind == model.FlowKindStake {
 				if ops[f.OpN] == nil {
@@ -236,7 +236,7 @@ func (b *Builder) AppendImplicitEvents(ctx context.Context) error {
 				ops[f.OpN].Volume += f.AmountOut
 			}
 		case model.FlowTypePenalty:
-			// Oxford+ staking slash happens EOC
+			// Atlas+ staking slash happens EOC
 			// TODO: differentiate staked & unstaked amount?
 			switch f.Kind {
 			case model.FlowKindStake:
@@ -280,7 +280,7 @@ func (b *Builder) AppendImplicitEvents(ctx context.Context) error {
 // Originations (on migration)
 // Transactions / Subsidy
 func (b *Builder) AppendImplicitBlockOps(ctx context.Context) error {
-	for _, op := range b.block.TZ.Block.Metadata.ImplicitOperationsResults {
+	for _, op := range b.block.MV.Block.Metadata.ImplicitOperationsResults {
 		Errorf := func(format string, args ...interface{}) error {
 			return fmt.Errorf(
 				"implicit block %s op [%d]: "+format,
@@ -294,7 +294,7 @@ func (b *Builder) AppendImplicitBlockOps(ctx context.Context) error {
 			P: n,                      // pos in list
 		}
 		switch op.Kind {
-		case tezos.OpTypeOrigination:
+		case mavryk.OpTypeOrigination:
 			// for now we expect a single address only
 			dst, ok := b.AccountByAddress(op.OriginatedContracts[0])
 			if !ok {
@@ -357,7 +357,7 @@ func (b *Builder) AppendImplicitBlockOps(ctx context.Context) error {
 			o.Contract = model.NewImplicitContract(dst, *op, o, b.block.Params)
 			b.conMap[dst.RowId] = o.Contract
 
-		case tezos.OpTypeTransaction:
+		case mavryk.OpTypeTransaction:
 			for _, v := range op.BalanceUpdates {
 				addr := v.Address()
 				if !addr.IsValid() {

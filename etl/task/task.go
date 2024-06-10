@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 var (
@@ -72,16 +72,16 @@ var _ pack.Item = (*TaskRequest)(nil)
 const TaskTableKey = "task"
 
 type TaskRequest struct {
-	Id      uint64        `pack:"I,pk"      json:"id"`
-	Index   string        `pack:"J"         json:"index"`
-	Decoder uint64        `pack:"D"         json:"decoder"`
-	Owner   tezos.Address `pack:"o,bloom=2" json:"owner"`
-	Account uint64        `pack:"a,bloom=2" json:"account"`
-	Ordered bool          `pack:"O"         json:"ordered"`
-	Flags   uint64        `pack:"f,snappy"  json:"flags"`
-	Url     string        `pack:"u,snappy"  json:"url"`
-	Status  TaskStatus    `pack:"s,snappy"  json:"status"`
-	Data    []byte        `pack:"d,snappy"  json:"data"`
+	Id      uint64         `pack:"I,pk"      json:"id"`
+	Index   string         `pack:"J"         json:"index"`
+	Decoder uint64         `pack:"D"         json:"decoder"`
+	Owner   mavryk.Address `pack:"o,bloom=2" json:"owner"`
+	Account uint64         `pack:"a,bloom=2" json:"account"`
+	Ordered bool           `pack:"O"         json:"ordered"`
+	Flags   uint64         `pack:"f,snappy"  json:"flags"`
+	Url     string         `pack:"u,snappy"  json:"url"`
+	Status  TaskStatus     `pack:"s,snappy"  json:"status"`
+	Data    []byte         `pack:"d,snappy"  json:"data"`
 }
 
 func (r *TaskRequest) SetID(i uint64) {
@@ -113,7 +113,7 @@ type TaskResult struct {
 	Id      uint64
 	Index   string
 	Decoder uint64
-	Owner   tezos.Address
+	Owner   mavryk.Address
 	Account uint64
 	Flags   uint64
 	Status  TaskStatus

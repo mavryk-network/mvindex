@@ -15,12 +15,12 @@ import (
 	"strings"
 	"time"
 
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 const (
 	libraryVersion = "v18"
-	userAgent      = "tzindex/v" + libraryVersion
+	userAgent      = "mvindex/v" + libraryVersion
 	mediaType      = "application/json"
 )
 
@@ -35,7 +35,7 @@ type Client struct {
 	// Optional API key for protected endpoints
 	apiKey string
 	// The chain the client will query.
-	chainId tezos.ChainIdHash
+	chainId mavryk.ChainIdHash
 	// The current chain configuration.
 	params *Params
 	// Number of retries
@@ -85,7 +85,7 @@ func (c *Client) Params() *Params {
 	return c.params
 }
 
-func (c *Client) WithChainId(id tezos.ChainIdHash) *Client {
+func (c *Client) WithChainId(id mavryk.ChainIdHash) *Client {
 	c.chainId = id.Clone()
 	return c
 }

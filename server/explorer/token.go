@@ -11,9 +11,9 @@ import (
 	"github.com/gorilla/mux"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 func init() {
@@ -23,17 +23,17 @@ func init() {
 var _ server.RESTful = (*Token)(nil)
 
 type Token struct {
-	Contract     tezos.Address   `json:"contract"`
-	TokenId      tezos.Z         `json:"token_id"`
-	Creator      tezos.Address   `json:"creator"`
+	Contract     mavryk.Address  `json:"contract"`
+	TokenId      mavryk.Z        `json:"token_id"`
+	Creator      mavryk.Address  `json:"creator"`
 	Type         model.TokenType `json:"type"`
 	FirstBlock   int64           `json:"first_block"`
 	FirstTime    time.Time       `json:"first_time"`
 	LastBlock    int64           `json:"last_block"`
 	LastTime     time.Time       `json:"last_time"`
-	Supply       tezos.Z         `json:"total_supply"`
-	TotalMint    tezos.Z         `json:"total_mint"`
-	TotalBurn    tezos.Z         `json:"total_burn"`
+	Supply       mavryk.Z        `json:"total_supply"`
+	TotalMint    mavryk.Z        `json:"total_mint"`
+	TotalBurn    mavryk.Z        `json:"total_burn"`
 	NumTransfers int             `json:"num_transfers"`
 	NumHolders   int             `json:"num_holders"`
 	Metadata     json.RawMessage `json:"metadata,omitempty"`
@@ -71,7 +71,7 @@ func (t Token) RESTPrefix() string {
 }
 
 func (t Token) RESTPath(r *mux.Router) string {
-	path, _ := r.Get("token").URLPath("ident", tezos.NewToken(t.Contract, t.TokenId).String())
+	path, _ := r.Get("token").URLPath("ident", mavryk.NewToken(t.Contract, t.TokenId).String())
 	return path.String()
 }
 
@@ -88,9 +88,9 @@ func (t Token) RegisterRoutes(r *mux.Router) error {
 }
 
 type TokenOwner struct {
-	Account      tezos.Address   `json:"account"`
-	Contract     tezos.Address   `json:"contract"`
-	TokenId      tezos.Z         `json:"token_id"`
+	Account      mavryk.Address  `json:"account"`
+	Contract     mavryk.Address  `json:"contract"`
+	TokenId      mavryk.Z        `json:"token_id"`
 	Type         model.TokenType `json:"type"`
 	FirstBlock   int64           `json:"first_block"`
 	FirstTime    time.Time       `json:"first_time"`
@@ -99,10 +99,10 @@ type TokenOwner struct {
 	NumTransfers int             `json:"num_transfers"`
 	NumMints     int             `json:"num_mints"`
 	NumBurns     int             `json:"num_burns"`
-	VolSent      tezos.Z         `json:"vol_sent"`
-	VolRecv      tezos.Z         `json:"vol_recv"`
-	VolMint      tezos.Z         `json:"vol_mint"`
-	VolBurn      tezos.Z         `json:"vol_burn"`
+	VolSent      mavryk.Z        `json:"vol_sent"`
+	VolRecv      mavryk.Z        `json:"vol_recv"`
+	VolMint      mavryk.Z        `json:"vol_mint"`
+	VolBurn      mavryk.Z        `json:"vol_burn"`
 	Metadata     json.RawMessage `json:"metadata,omitempty"`
 }
 
@@ -136,13 +136,13 @@ func (t TokenOwner) Expires() time.Time {
 }
 
 type TokenEvent struct {
-	Contract tezos.Address        `json:"contract"`
-	TokenId  tezos.Z              `json:"token_id"`
+	Contract mavryk.Address       `json:"contract"`
+	TokenId  mavryk.Z             `json:"token_id"`
 	Type     model.TokenEventType `json:"type"`
-	Signer   tezos.Address        `json:"signer"`
-	Sender   tezos.Address        `json:"sender"`
-	Receiver tezos.Address        `json:"receiver"`
-	Amount   tezos.Z              `json:"amount"`
+	Signer   mavryk.Address       `json:"signer"`
+	Sender   mavryk.Address       `json:"sender"`
+	Receiver mavryk.Address       `json:"receiver"`
+	Amount   mavryk.Z             `json:"amount"`
 	Height   int64                `json:"height"`
 	Time     time.Time            `json:"time"`
 	OpId     model.OpID           `json:"op_id"`
@@ -176,7 +176,7 @@ func loadToken(ctx *server.Context) *model.Token {
 	if !ok || id == "" {
 		panic(server.EBadRequest(server.EC_RESOURCE_ID_MISSING, "missing token address", nil))
 	}
-	addr, err := tezos.ParseToken(id)
+	addr, err := mavryk.ParseToken(id)
 	if err != nil {
 		panic(server.EBadRequest(server.EC_RESOURCE_ID_MALFORMED, "invalid token address", err))
 	}
@@ -229,7 +229,7 @@ func ReadToken(ctx *server.Context) (interface{}, int) {
 
 type TokenListRequest struct {
 	ListRequest
-	Contract tezos.Address   `schema:"contract"`
+	Contract mavryk.Address  `schema:"contract"`
 	Type     model.TokenType `schema:"type"`
 }
 
@@ -273,8 +273,8 @@ func ListTokens(ctx *server.Context) (interface{}, int) {
 
 type TokenBalanceListRequest struct {
 	ListRequest
-	Contract tezos.Address `schema:"contract"`
-	WithZero bool          `schema:"zero"`
+	Contract mavryk.Address `schema:"contract"`
+	WithZero bool           `schema:"zero"`
 }
 
 func ListTokenBalances(ctx *server.Context) (interface{}, int) {
@@ -296,7 +296,7 @@ func ListTokenBalances(ctx *server.Context) (interface{}, int) {
 		AndGt("row_id", args.Cursor)
 
 	if !args.WithZero {
-		q = q.AndNotEqual("balance", tezos.Zero)
+		q = q.AndNotEqual("balance", mavryk.Zero)
 	}
 
 	err = q.Execute(ctx, &list)
@@ -313,7 +313,7 @@ func ListTokenBalances(ctx *server.Context) (interface{}, int) {
 
 type TokenEventListRequest struct {
 	ListRequest
-	Contract tezos.Address        `schema:"contract"`
+	Contract mavryk.Address       `schema:"contract"`
 	Type     model.TokenEventType `schema:"type"`
 }
 

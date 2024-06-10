@@ -8,9 +8,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 func (b *Builder) AppendTransferTicketOp(ctx context.Context, oh *rpc.Operation, id model.OpRef, rollback bool) error {
@@ -175,7 +175,7 @@ func (b *Builder) AppendTransferTicketOp(ctx context.Context, oh *rpc.Operation,
 	// apply internal operation result (may generate new op and flows)
 	for i, v := range tx.Metadata.InternalResults {
 		// skip events, they are processed in event index
-		if v.Kind == tezos.OpTypeEvent {
+		if v.Kind == mavryk.OpTypeEvent {
 			continue
 		}
 		id.I = i

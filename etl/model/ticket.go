@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
 	"github.com/cespare/xxhash/v2"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
 )
 
 const (
@@ -37,7 +37,7 @@ func (i TicketID) U64() uint64 {
 // a ticketer (the issuing contract), type and contents matching this type.
 type Ticket struct {
 	Id           TicketID       `pack:"I,pk"      json:"row_id"`
-	Address      tezos.Address  `pack:"A,bloom=3" json:"address"`
+	Address      mavryk.Address `pack:"A,bloom=3" json:"address"`
 	Ticketer     AccountID      `pack:"X,bloom=3" json:"ticketer"`
 	Type         micheline.Prim `pack:"T,snappy"  json:"type"`
 	Content      micheline.Prim `pack:"C,snappy"  json:"content"`
@@ -47,9 +47,9 @@ type Ticket struct {
 	FirstTime    time.Time      `pack:"f"         json:"first_time"`
 	LastBlock    int64          `pack:">,i32"     json:"last_block"`
 	LastTime     time.Time      `pack:"t"         json:"last_time"`
-	Supply       tezos.Z        `pack:"S,snappy"  json:"total_supply"`
-	TotalMint    tezos.Z        `pack:"m,snappy"  json:"total_mint"`
-	TotalBurn    tezos.Z        `pack:"b,snappy"  json:"total_burn"`
+	Supply       mavryk.Z       `pack:"S,snappy"  json:"total_supply"`
+	TotalMint    mavryk.Z       `pack:"m,snappy"  json:"total_mint"`
+	TotalBurn    mavryk.Z       `pack:"b,snappy"  json:"total_burn"`
 	NumTransfers int            `pack:"x,i32"     json:"num_transfers"`
 	NumHolders   int            `pack:"y,i32"     json:"num_holders"`
 }
@@ -74,7 +74,7 @@ func (_ Ticket) IndexOpts(_ string) pack.Options {
 	return pack.NoOptions
 }
 
-func TicketHash(a tezos.Address, typ, content micheline.Prim) uint64 {
+func TicketHash(a mavryk.Address, typ, content micheline.Prim) uint64 {
 	key := micheline.NewPair(
 		micheline.NewBytes(a.EncodePadded()),
 		micheline.NewPair(typ, content),
@@ -124,7 +124,7 @@ func GetTicketId(ctx context.Context, s *pack.Table, id TicketID) (*Ticket, erro
 	return ty, nil
 }
 
-func LookupTicket(ctx context.Context, s *pack.Table, addr tezos.Address, hash uint64) (*Ticket, error) {
+func LookupTicket(ctx context.Context, s *pack.Table, addr mavryk.Address, hash uint64) (*Ticket, error) {
 	var tick Ticket
 	err := pack.NewQuery("find.ticket_by_addr").
 		WithTable(s).
@@ -140,7 +140,7 @@ func LookupTicket(ctx context.Context, s *pack.Table, addr tezos.Address, hash u
 	return &tick, nil
 }
 
-func LookupTicketId(ctx context.Context, t *pack.Table, addr tezos.Address, hash uint64) (TicketID, error) {
+func LookupTicketId(ctx context.Context, t *pack.Table, addr mavryk.Address, hash uint64) (TicketID, error) {
 	tick, err := LookupTicket(ctx, t, addr, hash)
 	if err != nil {
 		return 0, err

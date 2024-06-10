@@ -11,8 +11,8 @@ import (
 	"strings"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 func (m *Indexer) BlockByID(ctx context.Context, id uint64) (*model.Block, error) {
@@ -60,9 +60,9 @@ func (m *Indexer) BlockByParentId(ctx context.Context, id uint64) (*model.Block,
 	return b, nil
 }
 
-func (m *Indexer) BlockHashByHeight(ctx context.Context, height int64) (tezos.BlockHash, error) {
+func (m *Indexer) BlockHashByHeight(ctx context.Context, height int64) (mavryk.BlockHash, error) {
 	type XBlock struct {
-		Hash tezos.BlockHash `pack:"H"`
+		Hash mavryk.BlockHash `pack:"H"`
 	}
 	b := &XBlock{}
 	table, err := m.Table(model.BlockTableKey)
@@ -83,9 +83,9 @@ func (m *Indexer) BlockHashByHeight(ctx context.Context, height int64) (tezos.Bl
 	return b.Hash, nil
 }
 
-func (m *Indexer) BlockHashById(ctx context.Context, id uint64) (tezos.BlockHash, error) {
+func (m *Indexer) BlockHashById(ctx context.Context, id uint64) (mavryk.BlockHash, error) {
 	type XBlock struct {
-		Hash tezos.BlockHash `pack:"H"`
+		Hash mavryk.BlockHash `pack:"H"`
 	}
 	b := &XBlock{}
 	table, err := m.Table(model.BlockTableKey)
@@ -126,7 +126,7 @@ func (m *Indexer) BlockByHeight(ctx context.Context, height int64) (*model.Block
 	return b, nil
 }
 
-func (m *Indexer) BlockByHash(ctx context.Context, h tezos.BlockHash, from, to int64) (*model.Block, error) {
+func (m *Indexer) BlockByHash(ctx context.Context, h mavryk.BlockHash, from, to int64) (*model.Block, error) {
 	if !h.IsValid() {
 		return nil, fmt.Errorf("invalid block hash %s", h)
 	}
@@ -157,7 +157,7 @@ func (m *Indexer) BlockByHash(ctx context.Context, h tezos.BlockHash, from, to i
 	return b, nil
 }
 
-func (m *Indexer) LookupBlockId(ctx context.Context, blockIdent string) (tezos.BlockHash, int64, error) {
+func (m *Indexer) LookupBlockId(ctx context.Context, blockIdent string) (mavryk.BlockHash, int64, error) {
 	var err error
 	switch {
 	case blockIdent == "head":
@@ -166,9 +166,9 @@ func (m *Indexer) LookupBlockId(ctx context.Context, blockIdent string) (tezos.B
 		} else {
 			err = err2
 		}
-	case len(blockIdent) == tezos.HashTypeBlock.B58Len || strings.HasPrefix(blockIdent, tezos.HashTypeBlock.B58Prefix):
+	case len(blockIdent) == mavryk.HashTypeBlock.B58Len || strings.HasPrefix(blockIdent, mavryk.HashTypeBlock.B58Prefix):
 		// assume it's a hash
-		if blockHash, err2 := tezos.ParseBlockHash(blockIdent); err2 == nil && blockHash.IsValid() {
+		if blockHash, err2 := mavryk.ParseBlockHash(blockIdent); err2 == nil && blockHash.IsValid() {
 			if b, err3 := m.BlockByHash(ctx, blockHash, 0, 0); err3 == nil {
 				return b.Hash, b.Height, nil
 			} else {
@@ -184,7 +184,7 @@ func (m *Indexer) LookupBlockId(ctx context.Context, blockIdent string) (tezos.B
 		}
 		err = model.ErrInvalidBlockHeight
 	}
-	return tezos.BlockHash{}, 0, err
+	return mavryk.BlockHash{}, 0, err
 }
 
 func (m *Indexer) LookupBlock(ctx context.Context, blockIdent string) (*model.Block, error) {
@@ -195,10 +195,10 @@ func (m *Indexer) LookupBlock(ctx context.Context, blockIdent string) (*model.Bl
 	switch {
 	case blockIdent == "head":
 		b, err = m.BlockByHeight(ctx, m.tips[model.BlockTableKey].Height)
-	case len(blockIdent) == tezos.HashTypeBlock.B58Len || strings.HasPrefix(blockIdent, tezos.HashTypeBlock.B58Prefix):
+	case len(blockIdent) == mavryk.HashTypeBlock.B58Len || strings.HasPrefix(blockIdent, mavryk.HashTypeBlock.B58Prefix):
 		// assume it's a hash
-		var blockHash tezos.BlockHash
-		blockHash, err = tezos.ParseBlockHash(blockIdent)
+		var blockHash mavryk.BlockHash
+		blockHash, err = mavryk.ParseBlockHash(blockIdent)
 		if err != nil || !blockHash.IsValid() {
 			return nil, model.ErrInvalidBlockHash
 		}
@@ -295,7 +295,7 @@ func (m *Indexer) LookupLastEndorsedBlock(ctx context.Context, bkr *model.Baker,
 	return height, nil
 }
 
-func (m *Indexer) ListBlockRights(ctx context.Context, height int64, typ tezos.RightType) ([]model.BaseRight, error) {
+func (m *Indexer) ListBlockRights(ctx context.Context, height int64, typ mavryk.RightType) ([]model.BaseRight, error) {
 	p := m.ParamsByHeight(height)
 	pos := int(p.CyclePosition(height))
 
@@ -316,19 +316,19 @@ func (m *Indexer) ListBlockRights(ctx context.Context, height int64, typ tezos.R
 			return err
 		}
 		switch typ {
-		case tezos.RightTypeBaking:
-			if r, ok := right.ToBase(pos, tezos.RightTypeBaking); ok {
+		case mavryk.RightTypeBaking:
+			if r, ok := right.ToBase(pos, mavryk.RightTypeBaking); ok {
 				resp = append(resp, r)
 			}
-		case tezos.RightTypeEndorsing:
-			if r, ok := right.ToBase(pos, tezos.RightTypeEndorsing); ok {
+		case mavryk.RightTypeEndorsing:
+			if r, ok := right.ToBase(pos, mavryk.RightTypeEndorsing); ok {
 				resp = append(resp, r)
 			}
 		default:
-			if r, ok := right.ToBase(pos, tezos.RightTypeBaking); ok {
+			if r, ok := right.ToBase(pos, mavryk.RightTypeBaking); ok {
 				resp = append(resp, r)
 			}
-			if r, ok := right.ToBase(pos, tezos.RightTypeEndorsing); ok {
+			if r, ok := right.ToBase(pos, mavryk.RightTypeEndorsing); ok {
 				resp = append(resp, r)
 			}
 		}

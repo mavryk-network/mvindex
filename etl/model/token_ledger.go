@@ -7,8 +7,8 @@ import (
 	"errors"
 	"fmt"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
 )
 
 var (
@@ -84,9 +84,9 @@ func DetectLedger(s micheline.Script) (schema LedgerSchema, typ TokenType, lid, 
 }
 
 type LedgerBalance struct {
-	Owner   tezos.Address
-	TokenId tezos.Z
-	Balance tezos.Z
+	Owner   mavryk.Address
+	TokenId mavryk.Z
+	Balance mavryk.Z
 	Name    string // use for domain names
 
 	// internal
@@ -430,9 +430,9 @@ type LedgerNFT1 LedgerBalance
 
 func (b *LedgerNFT1) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Owner   tezos.Address `prim:"owner,path=0/0"`
-		TokenId tezos.Z       `prim:"token_id,path=0/1"`
-		Balance tezos.Z       `prim:"balance,path=1,nofail"`
+		Owner   mavryk.Address `prim:"owner,path=0/0"`
+		TokenId mavryk.Z       `prim:"token_id,path=0/1"`
+		Balance mavryk.Z       `prim:"balance,path=1,nofail"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {
@@ -448,8 +448,8 @@ type LedgerNFT2 LedgerBalance
 
 func (b *LedgerNFT2) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		TokenId tezos.Z       `prim:"token_id,path=0"`
-		Owner   tezos.Address `prim:"owner,path=1"`
+		TokenId mavryk.Z       `prim:"token_id,path=0"`
+		Owner   mavryk.Address `prim:"owner,path=1"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {
@@ -469,9 +469,9 @@ type LedgerNFT3 LedgerBalance
 
 func (b *LedgerNFT3) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		TokenId tezos.Z       `prim:"token_id,path=0/0"`
-		Owner   tezos.Address `prim:"owner,path=0/1"`
-		Balance tezos.Z       `prim:"balance,path=1,nofail"`
+		TokenId mavryk.Z       `prim:"token_id,path=0/0"`
+		Owner   mavryk.Address `prim:"owner,path=0/1"`
+		Balance mavryk.Z       `prim:"balance,path=1,nofail"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {
@@ -489,9 +489,9 @@ type LedgerTzBTC LedgerBalance
 
 func (b *LedgerTzBTC) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Key     string        `prim:"key,path=0/0,nofail"`
-		Owner   tezos.Address `prim:"owner,path=0/1,nofail"`
-		Balance tezos.Z       `prim:"balance,path=1/0,nofail"`
+		Key     string         `prim:"key,path=0/0,nofail"`
+		Owner   mavryk.Address `prim:"owner,path=0/1,nofail"`
+		Balance mavryk.Z       `prim:"balance,path=1/0,nofail"`
 	}
 	up, _ := prim.UnpackAll()
 	err := up.Decode(&alias)
@@ -514,8 +514,8 @@ type LedgerFAa LedgerBalance
 
 func (b *LedgerFAa) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Owner   tezos.Address `prim:"owner,path=0"`
-		Balance tezos.Z       `prim:"balance,path=1/0,nofail"`
+		Owner   mavryk.Address `prim:"owner,path=0"`
+		Balance mavryk.Z       `prim:"balance,path=1/0,nofail"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {
@@ -532,8 +532,8 @@ type LedgerFAb LedgerBalance
 
 func (b *LedgerFAb) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Owner   tezos.Address `prim:"owner,path=0"`
-		Balance tezos.Z       `prim:"balance,path=1/1,nofail"`
+		Owner   mavryk.Address `prim:"owner,path=0"`
+		Balance mavryk.Z       `prim:"balance,path=1/1,nofail"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {
@@ -553,8 +553,8 @@ type LedgerFAc LedgerBalance
 
 func (b *LedgerFAc) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Owner   tezos.Address `prim:"owner,path=0"`
-		Balance tezos.Z       `prim:"balance,path=1,nofail"`
+		Owner   mavryk.Address `prim:"owner,path=0"`
+		Balance mavryk.Z       `prim:"balance,path=1,nofail"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {
@@ -572,9 +572,9 @@ type LedgerFAd LedgerBalance
 
 func (b *LedgerFAd) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Owner   tezos.Address `prim:"owner,path=0/0"`
-		TokenId tezos.Z       `prim:"token_id,path=0/1"`
-		Balance tezos.Z       `prim:"balance,path=1,nofail"`
+		Owner   mavryk.Address `prim:"owner,path=0/0"`
+		TokenId mavryk.Z       `prim:"token_id,path=0/1"`
+		Balance mavryk.Z       `prim:"balance,path=1,nofail"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {
@@ -612,9 +612,9 @@ type LedgerFAe LedgerBalance
 
 func (b *LedgerFAe) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Owner   tezos.Address `prim:"owner,path=0"`
-		TokenId tezos.Z       `prim:"token_id,path=1/0/0/0,nofail"`
-		Balance tezos.Z       `prim:"balance,path=1/0/0/1,nofail"`
+		Owner   mavryk.Address `prim:"owner,path=0"`
+		TokenId mavryk.Z       `prim:"token_id,path=1/0/0/0,nofail"`
+		Balance mavryk.Z       `prim:"balance,path=1/0/0/1,nofail"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {
@@ -636,8 +636,8 @@ type LedgerFAf LedgerBalance
 
 func (b *LedgerFAf) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Owner   tezos.Address `prim:"owner,path=0"`
-		Balance tezos.Z       `prim:"balance,path=1/0/1,nofail"`
+		Owner   mavryk.Address `prim:"owner,path=0"`
+		Balance mavryk.Z       `prim:"balance,path=1/0/1,nofail"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {
@@ -658,8 +658,8 @@ type LedgerFAg LedgerBalance
 
 func (b *LedgerFAg) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Owner   tezos.Address `prim:"owner,path=0"`
-		Balance tezos.Z       `prim:"balance,path=1/1,nofail"`
+		Owner   mavryk.Address `prim:"owner,path=0"`
+		Balance mavryk.Z       `prim:"balance,path=1/1,nofail"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {
@@ -677,9 +677,9 @@ type LedgerFAh LedgerBalance
 
 func (b *LedgerFAh) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Owner   tezos.Address `prim:"owner,path=0/0"`
-		TokenId tezos.Z       `prim:"token_id,path=0/1"`
-		Balance tezos.Z       `prim:"balance,path=1/0,nofail"`
+		Owner   mavryk.Address `prim:"owner,path=0/0"`
+		TokenId mavryk.Z       `prim:"token_id,path=0/1"`
+		Balance mavryk.Z       `prim:"balance,path=1/0,nofail"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {
@@ -698,9 +698,9 @@ type LedgerFAi LedgerBalance
 
 func (b *LedgerFAi) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Owner   tezos.Address `prim:"owner,path=0/0"`
-		TokenId tezos.Z       `prim:"token_id,path=0/1"`
-		Balance tezos.Z       `prim:"balance,path=1/0/0,nofail"`
+		Owner   mavryk.Address `prim:"owner,path=0/0"`
+		TokenId mavryk.Z       `prim:"token_id,path=0/1"`
+		Balance mavryk.Z       `prim:"balance,path=1/0/0,nofail"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {
@@ -725,8 +725,8 @@ type LedgerFAj LedgerBalance
 
 func (b *LedgerFAj) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Owner   tezos.Address `prim:"owner,path=0"`
-		Balance tezos.Z       `prim:"balance,path=1/0/1/0,nofail"`
+		Owner   mavryk.Address `prim:"owner,path=0"`
+		Balance mavryk.Z       `prim:"balance,path=1/0/1/0,nofail"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {
@@ -774,9 +774,9 @@ type LedgerDomain LedgerBalance
 
 func (b *LedgerDomain) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Name    []byte        `prim:"name,path=0"`
-		Owner   tezos.Address `prim:"owner,path=1/1/0/1"`
-		TokenId tezos.Z       `prim:"token_id,path=1/1/1/0,nofail"`
+		Name    []byte         `prim:"name,path=0"`
+		Owner   mavryk.Address `prim:"owner,path=1/1/0/1"`
+		TokenId mavryk.Z       `prim:"token_id,path=1/1/1/0,nofail"`
 	}
 	alias.TokenId.SetInt64(-1)
 	err := prim.Decode(&alias)
@@ -816,8 +816,8 @@ type LedgerTezFin LedgerBalance
 
 func (b *LedgerTezFin) UnmarshalPrim(prim micheline.Prim) error {
 	var alias struct {
-		Owner   tezos.Address `prim:"owner,path=0"`
-		Balance tezos.Z       `prim:"balance,path=1/1/1"`
+		Owner   mavryk.Address `prim:"owner,path=0"`
+		Balance mavryk.Z       `prim:"balance,path=1/1/1"`
 	}
 	err := prim.Decode(&alias)
 	if err == nil {

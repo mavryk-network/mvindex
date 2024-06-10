@@ -4,8 +4,8 @@
 package rpc
 
 import (
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
 )
 
 // Ensure Transaction implements the TypedOperation interface.
@@ -14,14 +14,14 @@ var _ TypedOperation = (*Transaction)(nil)
 // Transaction represents a transaction operation
 type Transaction struct {
 	Manager
-	Destination tezos.Address        `json:"destination"`
+	Destination mavryk.Address       `json:"destination"`
 	Amount      int64                `json:"amount,string"`
 	Parameters  micheline.Parameters `json:"parameters"`
 }
 
 // Addresses adds all addresses used in this operation to the set.
 // Implements TypedOperation interface.
-func (t Transaction) Addresses(set *tezos.AddressSet) {
+func (t Transaction) Addresses(set *mavryk.AddressSet) {
 	set.AddUnique(t.Source)
 	set.AddUnique(t.Destination)
 	for _, v := range t.Meta().InternalResults {
@@ -30,19 +30,19 @@ func (t Transaction) Addresses(set *tezos.AddressSet) {
 	}
 }
 
-func (t Transaction) AddEmbeddedAddresses(addUnique func(tezos.Address)) {
+func (t Transaction) AddEmbeddedAddresses(addUnique func(mavryk.Address)) {
 	if !t.Destination.IsContract() {
 		return
 	}
 	collect := func(p micheline.Prim) error {
 		switch {
 		case len(p.String) == 36 || len(p.String) == 37:
-			if a, err := tezos.ParseAddress(p.String); err == nil {
+			if a, err := mavryk.ParseAddress(p.String); err == nil {
 				addUnique(a)
 			}
 			return micheline.PrimSkip
-		case tezos.IsAddressBytes(p.Bytes):
-			a := tezos.Address{}
+		case mavryk.IsAddressBytes(p.Bytes):
+			a := mavryk.Address{}
 			if err := a.Decode(p.Bytes); err == nil {
 				addUnique(a)
 			}
@@ -122,12 +122,12 @@ func (t Transaction) AddEmbeddedAddresses(addUnique func(tezos.Address)) {
 }
 
 type InternalResult struct {
-	Kind        tezos.OpType         `json:"kind"`
-	Source      tezos.Address        `json:"source"`
+	Kind        mavryk.OpType        `json:"kind"`
+	Source      mavryk.Address       `json:"source"`
 	Nonce       int64                `json:"nonce"`
 	Result      OperationResult      `json:"result"`
-	Destination tezos.Address        `json:"destination"`    // transaction
-	Delegate    tezos.Address        `json:"delegate"`       // delegation
+	Destination mavryk.Address       `json:"destination"`    // transaction
+	Delegate    mavryk.Address       `json:"delegate"`       // delegation
 	Parameters  micheline.Parameters `json:"parameters"`     // transaction
 	Amount      int64                `json:"amount,string"`  // transaction
 	Balance     int64                `json:"balance,string"` // origination
@@ -139,13 +139,13 @@ type InternalResult struct {
 
 // found in block metadata from v010+
 type ImplicitResult struct {
-	Kind                tezos.OpType      `json:"kind"`
+	Kind                mavryk.OpType     `json:"kind"`
 	BalanceUpdates      BalanceUpdates    `json:"balance_updates"`
 	ConsumedGas         int64             `json:"consumed_gas,string"`
 	ConsumedMilliGas    int64             `json:"consumed_milligas,string"`
 	Storage             micheline.Prim    `json:"storage"`
 	StorageSize         int64             `json:"storage_size,string"`
-	OriginatedContracts []tezos.Address   `json:"originated_contracts,omitempty"`
+	OriginatedContracts []mavryk.Address  `json:"originated_contracts,omitempty"`
 	PaidStorageSizeDiff int64             `json:"paid_storage_size_diff,string"`
 	Script              *micheline.Script `json:"script"`
 }

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 func (m *Indexer) ChainByHeight(ctx context.Context, height int64) (*model.Chain, error) {

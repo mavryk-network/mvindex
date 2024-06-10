@@ -7,11 +7,11 @@ import (
 	"context"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
-func (m *Indexer) LookupBaker(ctx context.Context, addr tezos.Address) (*model.Baker, error) {
+func (m *Indexer) LookupBaker(ctx context.Context, addr mavryk.Address) (*model.Baker, error) {
 	if !addr.IsValid() {
 		return nil, model.ErrInvalidAddress
 	}

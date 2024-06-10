@@ -29,7 +29,7 @@ func ErrorStatus(err error) int {
 	}
 }
 
-// Error is a Tezos error as documented on http://tezos.gitlab.io/mainnet/api/errors.html.
+// Error is a Tezos error as documented on http://mavryk.gitlab.io/mainnet/api/errors.html.
 type Error interface {
 	error
 	ErrorID() string
@@ -83,7 +83,7 @@ type HTTPError interface {
 	HTTPStatus
 }
 
-// RPCError is a Tezos RPC error as documented on http://tezos.gitlab.io/mainnet/api/errors.html.
+// RPCError is a Tezos RPC error as documented on http://mavryk.gitlab.io/mainnet/api/errors.html.
 type RPCError interface {
 	Error
 	HTTPStatus

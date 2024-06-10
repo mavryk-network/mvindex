@@ -16,10 +16,10 @@ import (
 	"blockwatch.cc/packdb/encoding/csv"
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -60,7 +60,7 @@ func init() {
 // configurable marshalling helper
 type Block struct {
 	model.Block
-	Predecessor tezos.BlockHash `pack:"predecessor" json:"predecessor"`
+	Predecessor mavryk.BlockHash `pack:"predecessor" json:"predecessor"`
 
 	verbose bool            // cond. marshal
 	columns util.StringList // cond. cols & order when brief
@@ -81,56 +81,56 @@ func (b *Block) MarshalJSONVerbose() ([]byte, error) {
 		b.params = b.ctx.Crawler.ParamsByHeight(b.Height)
 	}
 	block := struct {
-		RowId                  uint64                 `json:"row_id"`
-		ParentId               uint64                 `json:"parent_id"`
-		Hash                   string                 `json:"hash"`
-		Predecessor            string                 `json:"predecessor"`
-		Timestamp              int64                  `json:"time"` // convert to UNIX milliseconds
-		Height                 int64                  `json:"height"`
-		Cycle                  int64                  `json:"cycle"`
-		IsCycleSnapshot        bool                   `json:"is_cycle_snapshot"`
-		Solvetime              int                    `json:"solvetime"`
-		Version                int                    `json:"version"`
-		Round                  int                    `json:"round"`
-		Nonce                  string                 `json:"nonce"`
-		VotingPeriodKind       tezos.VotingPeriodKind `json:"voting_period_kind"`
-		BakerId                uint64                 `json:"baker_id"`
-		Baker                  string                 `json:"baker"`
-		ProposerId             uint64                 `json:"proposer_id"`
-		Proposer               string                 `json:"proposer"`
-		NSlotsEndorsed         int                    `json:"n_endorsed_slots"`
-		NOpsApplied            int                    `json:"n_ops_applied"`
-		NOpsFailed             int                    `json:"n_ops_failed"`
-		NContractCalls         int                    `json:"n_calls"`
-		NRollupCalls           int                    `json:"n_rollup_calls"`
-		NTx                    int                    `json:"n_tx"`
-		NEvents                int                    `json:"n_events"`
-		NTickets               int                    `json:"n_tickets"`
-		Volume                 float64                `json:"volume"`
-		Fee                    float64                `json:"fee"`
-		Reward                 float64                `json:"reward"`
-		Deposit                float64                `json:"deposit"`
-		ActivatedSupply        float64                `json:"activated_supply"`
-		MintedSupply           float64                `json:"minted_supply"`
-		BurnedSupply           float64                `json:"burned_supply"`
-		SeenAccounts           int                    `json:"n_accounts"`
-		NewAccounts            int                    `json:"n_new_accounts"`
-		NewContracts           int                    `json:"n_new_contracts"`
-		ClearedAccounts        int                    `json:"n_cleared_accounts"`
-		FundedAccounts         int                    `json:"n_funded_accounts"`
-		GasLimit               int64                  `json:"gas_limit"`
-		GasUsed                int64                  `json:"gas_used"`
-		StoragePaid            int64                  `json:"storage_paid"`
-		PctAccountsReused      float64                `json:"pct_account_reuse"`
-		LbVote                 tezos.FeatureVote      `json:"lb_vote"`
-		LbEma                  int64                  `json:"lb_ema"`
-		AiVote                 tezos.FeatureVote      `json:"ai_vote"`
-		AiEma                  int64                  `json:"ai_ema"`
-		Protocol               tezos.ProtocolHash     `json:"protocol"`
-		ProposerConsensusKeyId uint64                 `json:"proposer_consensus_key_id"`
-		BakerConsensusKeyId    uint64                 `json:"baker_consensus_key_id"`
-		ProposerConsensusKey   string                 `json:"proposer_consensus_key"`
-		BakerConsensusKey      string                 `json:"baker_consensus_key"`
+		RowId                  uint64                  `json:"row_id"`
+		ParentId               uint64                  `json:"parent_id"`
+		Hash                   string                  `json:"hash"`
+		Predecessor            string                  `json:"predecessor"`
+		Timestamp              int64                   `json:"time"` // convert to UNIX milliseconds
+		Height                 int64                   `json:"height"`
+		Cycle                  int64                   `json:"cycle"`
+		IsCycleSnapshot        bool                    `json:"is_cycle_snapshot"`
+		Solvetime              int                     `json:"solvetime"`
+		Version                int                     `json:"version"`
+		Round                  int                     `json:"round"`
+		Nonce                  string                  `json:"nonce"`
+		VotingPeriodKind       mavryk.VotingPeriodKind `json:"voting_period_kind"`
+		BakerId                uint64                  `json:"baker_id"`
+		Baker                  string                  `json:"baker"`
+		ProposerId             uint64                  `json:"proposer_id"`
+		Proposer               string                  `json:"proposer"`
+		NSlotsEndorsed         int                     `json:"n_endorsed_slots"`
+		NOpsApplied            int                     `json:"n_ops_applied"`
+		NOpsFailed             int                     `json:"n_ops_failed"`
+		NContractCalls         int                     `json:"n_calls"`
+		NRollupCalls           int                     `json:"n_rollup_calls"`
+		NTx                    int                     `json:"n_tx"`
+		NEvents                int                     `json:"n_events"`
+		NTickets               int                     `json:"n_tickets"`
+		Volume                 float64                 `json:"volume"`
+		Fee                    float64                 `json:"fee"`
+		Reward                 float64                 `json:"reward"`
+		Deposit                float64                 `json:"deposit"`
+		ActivatedSupply        float64                 `json:"activated_supply"`
+		MintedSupply           float64                 `json:"minted_supply"`
+		BurnedSupply           float64                 `json:"burned_supply"`
+		SeenAccounts           int                     `json:"n_accounts"`
+		NewAccounts            int                     `json:"n_new_accounts"`
+		NewContracts           int                     `json:"n_new_contracts"`
+		ClearedAccounts        int                     `json:"n_cleared_accounts"`
+		FundedAccounts         int                     `json:"n_funded_accounts"`
+		GasLimit               int64                   `json:"gas_limit"`
+		GasUsed                int64                   `json:"gas_used"`
+		StoragePaid            int64                   `json:"storage_paid"`
+		PctAccountsReused      float64                 `json:"pct_account_reuse"`
+		LbVote                 mavryk.FeatureVote      `json:"lb_vote"`
+		LbEma                  int64                   `json:"lb_ema"`
+		AiVote                 mavryk.FeatureVote      `json:"ai_vote"`
+		AiEma                  int64                   `json:"ai_ema"`
+		Protocol               mavryk.ProtocolHash     `json:"protocol"`
+		ProposerConsensusKeyId uint64                  `json:"proposer_consensus_key_id"`
+		BakerConsensusKeyId    uint64                  `json:"baker_consensus_key_id"`
+		ProposerConsensusKey   string                  `json:"proposer_consensus_key"`
+		BakerConsensusKey      string                  `json:"baker_consensus_key"`
 	}{
 		RowId:                  b.RowId,
 		ParentId:               b.ParentId,
@@ -522,7 +522,7 @@ func StreamBlockTable(ctx *server.Context, args *TableRequest) (interface{}, int
 			// special hash type to []byte conversion
 			hashes := make([][]byte, len(val))
 			for i, v := range val {
-				h, err := tezos.ParseBlockHash(v)
+				h, err := mavryk.ParseBlockHash(v)
 				if err != nil {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid block hash '%s'", val), err))
 				}
@@ -536,7 +536,7 @@ func StreamBlockTable(ctx *server.Context, args *TableRequest) (interface{}, int
 		case "creator":
 			addrs := make([]model.AccountID, 0)
 			for _, v := range strings.Split(val[0], ",") {
-				addr, err := tezos.ParseAddress(v)
+				addr, err := mavryk.ParseAddress(v)
 				if err != nil || !addr.IsValid() {
 					panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", v), err))
 				}
@@ -597,7 +597,7 @@ func StreamBlockTable(ctx *server.Context, args *TableRequest) (interface{}, int
 					q = q.And(field, mode, 0)
 				} else {
 					// single-address lookup and compile condition
-					addr, err := tezos.ParseAddress(val[0])
+					addr, err := mavryk.ParseAddress(val[0])
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", val[0]), err))
 					}
@@ -616,7 +616,7 @@ func StreamBlockTable(ctx *server.Context, args *TableRequest) (interface{}, int
 				// multi-address lookup and compile condition
 				ids := make([]uint64, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					addr, err := tezos.ParseAddress(v)
+					addr, err := mavryk.ParseAddress(v)
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", v), err))
 					}
@@ -639,7 +639,7 @@ func StreamBlockTable(ctx *server.Context, args *TableRequest) (interface{}, int
 			}
 		case "voting_period_kind":
 			// parse only the first value
-			period := tezos.ParseVotingPeriod(val[0])
+			period := mavryk.ParseVotingPeriod(val[0])
 			if !period.IsValid() {
 				panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid voting period '%s'", val[0]), nil))
 			}

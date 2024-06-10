@@ -10,7 +10,7 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 // always read fresh data with updated counters

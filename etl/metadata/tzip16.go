@@ -4,7 +4,7 @@
 package metadata
 
 import (
-	"blockwatch.cc/tzgo/micheline"
+	"github.com/mavryk-network/mvgo/micheline"
 )
 
 func init() {
@@ -16,7 +16,7 @@ const (
 	tz16Ns     = "tz16"
 	tz16Schema = `{
     "$schema": "http://json-schema.org/draft/2019-09/schema#",
-    "$id": "https://api.tzpro.io/metadata/schemas/tz16.json",
+    "$id": "https://api.mvpro.io/metadata/schemas/tz16.json",
     "title": "Tzip16",
     "type": "object",
     "properties": {

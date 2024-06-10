@@ -3,9 +3,7 @@
 
 package rpc
 
-import (
-	"blockwatch.cc/tzgo/tezos"
-)
+import "github.com/mavryk-network/mvgo/mavryk"
 
 // Ensure Ballot implements the TypedOperation interface.
 var _ TypedOperation = (*Ballot)(nil)
@@ -13,8 +11,8 @@ var _ TypedOperation = (*Ballot)(nil)
 // Ballot represents a ballot operation
 type Ballot struct {
 	Generic
-	Source   tezos.Address      `json:"source"`
-	Period   int                `json:"period"`
-	Ballot   tezos.BallotVote   `json:"ballot"` // yay, nay, pass
-	Proposal tezos.ProtocolHash `json:"proposal"`
+	Source   mavryk.Address      `json:"source"`
+	Period   int                 `json:"period"`
+	Ballot   mavryk.BallotVote   `json:"ballot"` // yay, nay, pass
+	Proposal mavryk.ProtocolHash `json:"proposal"`
 }

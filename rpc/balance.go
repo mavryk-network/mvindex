@@ -6,8 +6,15 @@ package rpc
 import (
 	"fmt"
 
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
+
+// Staker is a variable structure included inside the staker
+type Staker struct {
+	Baker    string `json:"baker,omitempty"`
+	Contract string `json:"contract,omitempty"`
+	Delegate string `json:"delegate,omitempty"`
+}
 
 // BalanceUpdate is a variable structure depending on the Kind field
 type BalanceUpdate struct {
@@ -29,14 +36,14 @@ type BalanceUpdate struct {
 	Level_ int64 `json:"level,omitempty"` // wrongly called level, it's cycle
 	Cycle_ int64 `json:"cycle,omitempty"` // v4 fix
 
-	// Oxford staking
+	// Atlas staking
 	Staker struct {
 		Contract string `json:"contract,omitempty"` // single: used in ??
 		Delegate string `json:"delegate,omitempty"` // single & shared: used in ??
 		Baker    string `json:"baker,omitempty"`    // baker: ??
 	} `json:"staker"`
 	DelayedOp string `json:"delayed_operation_hash,omitempty"`
-	Delegator string `json:"delegator,omitempty"` // Oxford+, ??
+	Delegator string `json:"delegator,omitempty"` // Atlas+, ??
 }
 
 // Categories
@@ -68,23 +75,23 @@ type BalanceUpdate struct {
 // - `deposits` represents the account of frozen deposits in subsequent protocols (replacing the legacy container account `legacy_deposits` above).
 // - `unstaked_deposits` represent tez for which unstaking has been requested.
 
-func (b BalanceUpdate) Address() (addr tezos.Address) {
+func (b BalanceUpdate) Address() (addr mavryk.Address) {
 	switch {
 	case len(b.Delegator) > 0:
 		// debug
 		fmt.Printf("Found BALANCE_UPDATE with NEW delegator field: %#v\n", b)
 	case len(b.Contract) > 0:
-		addr, _ = tezos.ParseAddress(b.Contract)
+		addr, _ = mavryk.ParseAddress(b.Contract)
 	case len(b.Delegate) > 0:
-		addr, _ = tezos.ParseAddress(b.Delegate)
+		addr, _ = mavryk.ParseAddress(b.Delegate)
 	case len(b.Committer) > 0:
-		addr, _ = tezos.ParseAddress(b.Committer)
+		addr, _ = mavryk.ParseAddress(b.Committer)
 	case len(b.Staker.Contract) > 0:
-		addr, _ = tezos.ParseAddress(b.Staker.Contract)
+		addr, _ = mavryk.ParseAddress(b.Staker.Contract)
 	case len(b.Staker.Delegate) > 0:
-		addr, _ = tezos.ParseAddress(b.Staker.Delegate)
+		addr, _ = mavryk.ParseAddress(b.Staker.Delegate)
 	case len(b.Staker.Baker) > 0:
-		addr, _ = tezos.ParseAddress(b.Staker.Baker)
+		addr, _ = mavryk.ParseAddress(b.Staker.Baker)
 	}
 	return
 }

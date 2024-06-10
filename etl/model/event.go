@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 const EventTableKey = "event"

@@ -1,5 +1,5 @@
 kind: pipeline
-name: TzIndex Pipeline
+name: MvIndex Pipeline
 platform:
   os: linux
   arch: amd64

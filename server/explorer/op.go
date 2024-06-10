@@ -15,11 +15,11 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 func init() {
@@ -142,7 +142,7 @@ type Op struct {
 	Id            uint64                    `json:"id"`
 	Hash          string                    `json:"hash,omitempty"`
 	Type          model.OpType              `json:"type"`
-	BlockHash     tezos.BlockHash           `json:"block"`
+	BlockHash     mavryk.BlockHash          `json:"block"`
 	Timestamp     time.Time                 `json:"time"`
 	Height        int64                     `json:"height"`
 	Cycle         int64                     `json:"cycle"`
@@ -172,21 +172,21 @@ type Op struct {
 	BigmapDiff    *BigmapUpdateList         `json:"big_map_diff,omitempty"`
 	Value         *micheline.Prim           `json:"value,omitempty"`
 	CodeHash      string                    `json:"code_hash,omitempty"`
-	Sender        *tezos.Address            `json:"sender,omitempty"`
-	Receiver      *tezos.Address            `json:"receiver,omitempty"`
-	Creator       *tezos.Address            `json:"creator,omitempty"`
-	Baker         *tezos.Address            `json:"baker,omitempty"`
-	OldBaker      *tezos.Address            `json:"previous_baker,omitempty"`
-	Source        *tezos.Address            `json:"source,omitempty"`
-	Accuser       *tezos.Address            `json:"accuser,omitempty"`
-	Offender      *tezos.Address            `json:"offender,omitempty"`
-	Loser         *tezos.Address            `json:"loser,omitempty"`
-	Winner        *tezos.Address            `json:"winner,omitempty"`
-	Staker        *tezos.Address            `json:"staker,omitempty"`
+	Sender        *mavryk.Address           `json:"sender,omitempty"`
+	Receiver      *mavryk.Address           `json:"receiver,omitempty"`
+	Creator       *mavryk.Address           `json:"creator,omitempty"`
+	Baker         *mavryk.Address           `json:"baker,omitempty"`
+	OldBaker      *mavryk.Address           `json:"previous_baker,omitempty"`
+	Source        *mavryk.Address           `json:"source,omitempty"`
+	Accuser       *mavryk.Address           `json:"accuser,omitempty"`
+	Offender      *mavryk.Address           `json:"offender,omitempty"`
+	Loser         *mavryk.Address           `json:"loser,omitempty"`
+	Winner        *mavryk.Address           `json:"winner,omitempty"`
+	Staker        *mavryk.Address           `json:"staker,omitempty"`
 	Power         int64                     `json:"power,omitempty"`
 	Limit         *NullMoney                `json:"limit,omitempty"`
-	Solution      tezos.HexBytes            `json:"solution,omitempty"`
-	Proof         tezos.HexBytes            `json:"proof,omitempty"`
+	Solution      mavryk.HexBytes           `json:"solution,omitempty"`
+	Proof         mavryk.HexBytes           `json:"proof,omitempty"`
 	Confirmations int64                     `json:"confirmations"`
 	NOps          int                       `json:"n_ops,omitempty"`
 	Batch         []*Op                     `json:"batch,omitempty"`
@@ -291,35 +291,35 @@ func (o *Op) AddAccounts(ctx *server.Context, op *model.Op, args server.Options)
 
 			// only available when rollup is a target
 			// unpack real type id from entrypoint
-			typ := tezos.OpType(op.Entrypoint)
+			typ := mavryk.OpType(op.Entrypoint)
 			switch o.Receiver.Type() {
-			case tezos.AddressTypeTxRollup:
-				typ += tezos.OpTypeTxRollupOrigination
-			case tezos.AddressTypeSmartRollup:
-				typ += tezos.OpTypeSmartRollupOriginate
+			case mavryk.AddressTypeTxRollup:
+				typ += mavryk.OpTypeTxRollupOrigination
+			case mavryk.AddressTypeSmartRollup:
+				typ += mavryk.OpTypeSmartRollupOriginate
 			}
 			switch typ {
-			case tezos.OpTypeTxRollupRejection:
+			case mavryk.OpTypeTxRollupRejection:
 				// assuming only player can send reject op
 				a := ctx.Indexer.LookupAddress(ctx, op.CreatorId)
 				o.Loser = &a
 				o.Winner = o.Sender
 
-			case tezos.OpTypeSmartRollupTimeout:
+			case mavryk.OpTypeSmartRollupTimeout:
 				// note: 3rd party can send timeout op
 				a := ctx.Indexer.LookupAddress(ctx, op.CreatorId)
 				o.Loser = &a
 				w := ctx.Indexer.LookupAddress(ctx, op.BakerId)
 				o.Winner = &w
 
-			case tezos.OpTypeSmartRollupRefute:
+			case mavryk.OpTypeSmartRollupRefute:
 				// assuming only player can send refute op
 				if op.CreatorId > 0 {
 					a := ctx.Indexer.LookupAddress(ctx, op.CreatorId)
 					o.Loser = &a
 					o.Winner = o.Sender
 				}
-			case tezos.OpTypeSmartRollupRecoverBond:
+			case mavryk.OpTypeSmartRollupRecoverBond:
 				a := ctx.Indexer.LookupAddress(ctx, op.CreatorId)
 				o.Staker = &a
 			}
@@ -382,7 +382,7 @@ func (o *Op) UnpackData(ctx *server.Context, op *model.Op, cc *model.Contract, a
 			return fmt.Errorf("explorer op: unmarshal %s data: %v", op.Type, err)
 		}
 	case model.OpTypeRegisterConstant:
-		expr, _ := tezos.ParseExprHash(op.Data)
+		expr, _ := mavryk.ParseExprHash(op.Data)
 		if con, err := ctx.Indexer.LookupConstant(ctx, expr); err != nil {
 			return fmt.Errorf("explorer op: loading constant %s value: %v", expr, err)
 		} else {
@@ -405,8 +405,8 @@ func (o *Op) UnpackData(ctx *server.Context, op *model.Op, cc *model.Contract, a
 		o.Data = nil
 	case model.OpTypeVdfRevelation:
 		if l := len(op.Parameters); l > 0 {
-			o.Solution = tezos.HexBytes(op.Parameters[:l/2])
-			o.Proof = tezos.HexBytes(op.Parameters[l/2:])
+			o.Solution = mavryk.HexBytes(op.Parameters[:l/2])
+			o.Proof = mavryk.HexBytes(op.Parameters[l/2:])
 		}
 	case model.OpTypeOrigination:
 		if args.WithPrim() {
@@ -607,19 +607,6 @@ func (o *Op) AddContractData(ctx *server.Context, op *model.Op, cc *model.Contra
 	// add storage
 	if len(op.Storage) > 0 && sTyp.IsValid() {
 		data := op.Storage
-		if cc != nil {
-			// storage type is patched post-Babylon, but pre-Babylon ops are unpatched,
-			// we always output post-babylon storage
-			if etl.NeedsBabylonUpgradeContract(cc, ctx.Params) && ctx.Params.IsPreBabylonHeight(op.Height) {
-				if acc, err := ctx.Indexer.LookupAccountById(ctx, cc.CreatorId); err == nil {
-					prim := micheline.Prim{}
-					if err := prim.UnmarshalBinary(op.Storage); err == nil {
-						prim = prim.MigrateToBabylonStorage(acc.Address.Encode())
-					}
-					data, _ = prim.MarshalBinary()
-				}
-			}
-		}
 		o.Storage = NewStorage(ctx, data, sTyp, op.Timestamp, args)
 	}
 
@@ -633,11 +620,11 @@ func (o *Op) AddContractData(ctx *server.Context, op *model.Op, cc *model.Contra
 func (o *Op) AddRollupData(ctx *server.Context, op *model.Op, args server.Options) error {
 	switch op.Type {
 	case model.OpTypeRollupOrigination:
-		if o.Receiver.Type() == tezos.AddressTypeSmartRollup {
+		if o.Receiver.Type() == mavryk.AddressTypeSmartRollup {
 			o.Parameters = NewSmartRollupParameters(ctx, op, args)
 		}
 	case model.OpTypeRollupTransaction:
-		if o.Receiver != nil && o.Receiver.Type() == tezos.AddressTypeTxRollup {
+		if o.Receiver != nil && o.Receiver.Type() == mavryk.AddressTypeTxRollup {
 			o.Parameters = NewTxRollupParameters(ctx, op, args)
 		} else {
 			o.Parameters = NewSmartRollupParameters(ctx, op, args)
@@ -681,7 +668,7 @@ func NewOp(ctx *server.Context, op *model.Op, block *model.Block, cc *model.Cont
 	}
 
 	// add block hash
-	var blockHash tezos.BlockHash
+	var blockHash mavryk.BlockHash
 	if block != nil {
 		blockHash = block.Hash
 	} else {
@@ -763,27 +750,27 @@ func (t Op) RegisterRoutes(r *mux.Router) error {
 type OpsRequest struct {
 	ListRequest // offset, limit, cursor, order
 
-	Block    string        `schema:"block"`    // height or hash for time-lock
-	Since    string        `schema:"since"`    // block hash or height for updates
-	Unpack   bool          `schema:"unpack"`   // unpack packed key/values
-	Prim     bool          `schema:"prim"`     // for prim/value rendering
-	Meta     bool          `schema:"meta"`     // include account metadata
-	Rights   bool          `schema:"rights"`   // include block rights
-	Merge    bool          `schema:"merge"`    // merge batch lists and internal ops
-	Storage  bool          `schema:"storage"`  // embed storage update
-	Address  tezos.Address `schema:"address"`  // filter by any address
-	Sender   tezos.Address `schema:"sender"`   // filter by sender
-	Receiver tezos.Address `schema:"receiver"` // filter by receiver
+	Block    string         `schema:"block"`    // height or hash for time-lock
+	Since    string         `schema:"since"`    // block hash or height for updates
+	Unpack   bool           `schema:"unpack"`   // unpack packed key/values
+	Prim     bool           `schema:"prim"`     // for prim/value rendering
+	Meta     bool           `schema:"meta"`     // include account metadata
+	Rights   bool           `schema:"rights"`   // include block rights
+	Merge    bool           `schema:"merge"`    // merge batch lists and internal ops
+	Storage  bool           `schema:"storage"`  // embed storage update
+	Address  mavryk.Address `schema:"address"`  // filter by any address
+	Sender   mavryk.Address `schema:"sender"`   // filter by sender
+	Receiver mavryk.Address `schema:"receiver"` // filter by receiver
 
 	// decoded type condition
 	TypeMode pack.FilterMode  `schema:"-"`
 	TypeList model.OpTypeList `schema:"-"`
 
 	// decoded values
-	BlockHeight int64           `schema:"-"`
-	BlockHash   tezos.BlockHash `schema:"-"`
-	SinceHeight int64           `schema:"-"`
-	SinceHash   tezos.BlockHash `schema:"-"`
+	BlockHeight int64            `schema:"-"`
+	BlockHash   mavryk.BlockHash `schema:"-"`
+	SinceHeight int64            `schema:"-"`
+	SinceHash   mavryk.BlockHash `schema:"-"`
 }
 
 func (r *OpsRequest) WithPrim() bool   { return r != nil && r.Prim }

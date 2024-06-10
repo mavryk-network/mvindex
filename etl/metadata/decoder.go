@@ -7,9 +7,9 @@ import (
 	"context"
 	"fmt"
 
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
 )
 
 type NewDecoderFunc func(uint64) Decoder
@@ -84,7 +84,7 @@ func (t EventType) MarshalText() ([]byte, error) {
 }
 
 type Event struct {
-	Owner tezos.Address
+	Owner mavryk.Address
 	Type  EventType
 	Flags int64
 	Data  any

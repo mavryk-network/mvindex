@@ -11,12 +11,12 @@ import (
 
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/store"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/cache"
-	"blockwatch.cc/tzindex/etl/index"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/cache"
+	"github.com/mavryk-network/mvindex/etl/index"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 type IndexerConfig struct {
@@ -77,7 +77,7 @@ func (m *Indexer) ParamsByCycle(cycle int64) *rpc.Params {
 	return m.reg.GetParamsByCycle(cycle)
 }
 
-func (m *Indexer) ParamsByProtocol(proto tezos.ProtocolHash) (*rpc.Params, error) {
+func (m *Indexer) ParamsByProtocol(proto mavryk.ProtocolHash) (*rpc.Params, error) {
 	return m.reg.GetParams(proto)
 }
 
@@ -443,7 +443,7 @@ func (m *Indexer) DisconnectBlock(ctx context.Context, block *model.Block, build
 		}
 
 		// Update the current tip.
-		cloned := block.TZ.ParentHash().Clone()
+		cloned := block.MV.ParentHash().Clone()
 		tip.Hash = &cloned
 		tip.Height = block.Height - 1
 	}

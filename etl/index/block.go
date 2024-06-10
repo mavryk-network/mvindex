@@ -8,8 +8,8 @@ import (
 	"fmt"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
 )
 
 const BlockIndexKey = "block"
@@ -105,7 +105,7 @@ func (idx *BlockIndex) ConnectBlock(ctx context.Context, block *model.Block, b m
 	}
 
 	// fetch and update snapshot block
-	if snap := block.TZ.Snapshot; snap != nil && block.Height > 1 {
+	if snap := block.MV.Snapshot; snap != nil && block.Height > 1 {
 		// protocol upgrades happen 1 block before cycle end. use parent params
 		// to catch changes in cycle length; some protocol upgrades fucked up
 		// and added a 16th snapshot or started a block too early

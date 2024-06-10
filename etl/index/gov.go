@@ -18,10 +18,10 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 const GovIndexKey = "gov"
@@ -138,12 +138,12 @@ func (idx *GovIndex) Close() error {
 
 func (idx *GovIndex) ConnectBlock(ctx context.Context, block *model.Block, builder model.BlockBuilder) error {
 	// detect first and last block of a voting period
-	isPeriodStart := block.TZ.IsVoteStart()
-	isPeriodEnd := block.TZ.IsVoteEnd()
+	isPeriodStart := block.MV.IsVoteStart()
+	isPeriodEnd := block.MV.IsVoteEnd()
 
 	// open a new election or vote on first block
 	if isPeriodStart {
-		if block.VotingPeriodKind == tezos.VotingPeriodProposal {
+		if block.VotingPeriodKind == mavryk.VotingPeriodProposal {
 			if err := idx.openElection(ctx, block, builder); err != nil {
 				log.Errorf("gov: open election at block %d %s: %s", block.Height, block.VotingPeriodKind, err)
 				// return err
@@ -160,15 +160,15 @@ func (idx *GovIndex) ConnectBlock(ctx context.Context, block *model.Block, build
 	// process proposals (1) or ballots (2, 4)
 	var err error
 	switch block.VotingPeriodKind {
-	case tezos.VotingPeriodProposal:
+	case mavryk.VotingPeriodProposal:
 		err = idx.processProposals(ctx, block, builder)
-	case tezos.VotingPeriodExploration:
+	case mavryk.VotingPeriodExploration:
 		err = idx.processBallots(ctx, block, builder)
-	case tezos.VotingPeriodCooldown:
+	case mavryk.VotingPeriodCooldown:
 		// nothing to do here
-	case tezos.VotingPeriodPromotion:
+	case mavryk.VotingPeriodPromotion:
 		err = idx.processBallots(ctx, block, builder)
-	case tezos.VotingPeriodAdoption:
+	case mavryk.VotingPeriodAdoption:
 		// nothing to do here
 	}
 	if err != nil {
@@ -191,7 +191,7 @@ func (idx *GovIndex) ConnectBlock(ctx context.Context, block *model.Block, build
 		// Note: must call on RPC block since IsProtocolUpgrade() has a different
 		// meaning on model.Block (there we compare parent proto vs current proto)
 		// whereas in RPC we compare block.Metadata.NextProto
-		if !success || block.TZ.Block.IsProtocolUpgrade() {
+		if !success || block.MV.Block.IsProtocolUpgrade() {
 			if err := idx.closeElection(ctx, block, builder); err != nil {
 				log.Errorf("gov: close election at block %d: %s", block.Height, err)
 				// return err
@@ -212,7 +212,7 @@ func (idx *GovIndex) DisconnectBlock(ctx context.Context, block *model.Block, bu
 	}
 
 	// re-open vote/election when at end of cycle
-	isPeriodEnd := block.TZ.IsVoteEnd()
+	isPeriodEnd := block.MV.IsVoteEnd()
 	if isPeriodEnd {
 		success, err := idx.reopenVote(ctx, block, builder)
 		if err != nil {
@@ -288,7 +288,7 @@ func (idx *GovIndex) openElection(ctx context.Context, block *model.Block, _ mod
 	log.Debugf("gov: open election at height %d", block.Height)
 	election := &model.Election{
 		NumPeriods:   1,
-		VotingPeriod: block.TZ.Block.GetVotingPeriod(),
+		VotingPeriod: block.MV.Block.GetVotingPeriod(),
 		StartTime:    block.Timestamp,
 		EndTime:      time.Time{}.UTC(), // set on close
 		StartHeight:  block.Height,
@@ -360,7 +360,7 @@ func (idx *GovIndex) openVote(ctx context.Context, block *model.Block, _ model.B
 		block.VotingPeriodKind, election.RowId, block.Height,
 		block.Params.NumVotingPeriods, block.Params.BlocksPerVotingPeriod,
 	)
-	log.Debugf("gov: vote counters %#v", block.TZ.Block.GetVotingInfo())
+	log.Debugf("gov: vote counters %#v", block.MV.Block.GetVotingInfo())
 
 	// update election
 	election.NumPeriods = block.VotingPeriodKind.Num()
@@ -372,7 +372,7 @@ func (idx *GovIndex) openVote(ctx context.Context, block *model.Block, _ model.B
 	vote := &model.Vote{
 		ElectionId:       election.RowId,
 		ProposalId:       election.ProposalId, // voted proposal, zero in first voting period
-		VotingPeriod:     block.TZ.Block.GetVotingPeriod(),
+		VotingPeriod:     block.MV.Block.GetVotingPeriod(),
 		VotingPeriodKind: block.VotingPeriodKind,
 		StartTime:        block.Timestamp,
 		EndTime:          time.Time{}.UTC(), // set on close
@@ -392,13 +392,13 @@ func (idx *GovIndex) openVote(ctx context.Context, block *model.Block, _ model.B
 	vote.EligibleStake = stake
 	vote.EligibleVoters = block.Chain.EligibleBakers
 	switch vote.VotingPeriodKind {
-	case tezos.VotingPeriodProposal:
+	case mavryk.VotingPeriodProposal:
 		// fixed min proposal quorum as defined by protocol
 		vote.QuorumPct = p.MinProposalQuorum
-	case tezos.VotingPeriodCooldown, tezos.VotingPeriodAdoption:
+	case mavryk.VotingPeriodCooldown, mavryk.VotingPeriodAdoption:
 		// no quorum
 		vote.QuorumPct = 0
-	case tezos.VotingPeriodExploration, tezos.VotingPeriodPromotion:
+	case mavryk.VotingPeriodExploration, mavryk.VotingPeriodPromotion:
 		// from most recent (testing_vote or promotion_vote) period
 		quorumPct, turnoutEma, err := idx.quorumByHeight(ctx, block.Height, p)
 		if err != nil {
@@ -431,12 +431,12 @@ func (idx *GovIndex) closeVote(ctx context.Context, block *model.Block, builder 
 	}
 
 	log.Debugf("gov: close %s vote in election %d at height %d", vote.VotingPeriodKind, vote.ElectionId, block.Height)
-	log.Debugf("gov: vote counters %#v", block.TZ.Block.GetVotingInfo())
+	log.Debugf("gov: vote counters %#v", block.MV.Block.GetVotingInfo())
 
 	// determine result
 	params := block.Params
 	switch vote.VotingPeriodKind {
-	case tezos.VotingPeriodProposal:
+	case mavryk.VotingPeriodProposal:
 		// select the winning proposal if any and update election
 		var isDraw bool
 		if vote.TurnoutStake > 0 {
@@ -482,12 +482,12 @@ func (idx *GovIndex) closeVote(ctx context.Context, block *model.Block, builder 
 		vote.IsDraw = isDraw
 		vote.IsFailed = vote.NoProposal || vote.NoQuorum || vote.IsDraw
 
-	case tezos.VotingPeriodExploration, tezos.VotingPeriodPromotion:
+	case mavryk.VotingPeriodExploration, mavryk.VotingPeriodPromotion:
 		vote.NoQuorum = vote.TurnoutStake < vote.QuorumStake
 		vote.NoMajority = vote.YayStake < (vote.YayStake+vote.NayStake)*8/10
 		vote.IsFailed = vote.NoQuorum || vote.NoMajority
 
-	case tezos.VotingPeriodCooldown, tezos.VotingPeriodAdoption:
+	case mavryk.VotingPeriodCooldown, mavryk.VotingPeriodAdoption:
 		// empty, cannot fail
 	}
 
@@ -659,7 +659,7 @@ func (idx *GovIndex) processProposals(ctx context.Context, block *model.Block, b
 				SourceId:         bkr.AccountId,
 				OpId:             op.RowId,
 				Stake:            stake,
-				Ballot:           tezos.BallotVoteYay,
+				Ballot:           mavryk.BallotVoteYay,
 			}
 			insBallots = append(insBallots, b)
 
@@ -751,13 +751,13 @@ func (idx *GovIndex) processBallots(ctx context.Context, block *model.Block, bui
 		vote.TurnoutStake += stake
 		vote.TurnoutVoters++
 		switch bop.Ballot {
-		case tezos.BallotVoteYay:
+		case mavryk.BallotVoteYay:
 			vote.YayStake += stake
 			vote.YayVoters++
-		case tezos.BallotVoteNay:
+		case mavryk.BallotVoteNay:
 			vote.NayStake += stake
 			vote.NayVoters++
-		case tezos.BallotVotePass:
+		case mavryk.BallotVotePass:
 			vote.PassStake += stake
 			vote.PassVoters++
 		}
@@ -864,7 +864,7 @@ func (idx *GovIndex) makeStakeSnapshot(ctx context.Context, block *model.Block, 
 
 	// skip deactivated bakers (we don't mark bakers deactivated until
 	// next block / first in cycle) so we have to use the block receipt
-	deactivated := tezos.NewAddressSet(block.TZ.Block.Metadata.Deactivated...)
+	deactivated := mavryk.NewAddressSet(block.MV.Block.Metadata.Deactivated...)
 
 	// snapshot all active bakers with at least minium stake (deactivation happens at
 	// start of the next cycle, so here bakers are still active!)
@@ -961,7 +961,7 @@ func (idx *GovIndex) quorumByHeight(ctx context.Context, height int64, params *r
 				return err
 			}
 			switch vote.VotingPeriodKind {
-			case tezos.VotingPeriodExploration, tezos.VotingPeriodPromotion:
+			case mavryk.VotingPeriodExploration, mavryk.VotingPeriodPromotion:
 				lastQuorum = vote.QuorumPct
 				lastTurnout = vote.TurnoutPct
 				lastTurnoutEma = vote.TurnoutEma

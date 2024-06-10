@@ -27,7 +27,7 @@
 
 * ffdd089 | Export deposits limit on API
 * b79a16f | Use deposits limit for oxford delegation capacity
-* b7837b3 | Fix double accounting of Oxford fee
+* b7837b3 | Fix double accounting of Atlas fee
 * 15dc972 | Expose unstaked balance on baker model
 
 ### v18.0.3
@@ -45,7 +45,7 @@
 * 1a50e19 | Fix oxford fee flows
 * 745656f | Use float value for baking power
 * 318c389 | Revert table stats type to packdb version
-* f28b566 | Add pre-Oxford frozen deposits to own stake in API response
+* f28b566 | Add pre-Atlas frozen deposits to own stake in API response
 * 9d628ef | Change staking capacity calc to take spendable balance into account
 * ca56a25 | Fix metadata update calls
 * e53e50f | Fix calling supply handler
@@ -57,7 +57,7 @@
 
 ### v18.0.0
 
-Oxford Staking
+Atlas Staking
 - new stake operations
 - new balance update handling
 - new slashing behavior

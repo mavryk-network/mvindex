@@ -17,9 +17,9 @@ import (
 	"blockwatch.cc/packdb/encoding/csv"
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -78,23 +78,23 @@ func (b *BigmapAllocItem) MarshalJSON() ([]byte, error) {
 
 func (b *BigmapAllocItem) MarshalJSONVerbose() ([]byte, error) {
 	bigmap := struct {
-		RowId        uint64          `json:"row_id"`
-		BigmapId     int64           `json:"bigmap_id"`
-		AccountId    uint64          `json:"account_id"`
-		Contract     string          `json:"contract"`
-		AllocHeight  int64           `json:"alloc_height"`
-		AllocTime    time.Time       `json:"alloc_time"`
-		AllocBlock   tezos.BlockHash `json:"alloc_block"`
-		KeyType      string          `json:"key_type,omitempty"`
-		ValueType    string          `json:"value_type,omitempty"`
-		NUpdates     int64           `json:"n_updates"`
-		NKeys        int64           `json:"n_keys"`
-		UpdateHeight int64           `json:"update_height"`
-		UpdateTime   time.Time       `json:"update_time"`
-		UpdateBlock  tezos.BlockHash `json:"update_block"`
-		DeleteHeight int64           `json:"delete_height"`
-		DeleteTime   time.Time       `json:"delete_time"`
-		DeleteBlock  tezos.BlockHash `json:"delete_block"`
+		RowId        uint64           `json:"row_id"`
+		BigmapId     int64            `json:"bigmap_id"`
+		AccountId    uint64           `json:"account_id"`
+		Contract     string           `json:"contract"`
+		AllocHeight  int64            `json:"alloc_height"`
+		AllocTime    time.Time        `json:"alloc_time"`
+		AllocBlock   mavryk.BlockHash `json:"alloc_block"`
+		KeyType      string           `json:"key_type,omitempty"`
+		ValueType    string           `json:"value_type,omitempty"`
+		NUpdates     int64            `json:"n_updates"`
+		NKeys        int64            `json:"n_keys"`
+		UpdateHeight int64            `json:"update_height"`
+		UpdateTime   time.Time        `json:"update_time"`
+		UpdateBlock  mavryk.BlockHash `json:"update_block"`
+		DeleteHeight int64            `json:"delete_height"`
+		DeleteTime   time.Time        `json:"delete_time"`
+		DeleteBlock  mavryk.BlockHash `json:"delete_block"`
 	}{
 		RowId:        b.RowId,
 		BigmapId:     b.BigmapId,
@@ -297,7 +297,7 @@ func StreamBigmapAllocTable(ctx *server.Context, args *TableRequest) (interface{
 					q = q.AndEqual(field, 0)
 				} else {
 					// single-address lookup and compile condition
-					addr, err := tezos.ParseAddress(val[0])
+					addr, err := mavryk.ParseAddress(val[0])
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", val[0]), err))
 					}
@@ -317,7 +317,7 @@ func StreamBigmapAllocTable(ctx *server.Context, args *TableRequest) (interface{
 				// multi-address lookup and compile condition
 				ids := make([]uint64, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					addr, err := tezos.ParseAddress(v)
+					addr, err := mavryk.ParseAddress(v)
 					if err != nil || !addr.IsValid() {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid address '%s'", v), err))
 					}

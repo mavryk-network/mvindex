@@ -11,7 +11,7 @@ import (
 	"sync"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 const (
@@ -53,44 +53,44 @@ type AccountRank struct {
 // For history look at Op and Flow (balance updates) for baker info look at Baker,
 // for smart contract info at Contract.
 type Account struct {
-	RowId            AccountID         `pack:"I,pk"      json:"row_id"`
-	Address          tezos.Address     `pack:"H,bloom=3" json:"address"`
-	Type             tezos.AddressType `pack:"t,u8"      json:"address_type"`
-	Pubkey           tezos.Key         `pack:"k"         json:"pubkey"`
-	Counter          int64             `pack:"j,i32"     json:"counter"`
-	BakerId          AccountID         `pack:"D"         json:"baker_id"`
-	CreatorId        AccountID         `pack:"C"         json:"creator_id"`
-	FirstIn          int64             `pack:"i,i32"     json:"first_in"`
-	FirstOut         int64             `pack:"o,i32"     json:"first_out"`
-	LastIn           int64             `pack:"J,i32"     json:"last_in"`
-	LastOut          int64             `pack:"O,i32"     json:"last_out"`
-	FirstSeen        int64             `pack:"0,i32"     json:"first_seen"`
-	LastSeen         int64             `pack:"l,i32"     json:"last_seen"`
-	DelegatedSince   int64             `pack:"+,i32"     json:"delegated_since"`
-	TotalReceived    int64             `pack:"R"         json:"total_received"`
-	TotalSent        int64             `pack:"S"         json:"total_sent"`
-	TotalBurned      int64             `pack:"B"         json:"total_burned"`
-	TotalFeesPaid    int64             `pack:"F"         json:"total_fees_paid"`
-	TotalFeesUsed    int64             `pack:"u"         json:"total_fees_used"`
-	UnclaimedBalance int64             `pack:"U"         json:"unclaimed_balance"`
-	SpendableBalance int64             `pack:"s"         json:"spendable_balance"`
-	FrozenRollupBond int64             `pack:"L"         json:"frozen_rollup_bond"` // rollup
-	LostRollupBond   int64             `pack:"X"         json:"lost_rollup_bond"`   // rollup
-	StakedBalance    int64             `pack:"Y"         json:"staked_balance"`     // stake
-	UnstakedBalance  int64             `pack:"Z"         json:"unstaked_balance"`   // stake
-	LostStake        int64             `pack:"V"         json:"lost_stake"`         // stake
-	StakeShares      int64             `pack:"W"         json:"stake_shares"`       // stake
-	IsFunded         bool              `pack:"f,snappy"  json:"is_funded"`
-	IsActivated      bool              `pack:"A,snappy"  json:"is_activated"`
-	IsDelegated      bool              `pack:"=,snappy"  json:"is_delegated"`
-	IsStaked         bool              `pack:"?,snappy"  json:"is_staked"`
-	IsRevealed       bool              `pack:"r,snappy"  json:"is_revealed"`
-	IsBaker          bool              `pack:"d,snappy"  json:"is_baker"`
-	IsContract       bool              `pack:"c,snappy"  json:"is_contract"`
-	NTxSuccess       int               `pack:"1,i32"     json:"n_tx_success"`
-	NTxFailed        int               `pack:"2,i32"     json:"n_tx_failed"`
-	NTxIn            int               `pack:"3,i32"     json:"n_tx_in"`
-	NTxOut           int               `pack:"4,i32"     json:"n_tx_out"`
+	RowId            AccountID          `pack:"I,pk"      json:"row_id"`
+	Address          mavryk.Address     `pack:"H,bloom=3" json:"address"`
+	Type             mavryk.AddressType `pack:"t,u8"      json:"address_type"`
+	Pubkey           mavryk.Key         `pack:"k"         json:"pubkey"`
+	Counter          int64              `pack:"j,i32"     json:"counter"`
+	BakerId          AccountID          `pack:"D"         json:"baker_id"`
+	CreatorId        AccountID          `pack:"C"         json:"creator_id"`
+	FirstIn          int64              `pack:"i,i32"     json:"first_in"`
+	FirstOut         int64              `pack:"o,i32"     json:"first_out"`
+	LastIn           int64              `pack:"J,i32"     json:"last_in"`
+	LastOut          int64              `pack:"O,i32"     json:"last_out"`
+	FirstSeen        int64              `pack:"0,i32"     json:"first_seen"`
+	LastSeen         int64              `pack:"l,i32"     json:"last_seen"`
+	DelegatedSince   int64              `pack:"+,i32"     json:"delegated_since"`
+	TotalReceived    int64              `pack:"R"         json:"total_received"`
+	TotalSent        int64              `pack:"S"         json:"total_sent"`
+	TotalBurned      int64              `pack:"B"         json:"total_burned"`
+	TotalFeesPaid    int64              `pack:"F"         json:"total_fees_paid"`
+	TotalFeesUsed    int64              `pack:"u"         json:"total_fees_used"`
+	UnclaimedBalance int64              `pack:"U"         json:"unclaimed_balance"`
+	SpendableBalance int64              `pack:"s"         json:"spendable_balance"`
+	FrozenRollupBond int64              `pack:"L"         json:"frozen_rollup_bond"` // rollup
+	LostRollupBond   int64              `pack:"X"         json:"lost_rollup_bond"`   // rollup
+	StakedBalance    int64              `pack:"Y"         json:"staked_balance"`     // stake
+	UnstakedBalance  int64              `pack:"Z"         json:"unstaked_balance"`   // stake
+	LostStake        int64              `pack:"V"         json:"lost_stake"`         // stake
+	StakeShares      int64              `pack:"W"         json:"stake_shares"`       // stake
+	IsFunded         bool               `pack:"f,snappy"  json:"is_funded"`
+	IsActivated      bool               `pack:"A,snappy"  json:"is_activated"`
+	IsDelegated      bool               `pack:"=,snappy"  json:"is_delegated"`
+	IsStaked         bool               `pack:"?,snappy"  json:"is_staked"`
+	IsRevealed       bool               `pack:"r,snappy"  json:"is_revealed"`
+	IsBaker          bool               `pack:"d,snappy"  json:"is_baker"`
+	IsContract       bool               `pack:"c,snappy"  json:"is_contract"`
+	NTxSuccess       int                `pack:"1,i32"     json:"n_tx_success"`
+	NTxFailed        int                `pack:"2,i32"     json:"n_tx_failed"`
+	NTxIn            int                `pack:"3,i32"     json:"n_tx_in"`
+	NTxOut           int                `pack:"4,i32"     json:"n_tx_out"`
 
 	// used during block processing, not stored in DB
 	IsNew       bool   `pack:"-" json:"-"` // first seen this block
@@ -106,7 +106,7 @@ type Account struct {
 // Ensure Account implements the pack.Item interface.
 var _ pack.Item = (*Account)(nil)
 
-func NewAccount(addr tezos.Address) *Account {
+func NewAccount(addr mavryk.Address) *Account {
 	acc := AllocAccount()
 	acc.Type = addr.Type()
 	acc.Address = addr
@@ -262,7 +262,7 @@ func (a *Account) UpdateBalance(f *Flow) error {
 			// log.Infof("Unstake: %s %d", a, f.AmountOut)
 			// handle only out flow
 			if f.AmountOut > 0 {
-				// Oxford: select the correct baker
+				// Atlas: select the correct baker
 				// - an implicit unstake happens during re-delegation, but the new baker
 				// is already assigned to the account by the operation decoder; for this
 				// case to work we must check which baker is referenced by the stake flow
@@ -454,7 +454,7 @@ func (a *Account) RollbackBalance(f *Flow) error {
 		case FlowTypeUnstake:
 			// handle only out flow
 			if f.AmountOut > 0 {
-				// Oxford: select the correct baker
+				// Atlas: select the correct baker
 				// - an implicit unstake happens during re-delegation, but the new baker
 				// is already assigned to the account by the operation decoder; for this
 				// case to work we must check which baker is referenced by the stake flow

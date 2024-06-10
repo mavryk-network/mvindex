@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 const (
@@ -37,7 +37,7 @@ type TicketOwner struct {
 	Ticket       TicketID      `pack:"T,bloom=3" json:"ticket"`
 	Ticketer     AccountID     `pack:"E,bloom=3" json:"ticketer"`
 	Account      AccountID     `pack:"A,bloom=3" json:"account"`
-	Balance      tezos.Z       `pack:"B,snappy"  json:"balance"`       // current balance
+	Balance      mavryk.Z      `pack:"B,snappy"  json:"balance"`       // current balance
 	FirstBlock   int64         `pack:"<,i32"     json:"first_block"`   // block height
 	FirstTime    time.Time     `pack:"f"         json:"first_time"`    // block time
 	LastBlock    int64         `pack:">,i32"     json:"last_block"`    // block height
@@ -45,10 +45,10 @@ type TicketOwner struct {
 	NumTransfers int           `pack:"x,i32"     json:"num_transfers"` // #xfers this owner/ticket combi sent or recv
 	NumMints     int           `pack:"y,i32"     json:"num_mints"`     // #mints this owner/ticket combi
 	NumBurns     int           `pack:"z,i32"     json:"num_burns"`     // #burns this owner/ticket combi
-	VolSent      tezos.Z       `pack:"s,snappy"  json:"vol_sent"`      // running total
-	VolRecv      tezos.Z       `pack:"r,snappy"  json:"vol_recv"`      // running total
-	VolMint      tezos.Z       `pack:"m,snappy"  json:"vol_mint"`      // running total
-	VolBurn      tezos.Z       `pack:"b,snappy"  json:"vol_burn"`      // running total
+	VolSent      mavryk.Z      `pack:"s,snappy"  json:"vol_sent"`      // running total
+	VolRecv      mavryk.Z      `pack:"r,snappy"  json:"vol_recv"`      // running total
+	VolMint      mavryk.Z      `pack:"m,snappy"  json:"vol_mint"`      // running total
+	VolBurn      mavryk.Z      `pack:"b,snappy"  json:"vol_burn"`      // running total
 
 	// internal, used for stats
 	WasZero bool `pack:"-"  json:"-"`

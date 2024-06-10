@@ -9,9 +9,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/cache"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/cache"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 func (m *Indexer) CacheStats() map[string]interface{} {
@@ -121,31 +121,31 @@ func (m *Indexer) LookupBlockHeightFromTime(ctx context.Context, tm time.Time) i
 }
 
 // called concurrently from API consumers, uses read-mostly cache
-func (m *Indexer) LookupBlockHash(ctx context.Context, height int64) tezos.BlockHash {
+func (m *Indexer) LookupBlockHash(ctx context.Context, height int64) mavryk.BlockHash {
 	cc, err := m.getBlocks(ctx)
 	if err != nil {
-		return tezos.BlockHash{}
+		return mavryk.BlockHash{}
 	}
 	return cc.GetHash(height)
 }
 
 // called concurrently from API consumers, uses read-mostly cache
-func (m *Indexer) LookupProposalHash(ctx context.Context, id model.ProposalID) tezos.ProtocolHash {
+func (m *Indexer) LookupProposalHash(ctx context.Context, id model.ProposalID) mavryk.ProtocolHash {
 	gc, err := m.getProposals(ctx)
 	if err != nil {
-		return tezos.ProtocolHash{}
+		return mavryk.ProtocolHash{}
 	}
 	return gc.GetHash(id)
 }
 
-func (m *Indexer) LookupAddress(ctx context.Context, id model.AccountID) tezos.Address {
+func (m *Indexer) LookupAddress(ctx context.Context, id model.AccountID) mavryk.Address {
 	if id == 0 {
-		return tezos.InvalidAddress
+		return mavryk.InvalidAddress
 	}
 	cc, err := m.getAddrs(ctx)
 	if err != nil {
 		log.Errorf("addr cache build failed: %s", err)
-		return tezos.InvalidAddress
+		return mavryk.InvalidAddress
 	}
 	return cc.GetAddress(id)
 }

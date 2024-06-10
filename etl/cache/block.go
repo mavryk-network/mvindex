@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 // NOTE: simple read-mostly cache for timestamps and block hashes
@@ -33,7 +33,7 @@ type BlockCache struct {
 const defaultBlockCacheSize = 1 << 22 // 4M blocks = 150MB
 
 var (
-	blockHashLen = tezos.HashTypeBlock.Len
+	blockHashLen = mavryk.HashTypeBlock.Len
 )
 
 func NewBlockCache(size int) *BlockCache {
@@ -66,14 +66,14 @@ func (c BlockCache) Stats() Stats {
 	return s
 }
 
-func (c *BlockCache) GetHash(height int64) tezos.BlockHash {
+func (c *BlockCache) GetHash(height int64) mavryk.BlockHash {
 	if c.Len() > int(height) {
 		offs := int(height) * blockHashLen
 		c.stats.CountHits(1)
-		return tezos.NewBlockHash(c.hashes[offs : offs+blockHashLen])
+		return mavryk.NewBlockHash(c.hashes[offs : offs+blockHashLen])
 	}
 	c.stats.CountMisses(1)
-	return tezos.BlockHash{}
+	return mavryk.BlockHash{}
 }
 
 func (c *BlockCache) GetTime(height int64) time.Time {

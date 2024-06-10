@@ -7,20 +7,20 @@ import (
 	"fmt"
 	"sync"
 
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 type Registry struct {
 	sync.RWMutex
-	byProtocol   map[tezos.ProtocolHash]*rpc.Params
+	byProtocol   map[mavryk.ProtocolHash]*rpc.Params
 	byDeployment map[int]*rpc.Params
 	inOrder      []*rpc.Params
 }
 
 func NewRegistry() *Registry {
 	return &Registry{
-		byProtocol:   make(map[tezos.ProtocolHash]*rpc.Params),
+		byProtocol:   make(map[mavryk.ProtocolHash]*rpc.Params),
 		byDeployment: make(map[int]*rpc.Params),
 		inOrder:      make([]*rpc.Params, 0),
 	}
@@ -47,7 +47,7 @@ func (r *Registry) Register(p *rpc.Params) {
 	}
 }
 
-func (r *Registry) GetParams(h tezos.ProtocolHash) (*rpc.Params, error) {
+func (r *Registry) GetParams(h mavryk.ProtocolHash) (*rpc.Params, error) {
 	r.RLock()
 	defer r.RUnlock()
 	if p, ok := r.byProtocol[h]; !ok {

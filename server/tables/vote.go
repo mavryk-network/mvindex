@@ -16,9 +16,9 @@ import (
 	"blockwatch.cc/packdb/encoding/csv"
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -392,7 +392,7 @@ func StreamVoteTable(ctx *server.Context, args *TableRequest) (interface{}, int)
 					q = q.And(field, mode, 0)
 				} else {
 					// single-proposal lookup and compile condition
-					h, err := tezos.ParseProtocolHash(val[0])
+					h, err := mavryk.ParseProtocolHash(val[0])
 					if err != nil {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid protocol hash '%s'", val[0]), err))
 					}
@@ -412,7 +412,7 @@ func StreamVoteTable(ctx *server.Context, args *TableRequest) (interface{}, int)
 				// multi-proposal lookup and compile condition
 				ids := make([]uint64, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					h, err := tezos.ParseProtocolHash(v)
+					h, err := mavryk.ParseProtocolHash(v)
 					if err != nil {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid protocol hash '%s'", v), err))
 					}
@@ -459,7 +459,7 @@ func StreamVoteTable(ctx *server.Context, args *TableRequest) (interface{}, int)
 				case "voting_period_kind":
 					fvals := make([]string, 0)
 					for _, vv := range strings.Split(v, ",") {
-						fval := tezos.ParseVotingPeriod(vv)
+						fval := mavryk.ParseVotingPeriod(vv)
 						if !fval.IsValid() {
 							panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid %s filter value '%s'", key, vv), nil))
 						}

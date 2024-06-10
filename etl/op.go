@@ -7,12 +7,12 @@ import (
 	"context"
 	"fmt"
 
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 func (b *Builder) AppendRegularBlockOps(ctx context.Context, rollback bool) error {
-	for op_l, ol := range b.block.TZ.Block.Operations {
+	for op_l, ol := range b.block.MV.Block.Operations {
 		for op_p, oh := range ol {
 			for op_c, o := range oh.Contents {
 				var err error

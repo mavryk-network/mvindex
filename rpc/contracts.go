@@ -7,19 +7,19 @@ import (
 	"context"
 	"fmt"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
 )
 
 // Contracts holds info about a Tezos account
 type ContractInfo struct {
 	Balance int64 `json:"balance,string"`
-	// Delegate tezos.Address `json:"delegate"`
+	// Delegate mavryk.Address `json:"delegate"`
 	Counter int64 `json:"counter,string"`
 }
 
 // GetContract returns the full info about a contract at block id.
-func (c *Client) GetContract(ctx context.Context, addr tezos.Address, id BlockID) (*ContractInfo, error) {
+func (c *Client) GetContract(ctx context.Context, addr mavryk.Address, id BlockID) (*ContractInfo, error) {
 	u := fmt.Sprintf("chains/main/blocks/%s/context/contracts/%s", id, addr)
 	var info ContractInfo
 	err := c.Get(ctx, u, &info)
@@ -30,7 +30,7 @@ func (c *Client) GetContract(ctx context.Context, addr tezos.Address, id BlockID
 }
 
 // GetContractScript returns the originated contract script.
-func (c *Client) GetContractScript(ctx context.Context, addr tezos.Address, id BlockID) (*micheline.Script, error) {
+func (c *Client) GetContractScript(ctx context.Context, addr mavryk.Address, id BlockID) (*micheline.Script, error) {
 	u := fmt.Sprintf("chains/main/blocks/%s/context/contracts/%s/script", id, addr)
 	s := micheline.NewScript()
 	err := c.Get(ctx, u, s)
@@ -41,7 +41,7 @@ func (c *Client) GetContractScript(ctx context.Context, addr tezos.Address, id B
 }
 
 // GetContractStorage returns the contract's storage at block id.
-func (c *Client) GetContractStorage(ctx context.Context, addr tezos.Address, id BlockID) (micheline.Prim, error) {
+func (c *Client) GetContractStorage(ctx context.Context, addr mavryk.Address, id BlockID) (micheline.Prim, error) {
 	u := fmt.Sprintf("chains/main/blocks/%s/context/contracts/%s/storage", id, addr)
 	prim := micheline.Prim{}
 	err := c.Get(ctx, u, &prim)

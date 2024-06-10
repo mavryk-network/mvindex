@@ -4,8 +4,8 @@
 package etl
 
 import (
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 // pre-Ithaca
@@ -18,7 +18,7 @@ import (
 // - all bakers pay deposit at migration and at end of cycle
 // - endorsing reward is minted and paid at end of cycle or burned for low participation
 //
-// post-Oxford
+// post-Atlas
 // - each reward flow may be split into two flows (4 balance updates), one for the baker
 // and another for the staker pool
 // - only bake reward, bake bonus and endorse reward are shared with stakers
@@ -33,11 +33,11 @@ func (b *Builder) NewImplicitFlows() []*model.Flow {
 	}
 	var (
 		fees     int64 // block fees, deduct from baker reward flow
-		last     tezos.Address
+		last     mavryk.Address
 		nextType model.FlowType = model.FlowTypeInvalid
 	)
 	// ignore buggy mainnet receipts at block 1409024
-	bu := b.block.TZ.Block.Metadata.BalanceUpdates
+	bu := b.block.MV.Block.Metadata.BalanceUpdates
 	if b.block.Params.IsMainnet() && b.block.Height == 1409024 {
 		bu = bu[:len(bu)-2]
 	}
@@ -48,11 +48,11 @@ func (b *Builder) NewImplicitFlows() []*model.Flow {
 		//
 		// priority order is defined in rpc/balance.go
 		// - contract (usually balance updates)
-		// - delegate (usually pre-oxford baker updates)
+		// - delegate (usually pre-atlas baker updates)
 		// - committer (rollup)
-		// - staker.contract (post-Oxford user stake, user or baker address)
-		// - staker.delegate (post-Oxford shared stake, baker address)
-		// - staker.baker (post-Oxford baker)
+		// - staker.contract (post-Atlas user stake, user or baker address)
+		// - staker.delegate (post-Atlas shared stake, baker address)
+		// - staker.baker (post-Atlas baker)
 		addr := u.Address()
 
 		// re-assign flows for the same baker to new operations under certain conditions
@@ -88,7 +88,7 @@ func (b *Builder) NewImplicitFlows() []*model.Flow {
 			}
 
 		default:
-			// post-oxford we break update streams for the same baker into
+			// post-atlas we break update streams for the same baker into
 			// multiple events when anything leaves unstaked_deposits
 			//
 			// that means we split
@@ -236,7 +236,7 @@ func (b *Builder) NewImplicitFlows() []*model.Flow {
 						f.AmountOut = -u.Amount() // note the negation!
 						flows = append(flows, f)
 					default:
-						// post-Oxford deposits go into staking
+						// post-Atlas deposits go into staking
 						f := model.NewFlow(b.block, acc, acc, id)
 						f.Kind = model.FlowKindBalance
 						f.Type = model.FlowTypeStake
@@ -286,7 +286,7 @@ func (b *Builder) NewImplicitFlows() []*model.Flow {
 							flows = append(flows, f)
 						}
 					default:
-						// post-Oxford payout share to spendable
+						// post-Atlas payout share to spendable
 						// fees are explicitly paid to proposer
 						// deposit refund from finalize unstake
 						if nextType.IsValid() {
@@ -359,7 +359,7 @@ func (b *Builder) NewImplicitFlows() []*model.Flow {
 					// funds accounts
 				}
 			case "delayed_operation":
-				// Oxford+ penalty reward
+				// Atlas+ penalty reward
 				offender, _ := b.AccountByAddress(bu[i-1].Address())
 				f := model.NewFlow(b.block, acc, offender, id)
 				f.Kind = model.FlowKindBalance
@@ -403,7 +403,7 @@ func (b *Builder) NewImplicitFlows() []*model.Flow {
 						f.IsFrozen = true
 						flows = append(flows, f)
 					default:
-						// post-Oxford bootstrap migration deposits are explicit
+						// post-Atlas bootstrap migration deposits are explicit
 						if b.block.Height == 2 && u.Origin == "migration" {
 							f := model.NewFlow(b.block, acc, acc, id)
 							f.Kind = model.FlowKindBalance
@@ -412,7 +412,7 @@ func (b *Builder) NewImplicitFlows() []*model.Flow {
 							flows = append(flows, f)
 							nextType = model.FlowTypeStake
 						}
-						// post-Oxford deposits express rewards paid into the staking pool
+						// post-Atlas deposits express rewards paid into the staking pool
 						// OR deposit top-ups from auto-staking; the exact type (and hence)
 						// operation that will be produced is defined in nextType which is
 						// set when processing the first update from this pair
@@ -432,7 +432,7 @@ func (b *Builder) NewImplicitFlows() []*model.Flow {
 					f.IsFrozen = true
 					flows = append(flows, f)
 				case "unstaked_deposits":
-					// post-oxford unstaked inflow comes from frozen deposits
+					// post-atlas unstaked inflow comes from frozen deposits
 					f := model.NewFlow(b.block, acc, acc, id)
 					f.Kind = model.FlowKindStake
 					f.Type = model.FlowTypeUnstake
@@ -447,7 +447,7 @@ func (b *Builder) NewImplicitFlows() []*model.Flow {
 					// flows = append(flows, f)
 				}
 			} else {
-				// pre-Oxford
+				// pre-Atlas
 				// payout: deduct unfrozen deposits, rewards and fees
 				// when cycle is set and > N-5 then this is a seed nonce slashing
 				// because the baker did not publish nonces
@@ -457,7 +457,7 @@ func (b *Builder) NewImplicitFlows() []*model.Flow {
 				case "deposits", "legacy_deposits":
 					switch {
 					case b.block.Params.Version < 18:
-						// pre-Oxford deposit outflows are unfrozen deposits that
+						// pre-Atlas deposit outflows are unfrozen deposits that
 						// go back to spendable balance
 						f := model.NewFlow(b.block, acc, acc, id)
 						f.Kind = model.FlowKindDeposits
@@ -489,7 +489,7 @@ func (b *Builder) NewImplicitFlows() []*model.Flow {
 							f.IsBurned = isBurn
 							flows = append(flows, f)
 						}
-						// other post-Oxford deposit outflows are unstaked:
+						// other post-Atlas deposit outflows are unstaked:
 						// we skip this first balance update from the pair and
 						// handle the second above in `unstaked_deposits`
 					}
@@ -552,7 +552,7 @@ func (b *Builder) NewImplicitFlows() []*model.Flow {
 						f.IsUnfrozen = true // re-use to signal unstake slash
 						flows = append(flows, f)
 					} else {
-						// post-Oxford unstaked out-flow can go to
+						// post-Atlas unstaked out-flow can go to
 						// - spendable balance (auto-finalize)
 						// - back to frozen deposits (auto-staked)
 						f := model.NewFlow(b.block, acc, acc, id)

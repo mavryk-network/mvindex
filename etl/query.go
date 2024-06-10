@@ -5,8 +5,8 @@ package etl
 
 import (
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 type ListRequest struct {
@@ -24,7 +24,7 @@ type ListRequest struct {
 	Entrypoints []int64
 	Period      int64
 	BigmapId    int64
-	BigmapKey   tezos.ExprHash
+	BigmapKey   mavryk.ExprHash
 	OpId        model.OpID
 	WithStorage bool
 }

@@ -9,9 +9,9 @@ import (
 	"sort"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/etl/task"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/etl/task"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 var RightsIndexKey = "rights"
@@ -105,7 +105,7 @@ func (idx *RightsIndex) Close() error {
 
 func (idx *RightsIndex) ConnectBlock(ctx context.Context, block *model.Block, builder model.BlockBuilder) error {
 	// reset cache at start of cycle
-	if block.TZ.IsCycleStart() {
+	if block.MV.IsCycleStart() {
 		for n, v := range idx.cache {
 			v.Free()
 			delete(idx.cache, n)
@@ -144,7 +144,7 @@ func (idx *RightsIndex) ConnectBlock(ctx context.Context, block *model.Block, bu
 			}
 			// use params that were active at the seed block
 			p := builder.Params(sop.Level)
-			start := block.TZ.GetCycleStart() - p.BlocksPerCycle // -1 cycle!
+			start := block.MV.GetCycleStart() - p.BlocksPerCycle // -1 cycle!
 			pos := int((sop.Level - start) / p.BlocksPerCommitment)
 			right.Seeded.Set(pos)
 		}
@@ -166,9 +166,9 @@ func (idx *RightsIndex) ConnectBlock(ctx context.Context, block *model.Block, bu
 			// rights but bakes a round > 0 block
 			log.Warnf("rights: missing #%d baking right for block %d proposer %d: %v", block.Round, block.Height, block.ProposerId, err)
 		} else {
-			pos := int(block.TZ.GetCyclePosition())
+			pos := int(block.MV.GetCyclePosition())
 			right.Baked.Set(pos)
-			if block.TZ.IsSeedRequired() {
+			if block.MV.IsSeedRequired() {
 				right.Seed.Set(pos / int(p.BlocksPerCommitment))
 			}
 			if err := idx.table.Update(ctx, right); err != nil {
@@ -177,7 +177,7 @@ func (idx *RightsIndex) ConnectBlock(ctx context.Context, block *model.Block, bu
 			// update reliability
 			bkr, ok := builder.BakerById(right.AccountId)
 			if ok {
-				bkr.Reliability = right.Reliability(int(block.TZ.GetCyclePosition()))
+				bkr.Reliability = right.Reliability(int(block.MV.GetCyclePosition()))
 			}
 		}
 	}
@@ -197,7 +197,7 @@ func (idx *RightsIndex) ConnectBlock(ctx context.Context, block *model.Block, bu
 
 		// all endorsements are for block - 1, make sure we use the correct settings
 		// for the cycle (in case of first block)
-		start := block.Parent.TZ.GetCycleStart()
+		start := block.Parent.MV.GetCycleStart()
 		pos := int(block.Height - 1 - start)
 		upd := make([]pack.Item, 0)
 		for id := range endorsers {
@@ -215,7 +215,7 @@ func (idx *RightsIndex) ConnectBlock(ctx context.Context, block *model.Block, bu
 			upd = append(upd, right)
 			bkr, ok := builder.BakerById(right.AccountId)
 			if ok {
-				bkr.Reliability = right.Reliability(int(block.TZ.GetCyclePosition()))
+				bkr.Reliability = right.Reliability(int(block.MV.GetCyclePosition()))
 			}
 		}
 
@@ -226,26 +226,26 @@ func (idx *RightsIndex) ConnectBlock(ctx context.Context, block *model.Block, bu
 	}
 
 	// nothing more to do when no new rights are available
-	if len(block.TZ.Baking) == 0 && len(block.TZ.Endorsing) == 0 {
+	if len(block.MV.Baking) == 0 && len(block.MV.Endorsing) == 0 {
 		return nil
 	}
 
 	// we use current block's params
 	// - during regular block processing they are the most recent ones,
 	// - during protocol migration this is the set of new params
-	start := block.TZ.Baking[0][0].Level
+	start := block.MV.Baking[0][0].Level
 	cycle := p.HeightToCycle(start)
 
 	// create new rights data for each baker, add baking and endorsing rights
 	// process cycle by cycle (only during bootstrap/genesis we handle multiple cycles)
-	for c := range block.TZ.Baking {
+	for c := range block.MV.Baking {
 		// advance to next cycle (only on genesis)
 		if c > 0 {
 			start += p.BlocksPerCycle
 			cycle++
 		}
-		bake := block.TZ.Baking[c]
-		endorse := block.TZ.Endorsing[c]
+		bake := block.MV.Baking[c]
+		endorse := block.MV.Endorsing[c]
 
 		// sort rights by baker to speed up processing, we don't care when
 		// levels end up unsorted, so we use the faster quicksort
@@ -311,7 +311,7 @@ func (idx *RightsIndex) ConnectBlock(ctx context.Context, block *model.Block, bu
 		}
 
 		// add empty rights for all known bakers with stake in snapshot
-		if sn := block.TZ.Snapshot; sn != nil {
+		if sn := block.MV.Snapshot; sn != nil {
 			snap, err := builder.Table(SnapshotIndexKey)
 			if err != nil {
 				return err
@@ -367,7 +367,7 @@ func (idx *RightsIndex) DisconnectBlock(ctx context.Context, block *model.Block,
 
 	// on first block of cycle, also clear endorsing rights of previous cycle
 	// and entire last future cycle
-	if block.TZ.IsCycleStart() && block.Parent != nil {
+	if block.MV.IsCycleStart() && block.Parent != nil {
 		prevBlocksPerCycle := block.Parent.Params.BlocksPerCycle
 		err := pack.NewQuery("etl.rollback_start").
 			WithTable(idx.table).
@@ -396,9 +396,9 @@ func (idx *RightsIndex) DisconnectBlock(ctx context.Context, block *model.Block,
 	} else {
 		// on a regular mid-cycle block, clear same-cycle bits only
 		p := block.Params
-		bakePos := int(block.TZ.GetCyclePosition())
+		bakePos := int(block.MV.GetCyclePosition())
 		seedPos := -1
-		if block.TZ.IsSeedRequired() {
+		if block.MV.IsSeedRequired() {
 			seedPos = bakePos / int(p.BlocksPerCommitment)
 		}
 		err := pack.NewQuery("etl.rollback_middle").

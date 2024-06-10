@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	company           = "Blockwatch Data Inc."
-	envPrefix         = "TZ"
-	appName           = "tzindex"
+	company           = "Mavryk Dynamics LTD."
+	envPrefix         = "MV"
+	appName           = "mvindex"
 	apiVersion        = "v018-2024-03-26"
 	version    string = "v18.0"
 	commit     string = "dev"
@@ -26,7 +26,7 @@ func UserAgent() string {
 }
 
 func printVersion() {
-	fmt.Printf("Tezos L1 Indexer by %s\n", company)
+	fmt.Printf("Mavryk L1 Indexer by %s\n", company)
 	fmt.Printf("Version: %s (%s)\n", version, commit)
 	fmt.Printf("API version: %s\n", apiVersion)
 	fmt.Printf("Go version: %s\n", runtime.Version())

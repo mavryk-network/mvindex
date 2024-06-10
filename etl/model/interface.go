@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/task"
-	"blockwatch.cc/tzindex/rpc"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/task"
+	"github.com/mavryk-network/mvindex/rpc"
 )
 
 // Model is the interface all data models must implement.
@@ -30,7 +30,7 @@ type BlockCrawler interface {
 	ParamsByHeight(height int64) *rpc.Params
 
 	// returns the blockchain params for the specified protocol
-	ParamsByProtocol(proto tezos.ProtocolHash) *rpc.Params
+	ParamsByProtocol(proto mavryk.ProtocolHash) *rpc.Params
 
 	// returns the current crawler chain tip
 	Tip() *ChainTip
@@ -54,16 +54,16 @@ type BlockCrawler interface {
 // BlockBuilder is an interface to access block builder caches and info.
 type BlockBuilder interface {
 	// resolves account from builder cache, returns nil and false when not found
-	AccountByAddress(tezos.Address) (*Account, bool)
+	AccountByAddress(mavryk.Address) (*Account, bool)
 
 	// resolves account from database, returns nil and error when not found
-	LoadAccountByAddress(context.Context, tezos.Address) (*Account, error)
+	LoadAccountByAddress(context.Context, mavryk.Address) (*Account, error)
 
 	// resolves account from id, returns nil and false when not found
 	AccountById(AccountID) (*Account, bool)
 
 	// resolves baker from address, returns nil and false when not found
-	BakerByAddress(tezos.Address) (*Baker, bool)
+	BakerByAddress(mavryk.Address) (*Baker, bool)
 
 	// resolves baker from id, returns nil and false when not found
 	BakerById(AccountID) (*Baker, bool)

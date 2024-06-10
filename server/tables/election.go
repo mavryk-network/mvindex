@@ -16,9 +16,9 @@ import (
 	"blockwatch.cc/packdb/encoding/csv"
 	"blockwatch.cc/packdb/pack"
 	"blockwatch.cc/packdb/util"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
-	"blockwatch.cc/tzindex/server"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
+	"github.com/mavryk-network/mvindex/server"
 )
 
 var (
@@ -93,7 +93,7 @@ func (e *Election) MarshalJSONVerbose() ([]byte, error) {
 		NoQuorum:         e.NoQuorum,
 		NoMajority:       e.NoMajority,
 		NoProposal:       e.NumProposals == 0,
-		VotingPeriodKind: tezos.ToVotingPeriod(e.NumPeriods).String(),
+		VotingPeriodKind: mavryk.ToVotingPeriod(e.NumPeriods).String(),
 	}
 	if p := e.ctx.Indexer.LookupProposalHash(e.ctx, e.ProposalId); p.IsValid() {
 		election.Proposal = p.String()
@@ -187,7 +187,7 @@ func (e *Election) MarshalJSONBrief() ([]byte, error) {
 				buf = append(buf, '0')
 			}
 		case "last_voting_period":
-			buf = strconv.AppendQuote(buf, tezos.ToVotingPeriod(e.NumPeriods).String())
+			buf = strconv.AppendQuote(buf, mavryk.ToVotingPeriod(e.NumPeriods).String())
 		default:
 			continue
 		}
@@ -251,7 +251,7 @@ func (e *Election) MarshalCSV() ([]string, error) {
 		case "no_proposal":
 			res[i] = strconv.FormatBool(e.NumProposals == 0)
 		case "last_voting_period":
-			res[i] = strconv.Quote(tezos.ToVotingPeriod(e.NumPeriods).String())
+			res[i] = strconv.Quote(mavryk.ToVotingPeriod(e.NumPeriods).String())
 		default:
 			continue
 		}
@@ -335,7 +335,7 @@ func StreamElectionTable(ctx *server.Context, args *TableRequest) (interface{}, 
 					q = q.And(field, mode, 0)
 				} else {
 					// single-proposal lookup and compile condition
-					h, err := tezos.ParseProtocolHash(val[0])
+					h, err := mavryk.ParseProtocolHash(val[0])
 					if err != nil {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid protocol hash '%s'", val[0]), err))
 					}
@@ -355,7 +355,7 @@ func StreamElectionTable(ctx *server.Context, args *TableRequest) (interface{}, 
 				// multi-proposal lookup and compile condition
 				ids := make([]uint64, 0)
 				for _, v := range strings.Split(val[0], ",") {
-					h, err := tezos.ParseProtocolHash(v)
+					h, err := mavryk.ParseProtocolHash(v)
 					if err != nil {
 						panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid protocol hash '%s'", v), err))
 					}
@@ -378,7 +378,7 @@ func StreamElectionTable(ctx *server.Context, args *TableRequest) (interface{}, 
 			}
 		case "last_voting_period":
 			// parse only the first value
-			period := tezos.ParseVotingPeriod(val[0])
+			period := mavryk.ParseVotingPeriod(val[0])
 			if !period.IsValid() {
 				panic(server.EBadRequest(server.EC_PARAM_INVALID, fmt.Sprintf("invalid voting period '%s'", val[0]), nil))
 			}

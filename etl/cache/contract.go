@@ -8,8 +8,8 @@ import (
 
 	lru "github.com/hashicorp/golang-lru/v2"
 
-	"blockwatch.cc/tzgo/micheline"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvgo/micheline"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
 var (

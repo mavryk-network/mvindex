@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
+	"github.com/mavryk-network/mvgo/mavryk"
 )
 
 const (
@@ -32,7 +32,7 @@ type TicketUpdate struct {
 	Id        TicketUpdateID `pack:"I,pk"      json:"row_id"`
 	TicketId  TicketID       `pack:"T"         json:"ticket"`
 	AccountId AccountID      `pack:"S"         json:"account"`
-	Amount    tezos.Z        `pack:"A,snappy"  json:"amount"`
+	Amount    mavryk.Z       `pack:"A,snappy"  json:"amount"`
 	Height    int64          `pack:"h,i32"     json:"height"`
 	Time      time.Time      `pack:"t"         json:"time"`
 	OpId      uint64         `pack:"d"         json:"op_id"`

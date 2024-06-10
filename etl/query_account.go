@@ -9,11 +9,11 @@ import (
 	"strings"
 
 	"blockwatch.cc/packdb/pack"
-	"blockwatch.cc/tzgo/tezos"
-	"blockwatch.cc/tzindex/etl/model"
+	"github.com/mavryk-network/mvgo/mavryk"
+	"github.com/mavryk-network/mvindex/etl/model"
 )
 
-func (m *Indexer) LookupAccount(ctx context.Context, addr tezos.Address) (*model.Account, error) {
+func (m *Indexer) LookupAccount(ctx context.Context, addr mavryk.Address) (*model.Account, error) {
 	if !addr.IsValid() {
 		return nil, model.ErrInvalidAddress
 	}
@@ -35,7 +35,7 @@ func (m *Indexer) LookupAccount(ctx context.Context, addr tezos.Address) (*model
 	return acc, nil
 }
 
-func (m *Indexer) LookupAccountId(ctx context.Context, addr tezos.Address) (model.AccountID, error) {
+func (m *Indexer) LookupAccountId(ctx context.Context, addr mavryk.Address) (model.AccountID, error) {
 	if !addr.IsValid() {
 		return 0, model.ErrInvalidAddress
 	}
@@ -111,7 +111,7 @@ func (m *Indexer) LookupAccountsById(ctx context.Context, ids []uint64) ([]*mode
 	return accs, nil
 }
 
-func (m *Indexer) FindActivatedAccount(ctx context.Context, addr tezos.Address) (*model.Account, error) {
+func (m *Indexer) FindActivatedAccount(ctx context.Context, addr mavryk.Address) (*model.Account, error) {
 	table, err := m.Table(model.OpTableKey)
 	if err != nil {
 		return nil, err
@@ -137,7 +137,7 @@ func (m *Indexer) FindActivatedAccount(ctx context.Context, addr tezos.Address) 
 				// skip broken records
 				return nil
 			}
-			ba, err := tezos.DecodeBlindedAddress(data[1])
+			ba, err := mavryk.DecodeBlindedAddress(data[1])
 			if err != nil {
 				// skip broken records
 				return nil
